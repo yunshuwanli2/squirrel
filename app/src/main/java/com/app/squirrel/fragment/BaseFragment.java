@@ -6,15 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 /**
  * Fragment基类
  */
 public abstract class BaseFragment extends Fragment {
 
-    private Unbinder unbinder;
 
     // fragment创建
     @Override
@@ -28,7 +24,6 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(getContentViewLayoutID(), null);
-        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -55,9 +50,6 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
 }

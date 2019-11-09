@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -14,18 +12,27 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="30dp"
         android:layout_marginRight="40dp"
-        android:background="@color/colorAccent">
+        android:background="@drawable/bg_input_text">
 
         <EditText
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@null" />
+            android:background="@null"
+            android:hint="请输入手机号码"
+            android:padding="5dp"
+            android:textColor="@android:color/darker_gray"
+            android:textColorHint="@android:color/darker_gray" />
 
-        <Button
+        <TextView
             android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:text="确认" />
+            android:layout_margin="1dp"
+            android:background="@color/gray"
+            android:gravity="center"
+            android:text="确认"
+            android:textColor="@android:color/background_dark"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -33,8 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="10dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -46,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="我同意"
-            android:textColor="@android:color/notification_default_color_light"
+            android:textColor="@android:color/background_dark"
             android:textSize="12sp" />
 
         <TextView
@@ -78,14 +85,19 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/ic_phone"
-            android:text="使用手机号码开箱"
+            android:background="@drawable/bg_buttom"
+            android:drawableLeft="@mipmap/ic_sm"
+            android:drawablePadding="5dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="切换扫描开箱"
+            android:textColor="@android:color/background_dark"
             android:textSize="22sp" />
 
 
     </LinearLayout>
 
-    <View
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
