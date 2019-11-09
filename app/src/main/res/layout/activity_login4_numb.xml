@@ -9,43 +9,52 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="30dp"
-        android:layout_marginRight="40dp"
-        android:background="@drawable/bg_input_text">
+        android:layout_marginRight="50dp"
+        android:background="@drawable/bg_input_text"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <EditText
+            android:id="@+id/et_number"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:hint="请输入手机号码"
-            android:padding="5dp"
-            android:textColor="@android:color/darker_gray"
-            android:textColorHint="@android:color/darker_gray" />
+            android:letterSpacing="0.1"
+            android:lines="1"
+            android:maxLength="11"
+            android:paddingStart="10dp"
+            android:textColor="@android:color/background_dark"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="20sp" />
 
         <TextView
-            android:layout_width="80dp"
+            android:id="@+id/tv_login"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_margin="1dp"
             android:background="@color/gray"
             android:gravity="center"
-            android:text="确认"
+            android:text="确 认"
             android:textColor="@android:color/background_dark"
-            android:textSize="18sp" />
+            android:textSize="22sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_agree_rule"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginBottom="10dp">
+        android:layout_height="40dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/iv_check"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_marginRight="10dp"
             android:src="@mipmap/ic_check_normol" />
 
@@ -64,35 +73,204 @@
             android:textSize="12sp" />
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:layout_weight="1.6">
+        android:layout_weight="1.6"
+        android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="1"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="2"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="3"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="4"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="5"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_6"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="6"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_7"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="7"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_8"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="8"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_9"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="9"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_clean"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="清空"
+                android:textColor="@color/lanse"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_0"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="0"
+                android:textColor="@color/lanse"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_delete_one"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_buttom_bg"
+                android:text="删除"
+                android:textColor="@color/lanse"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:background="@color/white"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/btn_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_buttom"
             android:drawableLeft="@mipmap/ic_sm"
             android:drawablePadding="5dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
             android:text="切换扫描开箱"
             android:textColor="@android:color/background_dark"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
 
     </LinearLayout>
