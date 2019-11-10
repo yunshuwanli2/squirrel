@@ -54,12 +54,23 @@
         android:layout_height="0dp"
         android:layout_weight="1.6"
         android:background="@color/white"
-        android:gravity="center"
+
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_logout"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_text"
+            android:gravity="center"
+            android:text="退出"
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="请选择回收类型开始投递"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
@@ -67,6 +78,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="5dp"
             android:text="未绑定小程序的用户可扫描下方二维码进行绑定"
             android:textColor="@android:color/darker_gray"
@@ -205,12 +217,14 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_gravity="center"
             android:background="@color/lanse"
             android:src="@mipmap/ic_dry_garbage" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
             android:gravity="center"
             android:text="扫一扫\n进入小松鼠小程序"

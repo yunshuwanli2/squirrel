@@ -6,8 +6,8 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -20,8 +20,16 @@ android {
         ]
     }
 
+    lintOptions {
+        abortOnError false
+    }
 
-
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = defaultConfig.applicationId + "-" + buildType.name + "-v" +
+                    defaultConfig.versionName + "-" + defaultConfig.versionCode + ".apk";
+        }
+    }
     signingConfigs {
         android_platfome {
             keyAlias "yunshuwanli"

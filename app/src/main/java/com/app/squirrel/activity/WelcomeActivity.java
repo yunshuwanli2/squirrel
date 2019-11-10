@@ -55,6 +55,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
+        findViewById(R.id.tv_logout).setOnClickListener(this);
 
 
     }
@@ -82,6 +83,10 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.ll_wet_garbage:
                 requestOpen(2);
+                break;
+            case R.id.tv_logout:
+                //TODO 退出
+                MSPUtils.clear(this);
                 break;
             default:
                 break;
