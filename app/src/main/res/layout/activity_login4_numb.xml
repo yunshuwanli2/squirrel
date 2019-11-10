@@ -22,6 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:cursorVisible="false"
             android:hint="请输入手机号码"
             android:letterSpacing="0.1"
             android:lines="1"

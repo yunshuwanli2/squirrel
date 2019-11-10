@@ -9,7 +9,18 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : "com.app.squirrel",
+                JPUSH_APPKEY : "7c3e05f3d764dc0212be82c6",
+                JPUSH_CHANNEL : "59fb8abeb23962b00ddce354"
+        ]
     }
+
+
 
     signingConfigs {
         android_platfome {
@@ -47,4 +58,8 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     api 'com.google.code.gson:gson:2.8.2'
+    api 'org.greenrobot:eventbus:3.1.1'
+
+    api 'cn.jiguang.sdk:jpush:3.3.9'
+    api 'cn.jiguang.sdk:jcore:2.1.6'
 }

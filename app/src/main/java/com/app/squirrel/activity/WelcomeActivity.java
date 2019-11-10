@@ -2,6 +2,7 @@ package com.app.squirrel.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +16,8 @@ import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -22,13 +25,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+public class WelcomeActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "WelcomeActivity";
 
     public static void JumpAct(Activity context) {
         Intent intent = new Intent(context, WelcomeActivity.class);
         context.startActivity(intent);
+        context.finish();
+    }
+
+    @Override
+    public boolean getEventBusSetting() {
+        return false;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMessage(Message message) {
+
+
     }
 
     @Override
@@ -41,12 +56,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         TextView tv_date = findViewById(R.id.tv_date);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");// HH:mm:ss
         Date date = new Date(System.currentTimeMillis());
         tv_date.setText(simpleDateFormat.format(date));
-
-
     }
 
     @Override

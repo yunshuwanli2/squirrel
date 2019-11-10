@@ -3,6 +3,7 @@ package com.app.squirrel.application;
 import com.app.squirrel.http.okhttp.MSPUtils;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by admin on 2019/10/24.
@@ -23,6 +24,8 @@ public class SquirrelApplication extends MApplication {
 
     private void init() {
         MSPUtils.clear(this);
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
     }
 
     @Override

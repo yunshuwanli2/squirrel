@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Login4NumbActivity extends AppCompatActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+public class Login4NumbActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "Login4NumbActivity";
 
