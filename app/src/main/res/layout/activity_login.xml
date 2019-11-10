@@ -9,12 +9,11 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="74dp"
         android:background="@mipmap/top_bg"
+        android:gravity="center_vertical"
         android:paddingStart="20dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="10dp">
+        android:paddingEnd="20dp">
 
         <TextView
             android:id="@+id/tv_tell_numb"
@@ -24,7 +23,7 @@
             android:drawablePadding="10dp"
             android:text="客户电话:18709878809"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_date"
@@ -32,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@+id/tv_tell_numb"
-            android:gravity="end"
+            android:gravity="end|center_vertical"
             android:text="2019-11-02 17:32"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,9 +43,9 @@
             android:layout_marginTop="8dp"
             android:drawableLeft="@mipmap/ic_mech"
             android:drawablePadding="12dp"
-            android:text="机器编码：00908787"
+            android:text="机器编码:00908787"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
@@ -59,16 +58,13 @@
 
         <TextView
             android:id="@+id/tv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="44dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_text"
-            android:paddingLeft="30dp"
-            android:paddingTop="5dp"
-            android:paddingRight="30dp"
-            android:paddingBottom="5dp"
+            android:gravity="center"
             android:text="返回"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -77,13 +73,13 @@
             android:layout_margin="10dp"
             android:text="请扫码开箱"
             android:textColor="@android:color/background_dark"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <ImageView
-            android:layout_width="180dp"
-            android:layout_height="180dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
-            android:background="@color/lanse" />
+            android:background="@mipmap/login_q" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,7 +102,7 @@
         <Button
             android:id="@+id/btn_switch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:background="@drawable/bg_buttom"
             android:drawableLeft="@mipmap/ic_phone"
             android:drawablePadding="5dp"

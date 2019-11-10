@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import com.app.squirrel.R;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
+import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 
 import org.json.JSONObject;
@@ -23,6 +25,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class Login4NumbActivity extends AppCompatActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+
+    private static final String TAG = "Login4NumbActivity";
 
     public static void JumpAct(Activity context) {
         Intent intent = new Intent(context, Login4NumbActivity.class);
@@ -153,10 +157,10 @@ public class Login4NumbActivity extends AppCompatActivity implements View.OnClic
             ToastUtil.showToast("手机号码格式错误");
             return;
         }
-        String url = " wxApi/auth";
+        String url = "wxApi/auth";
         Map<String, Object> para = new HashMap<>();
         para.put("phone", num);
-        HttpClientProxy.getInstance().postAsyn(url, 1, para, this);
+        HttpClientProxy.getInstance().getAsyn(url, 1, para, this);
     }
 
 
@@ -171,11 +175,28 @@ public class Login4NumbActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onSucceed(int requestId, JSONObject result) {
+        L.e(TAG, "[onSucceed] result:" + result);
+
+        String token = null;
+        String code = result.optString("code");
+        if (code.equals("0")) {
+            JSONObject data = result.optJSONObject("data");
+            token = data.optString("token");
+        }
+        if (!TextUtils.isEmpty(token)) {
+            MSPUtils.clear(this);
+            MSPUtils.put("token", token);
+            finish();
+        } else {
+            L.e(TAG, "获取token失败");
+            ToastUtil.showToast(result.optString("msg"));
+        }
 
     }
 
     @Override
     public void onFail(int requestId, String errorMsg) {
-
+        L.e(TAG, "[onFail]" + errorMsg);
+        ToastUtil.showToast("请求失败，请检查网络连接");
     }
 }

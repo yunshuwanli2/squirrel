@@ -1,6 +1,6 @@
 package com.app.squirrel.application;
 
-import android.app.Application;
+import com.app.squirrel.http.okhttp.MSPUtils;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 
@@ -11,17 +11,23 @@ import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 public class SquirrelApplication extends MApplication {
     @Override
     public boolean getDebugSetting() {
-        return false;
+        return true;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        init();
         CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
+    }
+
+    private void init() {
+        MSPUtils.clear(this);
     }
 
     @Override
     public String getBaseUrl_Https() {
-        return null;
+//        return "http://www.bumain.com:8090/";
+        return "http://60.205.177.220/";
     }
 }

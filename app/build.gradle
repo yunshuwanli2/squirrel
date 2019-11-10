@@ -10,10 +10,27 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        android_platfome {
+            keyAlias "yunshuwanli"
+            keyPassword "011235"
+            storeFile file("sign/android_studio_strokey.jks")
+            storePassword "011235"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.android_platfome
+            zipAlignEnabled false
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.android_platfome
+            zipAlignEnabled false
         }
     }
 }

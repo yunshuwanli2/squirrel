@@ -6,8 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.app.squirrel.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LoginActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -25,6 +29,10 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         findViewById(R.id.btn_switch).setOnClickListener(this);
         findViewById(R.id.tv_back).setOnClickListener(this);
 
+        TextView tv_date = findViewById(R.id.tv_date);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");// HH:mm:ss
+        Date date = new Date(System.currentTimeMillis());
+        tv_date.setText(simpleDateFormat.format(date));
 
     }
 

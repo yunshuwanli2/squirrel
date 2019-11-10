@@ -4,18 +4,27 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.app.squirrel.R;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
+import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.tool.L;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+
+    private static final String TAG = "WelcomeActivity";
 
     public static void JumpAct(Activity context) {
         Intent intent = new Intent(context, WelcomeActivity.class);
@@ -27,11 +36,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-
         findViewById(R.id.ll_dry_garbage).setOnClickListener(this);
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
+
+        TextView tv_date = findViewById(R.id.tv_date);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");// HH:mm:ss
+        Date date = new Date(System.currentTimeMillis());
+        tv_date.setText(simpleDateFormat.format(date));
+
 
     }
 
@@ -55,10 +69,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    boolean isLogin;
-
     private void requestOpen(int numb) {
-        if (!isLogin) {
+        if (TextUtils.isEmpty(MSPUtils.getString("token", ""))) {
             LoginActivity.JumpAct(this);
             return;
         }
@@ -69,12 +81,24 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void onSucceed(int requestId, JSONObject result) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
+    @Override
+    public void onBackPressed() {
+    }
+
+    @Override
+    public void onSucceed(int requestId, JSONObject result) {
+        L.e(TAG, "[onSucceed] result:" + result);
     }
 
     @Override
     public void onFail(int requestId, String errorMsg) {
-
+        L.e(TAG, "[onFail]" + errorMsg);
     }
 }

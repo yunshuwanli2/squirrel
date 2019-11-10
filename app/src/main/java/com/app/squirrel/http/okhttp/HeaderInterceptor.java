@@ -23,7 +23,7 @@ public class HeaderInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request oldRequest = chain.request();
         Request.Builder builder = oldRequest.newBuilder();
-//        addHeaders(builder);
+        addHeaders3(builder);
         Request newRequest = builder.build();
         return chain.proceed(newRequest);
     }
@@ -40,11 +40,11 @@ public class HeaderInterceptor implements Interceptor {
      */
     private Request.Builder addHeaders(Request.Builder builder) {
         return builder
-                .addHeader("Content-Type","application/json; charset=utf-8")
+                .addHeader("Content-Type", "application/json; charset=utf-8")
                 .addHeader("deviceToken", getMAC())
                 .addHeader("deviceType", "2")
                 .addHeader("osVersion", Build.VERSION.RELEASE)
-                .addHeader("appVersion", MAppInfoUtil.getVersionCode(MApplication.getApplication())+"");
+                .addHeader("appVersion", MAppInfoUtil.getVersionCode(MApplication.getApplication()) + "");
     }
 
     private Request.Builder addHeaders2(Request.Builder builder) {
@@ -54,6 +54,13 @@ public class HeaderInterceptor implements Interceptor {
                 .addHeader("phoneModel", Build.MODEL)
                 .addHeader("systemVersion", Build.VERSION.RELEASE)
                 .addHeader("appVersion", "3.2.0");
+    }
+
+    private Request.Builder addHeaders3(Request.Builder builder) {
+        return builder
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("token", MSPUtils.getString("token", ""));
     }
 
     public static String getMAC() {
