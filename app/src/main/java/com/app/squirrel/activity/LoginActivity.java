@@ -79,7 +79,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     void setScanCodePressedBg() {
-        ll_switch1.setBackgroundColor(getResources().getColor(R.color.lanse2));
+        ll_switch1.setBackgroundColor(getResources().getColor(R.color.lanse3));
         tv_switch1.setTextColor(getResources().getColor(R.color.white));
         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_sm_press);
         tv_switch1.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
@@ -93,7 +93,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     void setNumbPressedBg() {
-        ll_switch2.setBackgroundColor(getResources().getColor(R.color.lanse2));
+        ll_switch2.setBackgroundColor(getResources().getColor(R.color.lanse3));
         tv_switch2.setTextColor(getResources().getColor(R.color.white));
         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_phone_press);
         tv_switch2.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);

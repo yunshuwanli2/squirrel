@@ -18,7 +18,7 @@
 
     <application
         android:name=".application.SquirrelApplication"
-        android:icon="@mipmap/ic_checked"
+        android:icon="@mipmap/ic_sm"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_config"
         android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -60,6 +60,9 @@
                 <category android:name="com.app.squirrel" />
             </intent-filter>
         </receiver>
+
+
+
     </application>
 
 </manifest>

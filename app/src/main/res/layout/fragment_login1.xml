@@ -11,7 +11,7 @@
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:background="@mipmap/login_q" />
+        android:background="@mipmap/wexin" />
 
     <TextView
         android:layout_width="wrap_content"
