@@ -6,47 +6,7 @@
     android:orientation="vertical">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@mipmap/top_bg"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
-
-        <TextView
-            android:id="@+id/tv_tell_numb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/ic_connect"
-            android:drawablePadding="10dp"
-            android:text="客户电话:18709878809"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/tv_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@+id/tv_tell_numb"
-            android:gravity="end|center_vertical"
-            android:text="2019-11-02 17:32"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_tell_numb"
-            android:layout_marginTop="8dp"
-            android:drawableLeft="@mipmap/ic_mech"
-            android:drawablePadding="12dp"
-            android:text="机器编码:00908787"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-    </RelativeLayout>
+    <include layout="@layout/top_layout" />
 
 
     <LinearLayout
@@ -109,7 +69,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="可回收垃圾"
-                    android:textColor="@android:color/background_dark" />
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -139,7 +100,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="可回收垃圾"
-                    android:textColor="@android:color/background_dark" />
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -169,7 +131,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="有害垃圾"
-                    android:textColor="@android:color/background_dark" />
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -199,7 +162,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="干垃圾"
-                    android:textColor="@android:color/background_dark" />
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -214,27 +178,37 @@
 
         </LinearLayout>
 
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@mipmap/main_bottom_bg"
+        android:paddingRight="30dp">
+
+
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
+            android:id="@+id/wx_code"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:background="@color/lanse"
             android:src="@mipmap/ic_dry_garbage" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
+            android:layout_below="@+id/wx_code"
+            android:layout_alignParentEnd="true"
             android:gravity="center"
             android:text="扫一扫\n进入小松鼠小程序"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="10sp" />
-    </LinearLayout>
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@mipmap/main_bottom_bg" />
+
+    </RelativeLayout>
+
 </LinearLayout>

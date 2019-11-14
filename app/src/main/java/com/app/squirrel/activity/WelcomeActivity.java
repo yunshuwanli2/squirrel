@@ -119,6 +119,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onSucceed(int requestId, JSONObject result) {
         L.e(TAG, "[onSucceed] result:" + result);
+
     }
 
     @Override

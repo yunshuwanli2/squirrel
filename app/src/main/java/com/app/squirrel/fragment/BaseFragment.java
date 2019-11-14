@@ -1,55 +1,56 @@
 package com.app.squirrel.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-/**
- * Fragment基类
- */
-public abstract class BaseFragment extends Fragment {
+import org.greenrobot.eventbus.EventBus;
+
+public class BaseFragment extends Fragment {
+
+    protected Context mContext;
 
 
-    // fragment创建
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
-    // 处理fragment的布局
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(getContentViewLayoutID(), null);
-        return view;
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
     }
 
-    // 依附的activity创建完成
+    @Override
+    public void onStart() {
+        if (getEventBusSetting()) {
+            if (!EventBus.getDefault().isRegistered(this)) {
+                EventBus.getDefault().register(this);
+            }
+        }
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        if (getEventBusSetting()) {
+            if (EventBus.getDefault().isRegistered(this))
+                EventBus.getDefault().unregister(this);
+        }
+        super.onStop();
+    }
+
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initData();
     }
 
 
-    public interface PagerOnResumeListener {
-        void onResume();
-    }
-
-    // 子类必须实现初始化布局的方法
-    protected abstract int getContentViewLayoutID();
-
-    // 初始化数据, 可以不实现
-    public void initData() {
-
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public boolean getEventBusSetting() {
+        return false;
     }
 
 }

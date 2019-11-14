@@ -2,16 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:orientation="vertical">
 
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="400dp"
         android:layout_height="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="50dp"
+        android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_input_text"
         android:focusable="true"
         android:focusableInTouchMode="true">
@@ -34,7 +31,7 @@
 
         <TextView
             android:id="@+id/tv_login"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_margin="1dp"
             android:background="@color/gray"
@@ -46,11 +43,12 @@
 
     <LinearLayout
         android:id="@+id/ll_agree_rule"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:gravity="center_vertical">
+        android:layout_width="400dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="bottom">
 
         <ImageView
             android:id="@+id/iv_check"
@@ -75,23 +73,21 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_weight="1.6"
+        android:layout_width="420dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <Button
                 android:id="@+id/btn_1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="1"
@@ -101,9 +97,9 @@
 
             <Button
                 android:id="@+id/btn_2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="2"
@@ -113,9 +109,9 @@
 
             <Button
                 android:id="@+id/btn_3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="3"
@@ -126,14 +122,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <Button
                 android:id="@+id/btn_4"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="4"
@@ -143,11 +139,12 @@
 
             <Button
                 android:id="@+id/btn_5"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
+                android:gravity="center"
                 android:text="5"
                 android:textColor="@color/lanse"
                 android:textSize="24sp"
@@ -155,9 +152,9 @@
 
             <Button
                 android:id="@+id/btn_6"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="6"
@@ -168,14 +165,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <Button
                 android:id="@+id/btn_7"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="7"
@@ -185,9 +182,9 @@
 
             <Button
                 android:id="@+id/btn_8"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="8"
@@ -197,9 +194,9 @@
 
             <Button
                 android:id="@+id/btn_9"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="9"
@@ -210,26 +207,26 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <Button
                 android:id="@+id/btn_clean"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="清空"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_0"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="0"
@@ -239,46 +236,17 @@
 
             <Button
                 android:id="@+id/btn_delete_one"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@mipmap/ic_buttom_bg"
                 android:text="删除"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="@color/white"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_buttom"
-            android:drawableLeft="@mipmap/ic_sm"
-            android:drawablePadding="5dp"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
-            android:text="切换扫描开箱"
-            android:textColor="@android:color/background_dark"
-            android:textSize="18sp" />
-
-
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@mipmap/login_bottom_bg" />
 </LinearLayout>

@@ -1,11 +1,14 @@
-package com.app.squirrel.activity;
+package com.app.squirrel.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -24,13 +27,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Login4NumbActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class Login2Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
 
-    private static final String TAG = "Login4NumbActivity";
+    private static final String TAG = "Login2Fragment";
 
-    public static void JumpAct(Activity context) {
-        Intent intent = new Intent(context, Login4NumbActivity.class);
-        context.startActivity(intent);
+    public Login2Fragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_login2, container, false);
     }
 
     EditText editTextNumb;
@@ -39,30 +52,28 @@ public class Login4NumbActivity extends BaseActivity implements View.OnClickList
     StringBuffer stringBuffer;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login4_numb);
-        stringBuffer = new StringBuffer();
-        editTextNumb = findViewById(R.id.et_number);
-        editTextNumb.setShowSoftInputOnFocus(false);
-        ivAgree = findViewById(R.id.iv_check);
-        findViewById(R.id.btn_0).setOnClickListener(this);
-        findViewById(R.id.btn_1).setOnClickListener(this);
-        findViewById(R.id.btn_2).setOnClickListener(this);
-        findViewById(R.id.btn_3).setOnClickListener(this);
-        findViewById(R.id.btn_4).setOnClickListener(this);
-        findViewById(R.id.btn_5).setOnClickListener(this);
-        findViewById(R.id.btn_6).setOnClickListener(this);
-        findViewById(R.id.btn_7).setOnClickListener(this);
-        findViewById(R.id.btn_8).setOnClickListener(this);
-        findViewById(R.id.btn_9).setOnClickListener(this);
-        findViewById(R.id.btn_delete_one).setOnClickListener(this);
-        findViewById(R.id.btn_clean).setOnClickListener(this);
-        findViewById(R.id.ll_agree_rule).setOnClickListener(this);
-        findViewById(R.id.tv_login).setOnClickListener(this);
-        findViewById(R.id.btn_switch).setOnClickListener(this);
-    }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        stringBuffer = new StringBuffer();
+        editTextNumb = view.findViewById(R.id.et_number);
+        editTextNumb.setShowSoftInputOnFocus(false);
+        ivAgree = view.findViewById(R.id.iv_check);
+        view.findViewById(R.id.btn_0).setOnClickListener(this);
+        view.findViewById(R.id.btn_1).setOnClickListener(this);
+        view.findViewById(R.id.btn_2).setOnClickListener(this);
+        view.findViewById(R.id.btn_3).setOnClickListener(this);
+        view.findViewById(R.id.btn_4).setOnClickListener(this);
+        view.findViewById(R.id.btn_5).setOnClickListener(this);
+        view.findViewById(R.id.btn_6).setOnClickListener(this);
+        view.findViewById(R.id.btn_7).setOnClickListener(this);
+        view.findViewById(R.id.btn_8).setOnClickListener(this);
+        view.findViewById(R.id.btn_9).setOnClickListener(this);
+        view.findViewById(R.id.btn_delete_one).setOnClickListener(this);
+        view.findViewById(R.id.btn_clean).setOnClickListener(this);
+        view.findViewById(R.id.ll_agree_rule).setOnClickListener(this);
+        view.findViewById(R.id.tv_login).setOnClickListener(this);
+    }
 
     @Override
     public void onClick(View v) {
@@ -105,10 +116,6 @@ public class Login4NumbActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.tv_login:
                 login();
-                break;
-            case R.id.btn_switch:
-                LoginActivity.JumpAct(this);
-                finish();
                 break;
             case R.id.ll_agree_rule:
                 isAgree = !isAgree;
@@ -184,9 +191,9 @@ public class Login4NumbActivity extends BaseActivity implements View.OnClickList
             token = data.optString("token");
         }
         if (!TextUtils.isEmpty(token)) {
-            MSPUtils.clear(this);
+            MSPUtils.clear(getActivity());
             MSPUtils.put("token", token);
-            finish();
+            getActivity().finish();
         } else {
             L.e(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));
