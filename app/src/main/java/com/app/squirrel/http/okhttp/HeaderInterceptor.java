@@ -60,6 +60,7 @@ public class HeaderInterceptor implements Interceptor {
         return builder
                 .addHeader("Content-Type", "application/json; charset=utf-8")
                 .addHeader("Connection", "keep-alive")
+                .addHeader("appid", getMAC())
                 .addHeader("token", MSPUtils.getString("token", ""));
     }
 

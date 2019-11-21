@@ -34,21 +34,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private static final String TAG = "LoginActivity";
 
-    public class LoginRecive extends JPushMessageReceiver {
-        private static final String TAG = "LoginRecive";
-
-        public LoginRecive() {
-        }
-
-        @Override
-        public void onNotifyMessageArrived(Context var1, NotificationMessage var2) {
-            super.onNotifyMessageArrived(var1, var2);
-            L.d(TAG, "[onNotifyMessageArrived]" + var2.toString());
-
-        }
-    }
-
-
     public static void JumpAct(Activity context) {
         Intent intent = new Intent(context, LoginActivity.class);
         context.startActivity(intent);
@@ -110,9 +95,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onResume() {
         super.onResume();
         TextView tv_date = findViewById(R.id.tv_date);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");// HH:mm:ss
         Date date = new Date(System.currentTimeMillis());
-        tv_date.setText(simpleDateFormat.format(date));
+        tv_date.setText(WelcomeActivity.TIME_FORMAT.format(date));
     }
 
     @Override
@@ -125,11 +109,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         return true;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventMessage(Message message) {
+    @Subscribe(threadMode = ThreadMode.MAIN,sticky=true)
+    public void onLoginSuccEventMessage(Message message) {
         L.d(TAG, "[onEventMessage]");
-        EventBus.getDefault().removeStickyEvent(message);
-
         ToastUtil.showToast("登录成功");
         MApplication.getApplication().getGolbalHander().postDelayed(new Runnable() {
             @Override
@@ -138,12 +120,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }, 2000);
 
+        EventBus.getDefault().postSticky(message);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
 
     @Override
     public void onClick(View v) {

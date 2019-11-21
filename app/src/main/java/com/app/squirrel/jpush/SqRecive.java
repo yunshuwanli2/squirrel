@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Message;
 import android.text.TextUtils;
 
-import com.app.squirrel.activity.LoginActivity;
-import com.app.squirrel.activity.WelcomeActivity;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 
@@ -18,7 +16,6 @@ import cn.jpush.android.api.CmdMessage;
 import cn.jpush.android.api.CustomMessage;
 import cn.jpush.android.api.JPushMessage;
 import cn.jpush.android.api.NotificationMessage;
-import cn.jpush.android.helper.c;
 import cn.jpush.android.service.JPushMessageReceiver;
 
 public class SqRecive extends JPushMessageReceiver {
@@ -43,7 +40,7 @@ public class SqRecive extends JPushMessageReceiver {
                 String token = jsonObject.optString("token");
                 if (!TextUtils.isEmpty(token)) {
                     MSPUtils.put("token", token);
-                    EventBus.getDefault().post(new Message());
+                    EventBus.getDefault().postSticky(new Message());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

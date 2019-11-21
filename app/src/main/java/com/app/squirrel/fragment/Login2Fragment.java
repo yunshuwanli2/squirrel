@@ -2,6 +2,7 @@ package com.app.squirrel.fragment;
 
 
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -193,7 +195,7 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
         if (!TextUtils.isEmpty(token)) {
             MSPUtils.clear(getActivity());
             MSPUtils.put("token", token);
-            getActivity().finish();
+            EventBus.getDefault().postSticky(new Message());
         } else {
             L.e(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));

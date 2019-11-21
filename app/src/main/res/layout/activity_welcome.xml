@@ -14,17 +14,16 @@
         android:layout_height="0dp"
         android:layout_weight="1.6"
         android:background="@color/white"
-
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_logout"
+            android:id="@+id/tv_log_in_out"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_text"
             android:gravity="center"
-            android:text="退出"
+            android:text="登录"
             android:textSize="18sp" />
 
         <TextView
@@ -196,6 +195,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@color/lanse"
+            android:visibility="gone"
             android:src="@mipmap/ic_dry_garbage" />
 
         <TextView
@@ -204,6 +204,7 @@
             android:layout_below="@+id/wx_code"
             android:layout_alignParentEnd="true"
             android:gravity="center"
+            android:visibility="gone"
             android:text="扫一扫\n进入小松鼠小程序"
             android:textColor="@color/white"
             android:textSize="12sp" />
