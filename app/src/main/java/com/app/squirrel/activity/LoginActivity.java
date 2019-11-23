@@ -120,7 +120,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }, 2000);
 
-        EventBus.getDefault().postSticky(message);
     }
 
 

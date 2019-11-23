@@ -7,6 +7,9 @@ import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.MAppInfoUtil;
 
 import java.io.IOException;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -66,7 +69,7 @@ public class HeaderInterceptor implements Interceptor {
 
     public static String getMAC() {
         if (MAC == null)
-            MAC = MDeviceUtil.getDeviceInfo(MApplication.getApplication());
+            MAC = MDeviceUtil.getMacAddress2();
         L.e(TAG, "mac " + MAC);
         return MAC;
     }
@@ -76,4 +79,6 @@ public class HeaderInterceptor implements Interceptor {
                 + Build.MODEL + Build.VERSION.RELEASE;
         return systemInfo + MScreenUtils.getScreenInfo(MApplication.getApplication());
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.app.squirrel.application;
 
+import com.app.squirrel.http.okhttp.MDeviceUtil;
 import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.tool.L;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cn.jpush.android.api.JPushInterface;
@@ -10,6 +12,9 @@ import cn.jpush.android.api.JPushInterface;
  */
 
 public class SquirrelApplication extends MApplication {
+    private static final String TAG ="SquirrelApplication" ;
+
+  public static boolean test = true;
     @Override
     public boolean getDebugSetting() {
         return true;
@@ -24,13 +29,13 @@ public class SquirrelApplication extends MApplication {
 
     private void init() {
         MSPUtils.clear(this);
-        JPushInterface.setDebugMode(true);
+        JPushInterface.setDebugMode(getDebugSetting());
         JPushInterface.init(this);
     }
 
     @Override
     public String getBaseUrl_Https() {
 //        return "http://www.bumain.com:8090/";
-        return "http://60.205.177.220/";
+        return "http://60.205.177.220:8090";
     }
 }

@@ -193,6 +193,7 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
             token = data.optString("token");
         }
         if (!TextUtils.isEmpty(token)) {
+            L.e(TAG, "获取token成功，postSticky");
             MSPUtils.clear(getActivity());
             MSPUtils.put("token", token);
             EventBus.getDefault().postSticky(new Message());
