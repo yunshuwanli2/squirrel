@@ -169,7 +169,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void run() {
                 finish();
             }
-        }, 500);
+        }, 1000);
 
     }
 

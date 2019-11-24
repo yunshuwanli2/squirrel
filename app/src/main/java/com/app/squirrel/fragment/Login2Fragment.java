@@ -146,7 +146,7 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
     }
 
     private void deleteOne() {
-        if (stringBuffer.length() - 1 > 0) {
+        if (stringBuffer.length() > 0) {
             stringBuffer.deleteCharAt(stringBuffer.length() - 1);
             setEditTextNumbText();
         }
