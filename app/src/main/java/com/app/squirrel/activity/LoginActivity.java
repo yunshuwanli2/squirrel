@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,16 +21,20 @@ import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login2Fragment;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
+import com.bumain.plc.ModbusService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import cn.jpush.android.api.NotificationMessage;
 import cn.jpush.android.service.JPushMessageReceiver;
+
+import static com.app.squirrel.application.SquirrelApplication.test;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -39,17 +45,57 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         context.startActivity(intent);
     }
 
+
+    final static class SafeHandler extends Handler {
+        public static final int MSG_UPDATE_TIME = 0x5;
+        public static final int MSG_OVERTIME_FINISH_ACTIVITY = 0x6;
+        private WeakReference<LoginActivity> mWeakReference;
+
+        private SafeHandler(LoginActivity loginActivity) {
+            super();
+            mWeakReference = new WeakReference<>(loginActivity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            final LoginActivity activity = mWeakReference.get();
+            if (activity == null) return;
+            switch (msg.what) {
+                case MSG_UPDATE_TIME:
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Date date = new Date(System.currentTimeMillis());
+                            activity.tv_date.setText(WelcomeActivity.TIME_FORMAT.format(date));
+                            activity.mSafeHandle.removeMessages(MSG_UPDATE_TIME);
+                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
+                        }
+                    });
+                    break;
+                case MSG_OVERTIME_FINISH_ACTIVITY:
+                    activity.mSafeHandle.removeMessages(MSG_OVERTIME_FINISH_ACTIVITY);
+                    L.d(TAG, "[MSG_OVERTIME_FINISH_ACTIVITY]");
+                    activity.finish();
+                    break;
+            }
+
+        }
+    }
+
     LinearLayout ll_switch1;
     LinearLayout ll_switch2;
     TextView tv_switch1;
     TextView tv_switch2;
+    TextView tv_date;
     BaseFragment currentFragment;
+    SafeHandler mSafeHandle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+         tv_date = findViewById(R.id.tv_date);
         findViewById(R.id.tv_back).setOnClickListener(this);
 
         ll_switch1 = findViewById(R.id.ll_switch1);
@@ -59,7 +105,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         ll_switch1.setOnClickListener(this);
         ll_switch2.setOnClickListener(this);
-
+        mSafeHandle = new SafeHandler(this);
         switchScanCodeLogin();
     }
 
@@ -94,9 +140,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-        TextView tv_date = findViewById(R.id.tv_date);
-        Date date = new Date(System.currentTimeMillis());
-        tv_date.setText(WelcomeActivity.TIME_FORMAT.format(date));
+        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_OVERTIME_FINISH_ACTIVITY,3*60*1000);
+        mSafeHandle.sendEmptyMessage(SafeHandler.MSG_UPDATE_TIME);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_FINISH_ACTIVITY);
+        mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
     }
 
     @Override
@@ -112,13 +164,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Subscribe(threadMode = ThreadMode.MAIN,sticky=true)
     public void onLoginSuccEventMessage(Message message) {
         L.d(TAG, "[onEventMessage]");
-        ToastUtil.showToast("登录成功");
         MApplication.getApplication().getGolbalHander().postDelayed(new Runnable() {
             @Override
             public void run() {
                 finish();
             }
-        }, 2000);
+        }, 500);
 
     }
 
@@ -172,7 +223,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             currentFragment = targetFragment;
             transaction
                     .replace(R.id.content, targetFragment)
-                    .addToBackStack(null)
                     .commit();
         } else {
             if (currentFragment == targetFragment) return;

@@ -63,13 +63,13 @@ public class HeaderInterceptor implements Interceptor {
         return builder
                 .addHeader("Content-Type", "application/json; charset=utf-8")
                 .addHeader("Connection", "keep-alive")
-                .addHeader("appid", getMAC())
+                .addHeader("appid", MDeviceUtil.getMAC(MApplication.getApplication()))
                 .addHeader("token", MSPUtils.getString("token", ""));
     }
 
     public static String getMAC() {
         if (MAC == null)
-            MAC = MDeviceUtil.getMacAddress2();
+            MAC = MDeviceUtil.getMacAddress();
         L.e(TAG, "mac " + MAC);
         return MAC;
     }

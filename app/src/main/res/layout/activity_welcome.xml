@@ -72,9 +72,11 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/tv_recy_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
@@ -98,14 +100,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="可回收垃圾"
+                    android:text="湿垃圾"
                     android:textColor="@android:color/background_dark"
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/tv_wet_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
@@ -134,9 +138,11 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/tv_harmful_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="12sp" />
@@ -165,6 +171,8 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/tv_dry_hint"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"

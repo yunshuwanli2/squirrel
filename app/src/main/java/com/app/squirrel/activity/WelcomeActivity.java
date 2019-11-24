@@ -1,5 +1,6 @@
 package com.app.squirrel.activity;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -15,8 +16,12 @@ import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
+import com.app.squirrel.tool.ToastUtil;
 import com.bumain.plc.ModbusService;
+import com.bumain.plc.ModbusTest;
+import com.bumain.plc.ModbusTime;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
@@ -33,12 +38,17 @@ import static com.app.squirrel.application.SquirrelApplication.test;
 public class WelcomeActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "WelcomeActivity";
-    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");// HH:mm:ss
+    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
     private int openNumb = -1;
     public HandlerThread mHandleThread;
     public SafeHandler mSafeHandle;
     public TextView tv_date;
     public TextView loginOrout;
+    public TextView tv_harm_hint;
+    public TextView tv_wet_hint;
+    public TextView tv_recy_hint;
+    public TextView tv_dry_hint;
+    CountDownTimer timer;
     @Override
     public boolean getEventBusSetting() {
         return true;
@@ -48,10 +58,12 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onEventMessage(Message message) {
         L.d(TAG, "[onEventMessage]");
+        ToastUtil.showToast("登录成功");
         //
+        EventBus.getDefault().removeStickyEvent(message);
         setLoginStatues();
         //登录成功2分钟后自动登出
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_OVERTIME_USER_LOGOUT,2*60*1000);
+        mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
         //开门
         if (openNumb == -1) return;
@@ -70,13 +82,17 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
+        tv_dry_hint = findViewById(R.id.tv_dry_hint);
+        tv_harm_hint = findViewById(R.id.tv_harmful_hint);
+        tv_recy_hint = findViewById(R.id.tv_recy_hint);
+        tv_wet_hint = findViewById(R.id.tv_wet_hint);
         loginOrout = findViewById(R.id.tv_log_in_out);
         loginOrout.setOnClickListener(this);
         tv_date = findViewById(R.id.tv_date);
         mHandleThread = new HandlerThread(getClass().getSimpleName());
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
-        mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
+
     }
 
     @Override
@@ -85,6 +101,16 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
         L.d(TAG, "[onResume]");
         mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_CHECK_PLC_STATUES,60*1000);
         L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
+        mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
+        L.d(TAG, "[sendEmptyMessage ]MSG_UPDATE_TIME");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSafeHandle.removeMessages(SafeHandler.MSG_CHECK_PLC_STATUES);
+        mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
+        mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
     }
 
     @Override
@@ -100,6 +126,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
+        public static final int MSG_UPDATE_COUNTDOWN_TIME= 0x3;
         public static final int MSG_CHECK_PLC_STATUES = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
         private WeakReference<WelcomeActivity> mWeakReference;
@@ -120,7 +147,8 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                         public void run() {
                             Date date = new Date(System.currentTimeMillis());
                             activity.tv_date.setText(TIME_FORMAT.format(date));
-                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 30 * 1000);
+                            activity.mSafeHandle.removeMessages(MSG_UPDATE_TIME);
+                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME,   1000);
                         }
                     });
                     break;
@@ -144,8 +172,72 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                     break;
                 case MSG_OVERTIME_USER_LOGOUT:
                     L.d(TAG, "[MSG_OVERTIME_USER_LOGOUT]");
-                    activity.setLogoutStatues();
+                    new CountDownTimer(2*60*1000,1000){
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+
+                        @Override
+                        public void onFinish() {
+activity.runOnUiThread(new Runnable() {
+    @Override
+    public void run() {
+        activity.setLogoutStatues();
+    }
+});
+                        }
+                    }.start();
+
                     break;
+                case MSG_UPDATE_COUNTDOWN_TIME:
+                    Message message = msg;
+                    int time = message.arg2;
+                     final int numb = message.arg1;
+                     CountDownTimer timer =  new CountDownTimer(time*1000, 1000) {
+                            public void onTick(final long millisUntilFinished) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(numb == 1){
+                                            activity.tv_recy_hint.setVisibility(View.VISIBLE);
+                                            activity.tv_recy_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
+                                        }if(numb == 2){
+                                            activity.tv_wet_hint.setVisibility(View.VISIBLE);
+                                            activity.tv_wet_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
+                                        }if(numb == 3){
+                                            activity.tv_harm_hint.setVisibility(View.VISIBLE);
+                                            activity.tv_harm_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
+                                        }if(numb == 4){
+                                            activity.tv_dry_hint.setVisibility(View.VISIBLE);
+                                            activity.tv_dry_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
+                                        }
+                                    }
+                                });
+
+                            }
+                            public void onFinish() {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        if(numb == 1){
+                                            activity.tv_recy_hint.setVisibility(View.GONE);
+                                        }if(numb == 2){
+                                            activity.tv_wet_hint.setVisibility(View.GONE);
+                                        }if(numb == 3){
+                                            activity.tv_harm_hint.setVisibility(View.GONE);
+                                        }if(numb == 4){
+                                            activity.tv_dry_hint.setVisibility(View.GONE);
+                                        }
+
+                                    }
+                                });
+                            }
+                        };
+                     timer.start();
+                     L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
+                 break;
             }
 
         }
@@ -154,28 +246,22 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onStop() {
         super.onStop();
-        mSafeHandle.removeMessages(SafeHandler.MSG_CHECK_PLC_STATUES);
-        mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
-        mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
-                openNumb = 4;
                 requestOpen(4);
                 break;
             case R.id.ll_harmful_garbage:
-                openNumb = 3;
                 requestOpen(3);
                 break;
             case R.id.ll_recy_garbage:
-                openNumb = 1;
                 requestOpen(1);
                 break;
             case R.id.ll_wet_garbage:
-                openNumb = 2;
                 requestOpen(2);
                 break;
             case R.id.tv_log_in_out:
@@ -192,23 +278,39 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void requestOpen(int numb) {
-        L.d(TAG, "[requestOpen] numb" + numb);
+
+        openNumb = numb;
         if (isLogin()) {
             LoginActivity.JumpAct(this);
             return;
         }
+        L.d(TAG, "[requestOpen] numb" + numb);
         boolean boo;
         if(test){
             boo = true;
         }else {
+            if(ModbusService.isOn(numb))return;
             boo = ModbusService.setOnOff(true,numb);
         }
 
         if(boo){
+
             if(!test){
+                int time = getTime(ModbusService.getTime(numb));
+Message message = Message.obtain();
+message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
+message.arg1 = numb;
+message.arg2 = time;
+                mSafeHandle.sendMessage(message);
                 long weight =ModbusService.getWeight(numb);
                 recordOperateRequest(1,numb,weight,1);
             }else {
+                int time = 38;
+                Message message = Message.obtain();
+                message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
+                message.arg1 = numb;
+                message.arg2 = time;
+                mSafeHandle.sendMessage(message);
                 recordOperateRequest(1,numb,20,1);
             }
 
@@ -230,6 +332,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                                 }
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
+                                L.d(TAG, "[ModbusService getWeight Exception] exc:" + e.getMessage());
                             }
 
                         }else {
@@ -245,6 +348,13 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
 
     }
 
+    private int getTime(ModbusTime time){
+        int startTime = time.getStartHour()*60*60+time.getStartMinute()*60+time.getStartSecond();
+        int endTime = time.getEndHour()*60*60+time.getEndMinute()*60+time.getEndSecond();
+        int second=endTime-startTime;
+        return second;
+
+    }
     private void recordOperateRequest(int requestId,int numb,float weight,int openStatus){
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
