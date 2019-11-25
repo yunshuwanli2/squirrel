@@ -301,7 +301,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    boolean isOpen = false;
+    boolean[] isOpen = {false, false, false, false};
 
     private void openDoor(int numb) {
         openNumb = numb;
@@ -312,15 +312,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         L.d(TAG, "[openDoor] numb" + numb);
 
         if (test) {
-            if (isOpen) return;
-            isOpen = true;
+            if (isOpen[numb-1]) return;
+            isOpen[numb-1] = true;
         } else {
             if (ModbusService.isOn(numb)) return;
-            isOpen = ModbusService.setOnOff(true, numb);
+            isOpen[numb-1] = ModbusService.setOnOff(true, numb);
         }
 
-        if (isOpen) {
-
+        if (isOpen[numb-1]) {
             if (!test) {
                 int time = getTime(ModbusService.getTime(numb));
                 Message message = Message.obtain();

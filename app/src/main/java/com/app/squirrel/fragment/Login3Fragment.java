@@ -19,6 +19,7 @@ import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
+import com.app.squirrel.tool.MKeyBoardUtils;
 import com.app.squirrel.tool.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -68,6 +69,7 @@ public class Login3Fragment extends BaseFragment implements View.OnClickListener
         switch (v.getId()) {
             case R.id.tv_login:
                 login();
+                MKeyBoardUtils.hideSoftKeyboard(getActivity());
                 break;
             case R.id.ll_agree_rule:
                 isAgree = !isAgree;
