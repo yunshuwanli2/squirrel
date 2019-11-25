@@ -4,7 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UserManager {
 
-    private static AtomicBoolean loginSta = new AtomicBoolean();
+    private static AtomicBoolean loginSta = new AtomicBoolean(false);
+
     public static boolean isLogin() {
         return loginSta.get();
     }

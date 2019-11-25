@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
@@ -44,7 +45,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public HandlerThread mHandleThread;
     public SafeHandler mSafeHandle;
     public TextView tv_date;
-    public TextView loginOrout;
+    public LinearLayout loginOrout;
     public TextView tv_harm_hint;
     public TextView tv_wet_hint;
     public TextView tv_recy_hint;
@@ -91,13 +92,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         tv_harm_hint = findViewById(R.id.tv_harmful_hint);
         tv_recy_hint = findViewById(R.id.tv_recy_hint);
         tv_wet_hint = findViewById(R.id.tv_wet_hint);
-        loginOrout = findViewById(R.id.tv_log_in_out);
+        loginOrout = findViewById(R.id.ll_logout);
         iv_dry_img = findViewById(R.id.iv_dry_img);
         iv_harm_img = findViewById(R.id.iv_harm_img);
         iv_recy_img = findViewById(R.id.iv_rec_img);
         iv_wet_img = findViewById(R.id.iv_wet_img);
         loginOrout.setOnClickListener(this);
-        loginOrout.setVisibility(View.GONE);
+        loginOrout.setVisibility(View.INVISIBLE);
         tv_date = findViewById(R.id.tv_date);
         mHandleThread = new HandlerThread(getClass().getSimpleName());
         mHandleThread.start();
@@ -240,20 +241,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 public void run() {
 
                                     if (numb == 1) {
-                                        activity.tv_recy_hint.setVisibility(View.GONE);
+                                        activity.tv_recy_hint.setVisibility(View.INVISIBLE);
                                         activity.iv_recy_img.setBackground(null);
                                     }
                                     if (numb == 2) {
-                                        activity.tv_wet_hint.setVisibility(View.GONE);
+                                        activity.tv_wet_hint.setVisibility(View.INVISIBLE);
                                         activity.iv_wet_img.setBackground(null);
                                     }
                                     if (numb == 3) {
-                                        activity.tv_harm_hint.setVisibility(View.GONE);
+                                        activity.tv_harm_hint.setVisibility(View.INVISIBLE);
                                         activity.iv_harm_img.setBackground(null);
                                     }
                                     if (numb == 4) {
                                         activity.iv_dry_img.setBackground(null);
-                                        activity.tv_dry_hint.setVisibility(View.GONE);
+                                        activity.tv_dry_hint.setVisibility(View.INVISIBLE);
                                     }
 
                                 }
@@ -289,13 +290,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.ll_wet_garbage:
                 openDoor(2);
                 break;
-            case R.id.tv_log_in_out:
-                TextView view = (TextView) v;
-                if (view.getText().equals("登录")) {
-                    LoginActivity.JumpAct(this);
-                } else {
-                    setLogoutStatues();
-                }
+            case R.id.ll_logout:
+                setLogoutStatues();
                 break;
             default:
                 break;
@@ -306,7 +302,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void openDoor(int numb) {
         openNumb = numb;
-        if (UserManager.isLogin()) {
+        if (!UserManager.isLogin()) {
             LoginActivity.JumpAct(this);
             return;
         }
@@ -395,7 +391,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void setLogoutStatues() {
         UserManager.setLoginStatus(false);
-        loginOrout.setVisibility(View.GONE);
+        loginOrout.setVisibility(View.INVISIBLE);
     }
 
     private void setLoginStatues() {
