@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import com.app.squirrel.http.okhttp.MDeviceUtil;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
+import com.app.squirrel.tool.UserManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -28,17 +29,19 @@ public class SqRecive extends JPushMessageReceiver {
 
     public void onMessage(Context var1, CustomMessage var2) {
         super.onMessage(var1, var2);
-        L.d(TAG, "[onMessage]: "+var2.toString());
+        L.d(TAG, "[onMessage]: " + var2.toString());
         if (!TextUtils.isEmpty(var2.message)) {
             try {
                 JSONObject jsonObject = new JSONObject(var2.message);
                 String token = jsonObject.optString("token");
                 if (!TextUtils.isEmpty(token)) {
                     MSPUtils.put("token", token);
+                    UserManager.setLoginStatus(true);
                     EventBus.getDefault().postSticky(new Message());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                L.e(TAG, "[JSONException]: " + e.getMessage());
             }
         }
 
@@ -67,8 +70,8 @@ public class SqRecive extends JPushMessageReceiver {
     public void onConnected(Context var1, boolean var2) {
         L.d(TAG, "[onConnected]");
         String ANDROID_ID = MDeviceUtil.getMAC(var1);
-        L.d(TAG, "[ANDROID_ID]"+ANDROID_ID);
-        JPushInterface.setAlias(var1,10, ANDROID_ID);
+        L.d(TAG, "[ANDROID_ID]" + ANDROID_ID);
+        JPushInterface.setAlias(var1, 10, ANDROID_ID);
 //        String UID= JPushInterface.getUdid(var1);
 //        JPushInterface.getAlias(var1,1);
 //        L.e(TAG,"UID:"+UID);
@@ -92,7 +95,7 @@ public class SqRecive extends JPushMessageReceiver {
     }
 
     public void onAliasOperatorResult(Context var1, JPushMessage var2) {
-        L.d(TAG, "[onAliasOperatorResult]: "+var2.toString());
+        L.d(TAG, "[onAliasOperatorResult]: " + var2.toString());
 
     }
 

@@ -18,6 +18,7 @@ import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
+import com.app.squirrel.tool.UserManager;
 import com.bumain.plc.ModbusService;
 import com.bumain.plc.ModbusTime;
 
@@ -305,21 +306,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void openDoor(int numb) {
         openNumb = numb;
-        if (isLogin()) {
+        if (UserManager.isLogin()) {
             LoginActivity.JumpAct(this);
             return;
         }
         L.d(TAG, "[openDoor] numb" + numb);
 
         if (test) {
-            if (isOpen[numb-1]) return;
-            isOpen[numb-1] = true;
+            if (isOpen[numb - 1]) return;
+            isOpen[numb - 1] = true;
         } else {
             if (ModbusService.isOn(numb)) return;
-            isOpen[numb-1] = ModbusService.setOnOff(true, numb);
+            isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
         }
 
-        if (isOpen[numb-1]) {
+        if (isOpen[numb - 1]) {
             if (!test) {
                 int time = getTime(ModbusService.getTime(numb));
                 Message message = Message.obtain();
@@ -393,7 +394,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void setLogoutStatues() {
-        MSPUtils.clear(this);
+        UserManager.setLoginStatus(false);
         loginOrout.setVisibility(View.GONE);
     }
 
@@ -402,9 +403,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    private boolean isLogin() {
-        return TextUtils.isEmpty(MSPUtils.getString("token", ""));
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

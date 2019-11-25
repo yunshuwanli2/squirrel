@@ -21,6 +21,7 @@ import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.MKeyBoardUtils;
 import com.app.squirrel.tool.ToastUtil;
+import com.app.squirrel.tool.UserManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
@@ -122,8 +123,8 @@ public class Login3Fragment extends BaseFragment implements View.OnClickListener
         }
         if (!TextUtils.isEmpty(token)) {
             L.e(TAG, "获取token成功，postSticky");
-            MSPUtils.clear(getActivity());
             MSPUtils.put("token", token);
+            UserManager.setLoginStatus(true);
             EventBus.getDefault().postSticky(new Message());
         } else {
             L.e(TAG, "获取token失败");
