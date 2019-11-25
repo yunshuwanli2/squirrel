@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
@@ -47,6 +48,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public TextView tv_wet_hint;
     public TextView tv_recy_hint;
     public TextView tv_dry_hint;
+    public ImageView iv_wet_img;
+    public ImageView iv_recy_img;
+    public ImageView iv_dry_img;
+    public ImageView iv_harm_img;
     CountDownTimer timer;
 
     @Override
@@ -67,7 +72,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //开门
         if (openNumb == -1) return;
-        requestOpen(openNumb);
+        openDoor(openNumb);
 
     }
 
@@ -86,6 +91,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         tv_recy_hint = findViewById(R.id.tv_recy_hint);
         tv_wet_hint = findViewById(R.id.tv_wet_hint);
         loginOrout = findViewById(R.id.tv_log_in_out);
+        iv_dry_img = findViewById(R.id.iv_dry_img);
+        iv_harm_img = findViewById(R.id.iv_harm_img);
+        iv_recy_img = findViewById(R.id.iv_rec_img);
+        iv_wet_img = findViewById(R.id.iv_wet_img);
         loginOrout.setOnClickListener(this);
         loginOrout.setVisibility(View.GONE);
         tv_date = findViewById(R.id.tv_date);
@@ -201,17 +210,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 public void run() {
                                     if (numb == 1) {
                                         activity.tv_recy_hint.setVisibility(View.VISIBLE);
+                                        activity.iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
                                         activity.tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
                                     if (numb == 2) {
+                                        activity.iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
                                         activity.tv_wet_hint.setVisibility(View.VISIBLE);
                                         activity.tv_wet_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
                                     if (numb == 3) {
+                                        activity.iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
                                         activity.tv_harm_hint.setVisibility(View.VISIBLE);
                                         activity.tv_harm_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
                                     if (numb == 4) {
+                                        activity.iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
                                         activity.tv_dry_hint.setVisibility(View.VISIBLE);
                                         activity.tv_dry_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
@@ -227,14 +240,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                                     if (numb == 1) {
                                         activity.tv_recy_hint.setVisibility(View.GONE);
+                                        activity.iv_recy_img.setBackground(null);
                                     }
                                     if (numb == 2) {
                                         activity.tv_wet_hint.setVisibility(View.GONE);
+                                        activity.iv_wet_img.setBackground(null);
                                     }
                                     if (numb == 3) {
                                         activity.tv_harm_hint.setVisibility(View.GONE);
+                                        activity.iv_harm_img.setBackground(null);
                                     }
                                     if (numb == 4) {
+                                        activity.iv_dry_img.setBackground(null);
                                         activity.tv_dry_hint.setVisibility(View.GONE);
                                     }
 
@@ -260,16 +277,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
-                requestOpen(4);
+                openDoor(4);
                 break;
             case R.id.ll_harmful_garbage:
-                requestOpen(3);
+                openDoor(3);
                 break;
             case R.id.ll_recy_garbage:
-                requestOpen(1);
+                openDoor(1);
                 break;
             case R.id.ll_wet_garbage:
-                requestOpen(2);
+                openDoor(2);
                 break;
             case R.id.tv_log_in_out:
                 TextView view = (TextView) v;
@@ -284,23 +301,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void requestOpen(int numb) {
+    boolean isOpen = false;
 
+    private void openDoor(int numb) {
         openNumb = numb;
         if (isLogin()) {
             LoginActivity.JumpAct(this);
             return;
         }
-        L.d(TAG, "[requestOpen] numb" + numb);
-        boolean boo;
+        L.d(TAG, "[openDoor] numb" + numb);
+
         if (test) {
-            boo = true;
+            if (isOpen) return;
+            isOpen = true;
         } else {
             if (ModbusService.isOn(numb)) return;
-            boo = ModbusService.setOnOff(true, numb);
+            isOpen = ModbusService.setOnOff(true, numb);
         }
 
-        if (boo) {
+        if (isOpen) {
 
             if (!test) {
                 int time = getTime(ModbusService.getTime(numb));
@@ -311,6 +330,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mSafeHandle.sendMessage(message);
                 long weight = ModbusService.getWeight(numb);
                 recordOperateRequest(1, numb, weight, 1);
+
             } else {
                 int time = 38;
                 Message message = Message.obtain();
