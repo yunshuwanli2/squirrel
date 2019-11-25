@@ -18,7 +18,6 @@ import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 import com.bumain.plc.ModbusService;
-import com.bumain.plc.ModbusTest;
 import com.bumain.plc.ModbusTime;
 
 import org.greenrobot.eventbus.EventBus;
@@ -32,12 +31,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.app.squirrel.activity.WelcomeActivity.SafeHandler.MSG_UPDATE_TIME;
+import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
 import static com.app.squirrel.application.SquirrelApplication.test;
 
-public class WelcomeActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
+public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
-    private static final String TAG = "WelcomeActivity";
+    private static final String TAG = "MainActivity";
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
     private int openNumb = -1;
     public HandlerThread mHandleThread;
@@ -49,6 +48,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     public TextView tv_recy_hint;
     public TextView tv_dry_hint;
     CountDownTimer timer;
+
     @Override
     public boolean getEventBusSetting() {
         return true;
@@ -72,7 +72,6 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +87,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
         tv_wet_hint = findViewById(R.id.tv_wet_hint);
         loginOrout = findViewById(R.id.tv_log_in_out);
         loginOrout.setOnClickListener(this);
+        loginOrout.setVisibility(View.GONE);
         tv_date = findViewById(R.id.tv_date);
         mHandleThread = new HandlerThread(getClass().getSimpleName());
         mHandleThread.start();
@@ -99,7 +99,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
         L.d(TAG, "[onResume]");
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_CHECK_PLC_STATUES,60*1000);
+        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_CHECK_PLC_STATUES, 60 * 1000);
         L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
         L.d(TAG, "[sendEmptyMessage ]MSG_UPDATE_TIME");
@@ -115,30 +115,30 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onSucceed(int requestId, JSONObject result) {
-        L.d(TAG, "[onSucceed]"+result);
+        L.d(TAG, "[onSucceed]" + result);
     }
 
     @Override
     public void onFail(int requestId, String errorMsg) {
-        L.e(TAG, "[onFail]"+errorMsg);
+        L.e(TAG, "[onFail]" + errorMsg);
     }
 
 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
-        public static final int MSG_UPDATE_COUNTDOWN_TIME= 0x3;
+        public static final int MSG_UPDATE_COUNTDOWN_TIME = 0x3;
         public static final int MSG_CHECK_PLC_STATUES = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
-        private WeakReference<WelcomeActivity> mWeakReference;
+        private WeakReference<MainActivity> mWeakReference;
 
-        private SafeHandler(WelcomeActivity service, Looper looper) {
+        private SafeHandler(MainActivity service, Looper looper) {
             super(looper);
             mWeakReference = new WeakReference<>(service);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            final WelcomeActivity activity = mWeakReference.get();
+            final MainActivity activity = mWeakReference.get();
             if (activity == null) return;
             switch (msg.what) {
                 case MSG_UPDATE_TIME:
@@ -148,20 +148,20 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                             Date date = new Date(System.currentTimeMillis());
                             activity.tv_date.setText(TIME_FORMAT.format(date));
                             activity.mSafeHandle.removeMessages(MSG_UPDATE_TIME);
-                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME,   1000);
+                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
                         }
                     });
                     break;
                 case MSG_CHECK_PLC_STATUES:
                     L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
                     //每隔一分钟检查 投放门的状态
-                    if(!test){
-                        for(int i=1;i<=4;i++){
+                    if (!test) {
+                        for (int i = 1; i <= 4; i++) {
 //                            ModbusService.getWeight(i);
 //                            ModbusService.isFull(i);
                             ModbusService.isOn(i);
-                            if(ModbusService.isOn(i)){
-                                ModbusService.setOnOff(false,i);
+                            if (ModbusService.isOn(i)) {
+                                ModbusService.setOnOff(false, i);
                             }
                         }
                     }
@@ -172,7 +172,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                     break;
                 case MSG_OVERTIME_USER_LOGOUT:
                     L.d(TAG, "[MSG_OVERTIME_USER_LOGOUT]");
-                    new CountDownTimer(2*60*1000,1000){
+                    new CountDownTimer(2 * 60 * 1000, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
 
@@ -180,12 +180,12 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
 
                         @Override
                         public void onFinish() {
-activity.runOnUiThread(new Runnable() {
-    @Override
-    public void run() {
-        activity.setLogoutStatues();
-    }
-});
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activity.setLogoutStatues();
+                                }
+                            });
                         }
                     }.start();
 
@@ -193,51 +193,58 @@ activity.runOnUiThread(new Runnable() {
                 case MSG_UPDATE_COUNTDOWN_TIME:
                     Message message = msg;
                     int time = message.arg2;
-                     final int numb = message.arg1;
-                     CountDownTimer timer =  new CountDownTimer(time*1000, 1000) {
-                            public void onTick(final long millisUntilFinished) {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if(numb == 1){
-                                            activity.tv_recy_hint.setVisibility(View.VISIBLE);
-                                            activity.tv_recy_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
-                                        }if(numb == 2){
-                                            activity.tv_wet_hint.setVisibility(View.VISIBLE);
-                                            activity.tv_wet_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
-                                        }if(numb == 3){
-                                            activity.tv_harm_hint.setVisibility(View.VISIBLE);
-                                            activity.tv_harm_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
-                                        }if(numb == 4){
-                                            activity.tv_dry_hint.setVisibility(View.VISIBLE);
-                                            activity.tv_dry_hint.setText("开门后"+millisUntilFinished / 1000+"秒内关闭");
-                                        }
+                    final int numb = message.arg1;
+                    CountDownTimer timer = new CountDownTimer(time * 1000, 1000) {
+                        public void onTick(final long millisUntilFinished) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (numb == 1) {
+                                        activity.tv_recy_hint.setVisibility(View.VISIBLE);
+                                        activity.tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
-                                });
-
-                            }
-                            public void onFinish() {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        if(numb == 1){
-                                            activity.tv_recy_hint.setVisibility(View.GONE);
-                                        }if(numb == 2){
-                                            activity.tv_wet_hint.setVisibility(View.GONE);
-                                        }if(numb == 3){
-                                            activity.tv_harm_hint.setVisibility(View.GONE);
-                                        }if(numb == 4){
-                                            activity.tv_dry_hint.setVisibility(View.GONE);
-                                        }
-
+                                    if (numb == 2) {
+                                        activity.tv_wet_hint.setVisibility(View.VISIBLE);
+                                        activity.tv_wet_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
                                     }
-                                });
-                            }
-                        };
-                     timer.start();
-                     L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
-                 break;
+                                    if (numb == 3) {
+                                        activity.tv_harm_hint.setVisibility(View.VISIBLE);
+                                        activity.tv_harm_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+                                    }
+                                    if (numb == 4) {
+                                        activity.tv_dry_hint.setVisibility(View.VISIBLE);
+                                        activity.tv_dry_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+                                    }
+                                }
+                            });
+
+                        }
+
+                        public void onFinish() {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    if (numb == 1) {
+                                        activity.tv_recy_hint.setVisibility(View.GONE);
+                                    }
+                                    if (numb == 2) {
+                                        activity.tv_wet_hint.setVisibility(View.GONE);
+                                    }
+                                    if (numb == 3) {
+                                        activity.tv_harm_hint.setVisibility(View.GONE);
+                                    }
+                                    if (numb == 4) {
+                                        activity.tv_dry_hint.setVisibility(View.GONE);
+                                    }
+
+                                }
+                            });
+                        }
+                    };
+                    timer.start();
+                    L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
+                    break;
             }
 
         }
@@ -286,48 +293,48 @@ activity.runOnUiThread(new Runnable() {
         }
         L.d(TAG, "[requestOpen] numb" + numb);
         boolean boo;
-        if(test){
+        if (test) {
             boo = true;
-        }else {
-            if(ModbusService.isOn(numb))return;
-            boo = ModbusService.setOnOff(true,numb);
+        } else {
+            if (ModbusService.isOn(numb)) return;
+            boo = ModbusService.setOnOff(true, numb);
         }
 
-        if(boo){
+        if (boo) {
 
-            if(!test){
+            if (!test) {
                 int time = getTime(ModbusService.getTime(numb));
-Message message = Message.obtain();
-message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
-message.arg1 = numb;
-message.arg2 = time;
+                Message message = Message.obtain();
+                message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
+                message.arg1 = numb;
+                message.arg2 = time;
                 mSafeHandle.sendMessage(message);
-                long weight =ModbusService.getWeight(numb);
-                recordOperateRequest(1,numb,weight,1);
-            }else {
+                long weight = ModbusService.getWeight(numb);
+                recordOperateRequest(1, numb, weight, 1);
+            } else {
                 int time = 38;
                 Message message = Message.obtain();
                 message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
                 message.arg1 = numb;
                 message.arg2 = time;
                 mSafeHandle.sendMessage(message);
-                recordOperateRequest(1,numb,20,1);
+                recordOperateRequest(1, numb, 20, 1);
             }
 
 
             final int openDoorNumb = numb;
-            new Thread(){
+            new Thread() {
                 @Override
                 public void run() {
                     super.run();
-                    for (;;){
-                        if(!test){
+                    for (; ; ) {
+                        if (!test) {
                             try {
                                 Thread.sleep(1000);
                                 boolean isOn = ModbusService.isOn(openDoorNumb);
-                                if(!isOn){
-                                    long weight =ModbusService.getWeight(openDoorNumb);
-                                    recordOperateRequest(2,openDoorNumb,weight,0);
+                                if (!isOn) {
+                                    long weight = ModbusService.getWeight(openDoorNumb);
+                                    recordOperateRequest(2, openDoorNumb, weight, 0);
                                     break;
                                 }
                             } catch (InterruptedException e) {
@@ -335,8 +342,8 @@ message.arg2 = time;
                                 L.d(TAG, "[ModbusService getWeight Exception] exc:" + e.getMessage());
                             }
 
-                        }else {
-                            recordOperateRequest(2,openDoorNumb,24,0);
+                        } else {
+                            recordOperateRequest(2, openDoorNumb, 24, 0);
                             break;
                         }
 
@@ -348,14 +355,15 @@ message.arg2 = time;
 
     }
 
-    private int getTime(ModbusTime time){
-        int startTime = time.getStartHour()*60*60+time.getStartMinute()*60+time.getStartSecond();
-        int endTime = time.getEndHour()*60*60+time.getEndMinute()*60+time.getEndSecond();
-        int second=endTime-startTime;
+    private int getTime(ModbusTime time) {
+        int startTime = time.getStartHour() * 60 * 60 + time.getStartMinute() * 60 + time.getStartSecond();
+        int endTime = time.getEndHour() * 60 * 60 + time.getEndMinute() * 60 + time.getEndSecond();
+        int second = endTime - startTime;
         return second;
 
     }
-    private void recordOperateRequest(int requestId,int numb,float weight,int openStatus){
+
+    private void recordOperateRequest(int requestId, int numb, float weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
@@ -367,11 +375,11 @@ message.arg2 = time;
 
     private void setLogoutStatues() {
         MSPUtils.clear(this);
-        loginOrout.setText("登录");
+        loginOrout.setVisibility(View.GONE);
     }
 
     private void setLoginStatues() {
-        loginOrout.setText("退出");
+        loginOrout.setVisibility(View.VISIBLE);
 
     }
 

@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +33,11 @@ import java.util.regex.PatternSyntaxException;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Login2Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
+public class Login3Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "Login2Fragment";
 
-    public Login2Fragment() {
+    public Login3Fragment() {
     }
 
 
@@ -44,34 +45,20 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login2, container, false);
+        return inflater.inflate(R.layout.fragment_login3, container, false);
     }
 
-    EditText editTextNumb;
+    AppCompatEditText editTextNumb;
     ImageView ivAgree;
     boolean isAgree;
-    StringBuffer stringBuffer;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        stringBuffer = new StringBuffer();
         editTextNumb = view.findViewById(R.id.et_number);
-        editTextNumb.setShowSoftInputOnFocus(false);
         ivAgree = view.findViewById(R.id.iv_check);
-        view.findViewById(R.id.btn_0).setOnClickListener(this);
-        view.findViewById(R.id.btn_1).setOnClickListener(this);
-        view.findViewById(R.id.btn_2).setOnClickListener(this);
-        view.findViewById(R.id.btn_3).setOnClickListener(this);
-        view.findViewById(R.id.btn_4).setOnClickListener(this);
-        view.findViewById(R.id.btn_5).setOnClickListener(this);
-        view.findViewById(R.id.btn_6).setOnClickListener(this);
-        view.findViewById(R.id.btn_7).setOnClickListener(this);
-        view.findViewById(R.id.btn_8).setOnClickListener(this);
-        view.findViewById(R.id.btn_9).setOnClickListener(this);
-        view.findViewById(R.id.btn_delete_one).setOnClickListener(this);
-        view.findViewById(R.id.btn_clean).setOnClickListener(this);
+
         view.findViewById(R.id.ll_agree_rule).setOnClickListener(this);
         view.findViewById(R.id.tv_login).setOnClickListener(this);
     }
@@ -79,42 +66,6 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_0:
-                append(0);
-                break;
-            case R.id.btn_1:
-                append(1);
-                break;
-            case R.id.btn_2:
-                append(2);
-                break;
-            case R.id.btn_3:
-                append(3);
-                break;
-            case R.id.btn_4:
-                append(4);
-                break;
-            case R.id.btn_5:
-                append(5);
-                break;
-            case R.id.btn_6:
-                append(6);
-                break;
-            case R.id.btn_7:
-                append(7);
-                break;
-            case R.id.btn_8:
-                append(8);
-                break;
-            case R.id.btn_9:
-                append(9);
-                break;
-            case R.id.btn_delete_one:
-                deleteOne();
-                break;
-            case R.id.btn_clean:
-                clean();
-                break;
             case R.id.tv_login:
                 login();
                 break;
@@ -126,30 +77,6 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-    private void setEditTextNumbText() {
-        String curr = stringBuffer.toString();
-        editTextNumb.setText(curr);
-
-    }
-
-    private void append(int numb) {
-        if (stringBuffer.length() < 11) {
-            stringBuffer.append(numb);
-            setEditTextNumbText();
-        }
-    }
-
-    private void clean() {
-        stringBuffer.setLength(0);
-        setEditTextNumbText();
-    }
-
-    private void deleteOne() {
-        if (stringBuffer.length() > 0) {
-            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-            setEditTextNumbText();
-        }
-    }
 
     private void login() {
         String num = editTextNumb.getText().toString();

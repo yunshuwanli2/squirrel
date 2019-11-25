@@ -1,14 +1,11 @@
 package com.app.squirrel.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,23 +15,14 @@ import com.app.squirrel.R;
 import com.app.squirrel.application.MApplication;
 import com.app.squirrel.fragment.BaseFragment;
 import com.app.squirrel.fragment.Login1Fragment;
-import com.app.squirrel.fragment.Login2Fragment;
+import com.app.squirrel.fragment.Login3Fragment;
 import com.app.squirrel.tool.L;
-import com.app.squirrel.tool.ToastUtil;
-import com.bumain.plc.ModbusService;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import cn.jpush.android.api.NotificationMessage;
-import cn.jpush.android.service.JPushMessageReceiver;
-
-import static com.app.squirrel.application.SquirrelApplication.test;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -66,7 +54,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         @Override
                         public void run() {
                             Date date = new Date(System.currentTimeMillis());
-                            activity.tv_date.setText(WelcomeActivity.TIME_FORMAT.format(date));
+                            activity.tv_date.setText(MainActivity.TIME_FORMAT.format(date));
                             activity.mSafeHandle.removeMessages(MSG_UPDATE_TIME);
                             activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
                         }
@@ -95,7 +83,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-         tv_date = findViewById(R.id.tv_date);
+        tv_date = findViewById(R.id.tv_date);
         findViewById(R.id.tv_back).setOnClickListener(this);
 
         ll_switch1 = findViewById(R.id.ll_switch1);
@@ -140,7 +128,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_OVERTIME_FINISH_ACTIVITY,3*60*1000);
+        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_OVERTIME_FINISH_ACTIVITY, 3 * 60 * 1000);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_UPDATE_TIME);
     }
 
@@ -161,7 +149,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         return true;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN,sticky=true)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onLoginSuccEventMessage(Message message) {
         L.d(TAG, "[onEventMessage]");
         MApplication.getApplication().getGolbalHander().postDelayed(new Runnable() {
@@ -194,7 +182,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     Login1Fragment login1Fragment;
-    Login2Fragment login2Fragment;
+    Login3Fragment login2Fragment;
 
     private void switchScanCodeLogin() {
         setScanCodePressedBg();
@@ -209,7 +197,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         setNumbPressedBg();
         setScanCodeNormarBg();
         if (login2Fragment == null) {
-            login2Fragment = new Login2Fragment();
+            login2Fragment = new Login3Fragment();
         }
         switchFragment(login2Fragment);
     }

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
-
 
     <include layout="@layout/top_layout" />
 
@@ -13,18 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1.6"
-        android:background="@color/white"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_log_in_out"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_text"
-            android:gravity="center"
-            android:text="登录"
-            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -188,13 +178,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_switch1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_log_in_out"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:drawableLeft="@mipmap/ic_exit"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="退出登录"
+            android:visibility="gone"
+            android:textColor="@color/gray2"
+            android:textSize="18sp" />
+
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@mipmap/main_bottom_bg"
         android:paddingRight="30dp">
-
 
         <ImageView
             android:id="@+id/wx_code"
