@@ -317,6 +317,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         if (isOpen[numb - 1]) {
+            ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
                 int time = getTime(ModbusService.getTime(numb));
                 Message message = Message.obtain();
