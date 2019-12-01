@@ -111,9 +111,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onResume();
         L.d(TAG, "[onResume]");
         mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_CHECK_PLC_STATUES, 60 * 1000);
-        L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
+        L.d(TAG, "[sendEmptyMessage MSG_CHECK_PLC_STATUES]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
-        L.d(TAG, "[sendEmptyMessage ]MSG_UPDATE_TIME");
+        L.d(TAG, "[sendEmptyMessage MSG_UPDATE_TIME]");
     }
 
     @Override
@@ -269,11 +269,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
 
-    }
 
     @Override
     public void onClick(View v) {

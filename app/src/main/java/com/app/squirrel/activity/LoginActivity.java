@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.app.squirrel.R;
 import com.app.squirrel.application.MApplication;
+import com.app.squirrel.facedetect.FaceDetectFragment;
 import com.app.squirrel.fragment.BaseFragment;
 import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login3Fragment;
@@ -94,6 +95,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         ll_switch1.setOnClickListener(this);
         ll_switch2.setOnClickListener(this);
         mSafeHandle = new SafeHandler(this);
+
         switchScanCodeLogin();
     }
 
@@ -190,7 +192,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (login1Fragment == null) {
             login1Fragment = new Login1Fragment();
         }
-        switchFragment(login1Fragment);
+
+//        switchFragment(login1Fragment);
+        switchFragment(FaceDetectFragment.newInstance());
     }
 
     private void switchPhoneLogin() {
