@@ -183,7 +183,7 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
                 requestUrl = String.format("%s%s", BASE_URL, url);
             }
             final String finalUrl = requestUrl;
-            Request request = new Request.Builder().url(requestUrl).post(body).addHeader("Content-Type", "text/html; charset=utf-8").build();
+            Request request = new Request.Builder().url(requestUrl).post(body).build();
             OkHttpClientManager.getSingleInstance().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

@@ -193,8 +193,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             login1Fragment = new Login1Fragment();
         }
 
-//        switchFragment(login1Fragment);
-        switchFragment(FaceDetectFragment.newInstance());
+        switchFragment(login1Fragment);
     }
 
     private void switchPhoneLogin() {

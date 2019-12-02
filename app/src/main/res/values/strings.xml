@@ -4,4 +4,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="request_permission">需要访问相机的权限</string>
+
+    <string name="capture">点击拍照</string>
+    <string name="beauty">颜值</string>
+    <string name="emotion">情绪分析：</string>
 </resources>

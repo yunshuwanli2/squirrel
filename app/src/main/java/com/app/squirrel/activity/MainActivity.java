@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
+import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
@@ -299,7 +300,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void openDoor(int numb) {
         openNumb = numb;
         if (!UserManager.isLogin()) {
-            LoginActivity.JumpAct(this);
+//            LoginActivity.JumpAct(this);
+            FaceDetectActivity.JumpAct(this);
+
             return;
         }
         L.d(TAG, "[openDoor] numb" + numb);
