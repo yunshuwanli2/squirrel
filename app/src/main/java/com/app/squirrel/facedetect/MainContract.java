@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.app.squirrel.facedetect.entry.FaceppBean;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -22,5 +23,6 @@ public interface MainContract {
 
     interface Presenter{
         void getDetectResultFromServer(Bitmap photo);
+        void getDetectResultFromServer(File file);
     }
 }

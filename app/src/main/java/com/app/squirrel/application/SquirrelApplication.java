@@ -2,6 +2,7 @@ package com.app.squirrel.application;
 
 import com.app.squirrel.http.okhttp.MDeviceUtil;
 import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.http.okhttp.OkHttpClientManager;
 import com.app.squirrel.tool.L;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
@@ -24,6 +25,7 @@ public class SquirrelApplication extends MApplication {
     public void onCreate() {
         super.onCreate();
         init();
+        OkHttpClientManager.init();
         CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
     }
 

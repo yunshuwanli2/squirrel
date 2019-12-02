@@ -20,13 +20,12 @@ public class HeaderInterceptor implements Interceptor {
     private static final String TAG = "HeaderInterceptor";
     private static final String AGENT = "User-Agent";
     private static String MAC = null;
-    private static final String MAC_KEY = "MobileMac";
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request oldRequest = chain.request();
         Request.Builder builder = oldRequest.newBuilder();
-        addHeaders3(builder);
+//        addHeaders3(builder);
         Request newRequest = builder.build();
         return chain.proceed(newRequest);
     }
@@ -61,7 +60,7 @@ public class HeaderInterceptor implements Interceptor {
 
     private Request.Builder addHeaders3(Request.Builder builder) {
         return builder
-//                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .addHeader("Content-Type", "form-data; charset=utf-8")
                 .addHeader("Connection", "keep-alive")
                 .addHeader("appid", MDeviceUtil.getMAC(MApplication.getApplication()))
                 .addHeader("token", MSPUtils.getString("token", ""));

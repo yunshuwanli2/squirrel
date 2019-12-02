@@ -45,17 +45,17 @@ public class OkHttpClientManager {
 
     private static OkHttpClient getInstance() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .cookieJar(new MyCookieJar())
+//                .cookieJar(new MyCookieJar())
                 .cache(new Cache(MApplication.getApplication().getCacheDir(), 1024 * 1024))
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-                .addInterceptor(new HeaderInterceptor());
-//                .addNetworkInterceptor(new NewNetWorkInterceptor());
+                .addInterceptor(new HeaderInterceptor())
+                .addNetworkInterceptor(new NewNetWorkInterceptor());
 //                .hostnameVerifier(new TrustAllSSL.TrustAllHostnameVerifier());
         if (MApplication.getApplication().getDebugSetting()) {
             builder.addNetworkInterceptor(new HttpLog());
-            builder.sslSocketFactory(TrustAllSSL.getSSLSocketFactory());
+//            builder.sslSocketFactory(TrustAllSSL.getSSLSocketFactory(),new TrustAllSSL.TrustAllManager());
         }
         return builder.build();
     }

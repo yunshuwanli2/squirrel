@@ -22,7 +22,7 @@ public class FaceppBean {
      * time_used : 752
      * faces : [{"landmark":{"mouth_upper_lip_left_contour2":{"y":185,"x":146},"contour_chin":{"y":231,"x":137},"right_eye_pupil":{"y":146,"x":205},"mouth_upper_lip_bottom":{"y":195,"x":159}},"attributes":{"gender":{"value":"Female"},"age":{"value":21},"glass":{"value":"None"},"headpose":{"yaw_angle":-26.625063,"pitch_angle":12.921974,"roll_angle":22.814377},"smile":{"threshold":30.1,"value":2.566890001296997}},"face_rectangle":{"width":140,"top":89,"left":104,"height":141},"face_token":"ed319e807e039ae669a4d1af0922a0c8"}]
      */
-    public static FaceppBean jsonToList(JSONObject jsonObject) {
+    public static FaceppBean jsonToBean(JSONObject jsonObject) {
         if (jsonObject == null) return null;
         Gson gson = new GsonBuilder().registerTypeAdapter(Date.class,
                 new DateJsonDeserializer()).create();

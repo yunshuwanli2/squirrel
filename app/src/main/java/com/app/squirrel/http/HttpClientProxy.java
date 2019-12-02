@@ -55,6 +55,7 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");//mdiatype 这个需要和服务端保持一致
     private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");//mdiatype 这个需要和服务端保持一致
+    private static final MediaType MEDIA_TYPE_DATA = MediaType.parse("form-data; charset=utf-8");//mdiatype 这个需要和服务端保持一致
     private static final MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");
 
     public static final String BASE_URL = MApplication.getApplication().getBaseUrl_Https();//请求接口根地址
@@ -203,7 +204,6 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
     }
 
     /**
-     * 还没有在写接口
      *
      * @param url
      * @param requestId
@@ -357,22 +357,6 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
                 }
             }
         });
-    }
-
-
-    /**
-     * 统一为请求添加头信息
-     *
-     * @return
-     */
-    private Request.Builder addHeaders() {
-        Request.Builder builder = new Request.Builder()
-                .addHeader("Connection", "keep-alive")
-                .addHeader("platform", "2")
-                .addHeader("phoneModel", Build.MODEL)
-                .addHeader("systemVersion", Build.VERSION.RELEASE)
-                .addHeader("appVersion", "3.2.0");
-        return builder;
     }
 
 

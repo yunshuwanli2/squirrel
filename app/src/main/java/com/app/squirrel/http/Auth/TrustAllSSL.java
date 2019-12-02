@@ -21,7 +21,7 @@ public class TrustAllSSL {
 
     public static SSLSocketFactory getSSLSocketFactory() {
         try {
-            SSLContext sc = SSLContext.getInstance("TLS");
+            SSLContext sc = SSLContext.getInstance("TLS");//"SSL"
             sc.init(null, new TrustManager[]{new TrustAllManager()},
                     new SecureRandom());
             return  sc.getSocketFactory();
@@ -31,7 +31,7 @@ public class TrustAllSSL {
         return null;
     }
 
-    private static class TrustAllManager implements X509TrustManager {
+    public static class TrustAllManager implements X509TrustManager {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType)
                 throws CertificateException {

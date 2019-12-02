@@ -7,12 +7,16 @@ import android.graphics.Paint;
 
 import com.app.squirrel.BuildConfig;
 import com.app.squirrel.facedetect.entry.FaceppBean;
+import com.app.squirrel.facedetect.entry.FacesetTokenBean;
 import com.app.squirrel.facedetect.util.Utils;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
+import com.app.squirrel.tool.L;
+import com.app.squirrel.tool.ToastUtil;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +42,13 @@ public class MainPresenter implements MainContract.Presenter {
         Map<String, Object> map = new HashMap();
         map.put("api_key", BuildConfig.API_KEY);
         map.put("api_secret", BuildConfig.API_SECRET);
-        map.put("image_base64", s);
+//        map.put("image_base64", s);
         map.put("return_attributes", "gender,age,facequality");
         mView.showProgress();
         HttpClientProxy.getInstance().postAsyn(url, 1, map, new HttpCallback<JSONObject>() {
             @Override
             public void onSucceed(int requestId, JSONObject result) {
-                FaceppBean faceppBean = FaceppBean.jsonToList(result);
+                FaceppBean faceppBean = FaceppBean.jsonToBean(result);
                 handleDetectResult(photo, faceppBean);
             }
 
@@ -53,6 +57,10 @@ public class MainPresenter implements MainContract.Presenter {
                 mView.hideProgress();
             }
         });
+    }
+
+    @Override
+    public void getDetectResultFromServer(final File file) {
     }
 
     private void handleDetectResult(Bitmap photo, FaceppBean faceppBean) {
@@ -66,10 +74,49 @@ public class MainPresenter implements MainContract.Presenter {
             FaceppBean.FacesBean.AttributesBean attributesBean = faces.get(0).getAttributes();
             FaceppBean.FacesBean.AttributesBean.FacequalityBean facequalityBean = attributesBean.getFacequality();
             if (facequalityBean != null && facequalityBean.getThreshold() >= 60) {
-
-
+                requestFaceSet(faces.get(0).getFace_token());
             }
         }
+    }
+
+    private void requestFaceSet(final String currFaceToken) {
+        String url = "wxApi/fetchFaceSet";
+        HttpClientProxy.getInstance().getAsyn(url, 2, null, new HttpCallback<JSONObject>() {
+            @Override
+            public void onSucceed(int requestId, JSONObject result) {
+                if (result != null && result.optString("code").equals("0")) {
+                    List<FacesetTokenBean> tokenBeans = FacesetTokenBean.jsonToBeans(result.optJSONArray("data"));
+                    final String url_search = "https://api-cn.faceplusplus.com/facepp/v3/search";
+                    for (FacesetTokenBean tokenBean : tokenBeans) {
+                        Map<String, Object> map = new HashMap();
+                        map.put("api_key", BuildConfig.API_KEY);
+                        map.put("api_secret", BuildConfig.API_SECRET);
+                        map.put("face_token", currFaceToken);
+                        map.put("faceset_token", tokenBean.getFacesetToken());
+
+                        HttpClientProxy.getInstance().postAsyn(url_search, 1, map, new HttpCallback<JSONObject>() {
+                            @Override
+                            public void onSucceed(int requestId, JSONObject result) {
+                                //TODO 其中有一个成功即可
+                                mView.hideProgress();
+                                ToastUtil.showToast("登录成功");
+                            }
+
+                            @Override
+                            public void onFail(int requestId, String errorMsg) {
+                                mView.hideProgress();
+                            }
+                        });
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFail(int requestId, String errorMsg) {
+                mView.hideProgress();
+            }
+        });
     }
 
     private Bitmap markFacesInThePhoto(Bitmap bitmap, List<FaceppBean.FacesBean> faces) {
@@ -90,5 +137,6 @@ public class MainPresenter implements MainContract.Presenter {
         }
         return tempBitmap;
     }
+
 
 }
