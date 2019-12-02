@@ -51,11 +51,11 @@ public class OkHttpClientManager {
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
                 .addInterceptor(new HeaderInterceptor())
-                .addNetworkInterceptor(new NewNetWorkInterceptor());
-//                .hostnameVerifier(new TrustAllSSL.TrustAllHostnameVerifier());
+//                .addNetworkInterceptor(new NewNetWorkInterceptor())
+                .hostnameVerifier(new TrustAllSSL.TrustAllHostnameVerifier())
+                .sslSocketFactory(TrustAllSSL.getSSLSocketFactory(),new TrustAllSSL.TrustAllManager());
         if (MApplication.getApplication().getDebugSetting()) {
             builder.addNetworkInterceptor(new HttpLog());
-//            builder.sslSocketFactory(TrustAllSSL.getSSLSocketFactory(),new TrustAllSSL.TrustAllManager());
         }
         return builder.build();
     }
