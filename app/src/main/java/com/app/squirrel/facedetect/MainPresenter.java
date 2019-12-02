@@ -86,6 +86,10 @@ public class MainPresenter implements MainContract.Presenter {
             public void onSucceed(int requestId, JSONObject result) {
                 if (result != null && result.optString("code").equals("0")) {
                     List<FacesetTokenBean> tokenBeans = FacesetTokenBean.jsonToBeans(result.optJSONArray("data"));
+                    if (tokenBeans == null || tokenBeans.size() == 0) {
+                        ToastUtil.showToast("请登录小程序录入人脸信息");
+                        return;
+                    }
                     final String url_search = "https://api-cn.faceplusplus.com/facepp/v3/search";
                     for (FacesetTokenBean tokenBean : tokenBeans) {
                         Map<String, Object> map = new HashMap();
@@ -99,12 +103,18 @@ public class MainPresenter implements MainContract.Presenter {
                             public void onSucceed(int requestId, JSONObject result) {
                                 //TODO 其中有一个成功即可
                                 mView.hideProgress();
-                                ToastUtil.showToast("登录成功");
+                                if (true) {
+                                    ToastUtil.showToast("请登录小程序录入人脸信息");
+                                } else {
+                                    ToastUtil.showToast("登录成功");
+                                }
+
                             }
 
                             @Override
                             public void onFail(int requestId, String errorMsg) {
                                 mView.hideProgress();
+                                ToastUtil.showToast("登录失败");
                             }
                         });
                     }
