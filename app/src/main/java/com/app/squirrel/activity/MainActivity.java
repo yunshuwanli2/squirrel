@@ -300,9 +300,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void openDoor(int numb) {
         openNumb = numb;
         if (!UserManager.isLogin()) {
-//            LoginActivity.JumpAct(this);
-            FaceDetectActivity.JumpAct(this);
-
+            LoginActivity.JumpAct(this);
             return;
         }
         L.d(TAG, "[openDoor] numb" + numb);

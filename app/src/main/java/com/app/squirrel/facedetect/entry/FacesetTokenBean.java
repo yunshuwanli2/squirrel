@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 public class FacesetTokenBean {
+
     public static List<FacesetTokenBean> jsonToBeans(JSONArray jsonArray) {
         if (jsonArray == null) return null;
         Gson gson = new GsonBuilder().registerTypeAdapter(Date.class,

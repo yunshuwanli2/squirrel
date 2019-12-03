@@ -172,7 +172,7 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
                     Object obj = paramsMap.get(key);
                     String value = (obj instanceof String) ? (String) obj : String.valueOf(obj);
                     L.e(TAG, "http request params key :" + key + ", value ：" + value);
-                    builder.add(key, URLEncoder.encode(value, "utf-8"));
+                    builder.add(key, value);
                 }
             }
             RequestBody body = builder.build();
