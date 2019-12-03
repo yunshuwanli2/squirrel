@@ -150,6 +150,11 @@ public class FaceDetectFragment extends BaseFragment implements MainContract.Vie
     }
 
     @Override
+    public void finshActivity() {
+        getActivity().finish();
+    }
+
+    @Override
     public void showProgress() {
         button.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);

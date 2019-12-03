@@ -15,7 +15,7 @@ import cn.jpush.android.api.JPushInterface;
 public class SquirrelApplication extends MApplication {
     private static final String TAG ="SquirrelApplication" ;
 
-  public static boolean test = true;
+  public static boolean test = false;
     @Override
     public boolean getDebugSetting() {
         return true;

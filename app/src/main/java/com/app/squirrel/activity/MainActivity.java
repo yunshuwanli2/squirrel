@@ -71,6 +71,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         EventBus.getDefault().removeStickyEvent(message);
         setLoginStatues();
         //登录成功2分钟后自动登出
+        mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
         //开门
@@ -183,7 +184,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     L.d(TAG, "sendEmptyMessageDelayed :[MSG_CHECK_PLC_STATUES]");
                     break;
                 case MSG_OVERTIME_USER_LOGOUT:
-                    L.d(TAG, "[MSG_OVERTIME_USER_LOGOUT]");
+                    L.d(TAG, "[MSG_OVERTIME_USER_LOGOUT] begin");
                     new CountDownTimer(2 * 60 * 1000, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
@@ -271,20 +272,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
+                openNumb = 4;
+                if (!UserManager.isLogin()) {
+                    LoginActivity.JumpAct(this);
+                    return;
+                }
                 openDoor(4);
                 break;
             case R.id.ll_harmful_garbage:
+                openNumb = 3;
+                if (!UserManager.isLogin()) {
+                    LoginActivity.JumpAct(this);
+                    return;
+                }
                 openDoor(3);
                 break;
             case R.id.ll_recy_garbage:
+                openNumb = 1;
+                if (!UserManager.isLogin()) {
+                    LoginActivity.JumpAct(this);
+                    return;
+                }
                 openDoor(1);
                 break;
             case R.id.ll_wet_garbage:
+                openNumb = 2;
+                if (!UserManager.isLogin()) {
+                    LoginActivity.JumpAct(this);
+                    return;
+                }
                 openDoor(2);
                 break;
             case R.id.ll_logout:
@@ -298,11 +318,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     boolean[] isOpen = {false, false, false, false};
 
     private void openDoor(int numb) {
-        openNumb = numb;
-        if (!UserManager.isLogin()) {
-            LoginActivity.JumpAct(this);
-            return;
-        }
+
         L.d(TAG, "[openDoor] numb" + numb);
 
         if (test) {

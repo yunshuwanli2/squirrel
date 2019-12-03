@@ -32,6 +32,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * A simple {@link Fragment} subclass.
  */
+@Deprecated
 public class Login2Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "Login2Fragment";

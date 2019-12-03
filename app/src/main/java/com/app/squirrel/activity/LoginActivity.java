@@ -178,10 +178,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             public void run() {
                 finish();
             }
-        }, 1000);
+        }, 500);
 
     }
-
 
     @Override
     public void onClick(View v) {

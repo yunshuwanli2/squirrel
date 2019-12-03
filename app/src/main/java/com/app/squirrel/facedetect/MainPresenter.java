@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Message;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -15,6 +16,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.app.squirrel.BuildConfig;
 import com.app.squirrel.application.MApplication;
+import com.app.squirrel.application.SquirrelApplication;
 import com.app.squirrel.facedetect.entry.FaceSearchBean;
 import com.app.squirrel.facedetect.entry.FaceppBean;
 import com.app.squirrel.facedetect.entry.FacesetTokenBean;
@@ -23,7 +25,9 @@ import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
+import com.app.squirrel.tool.UserManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,6 +140,8 @@ public class MainPresenter implements MainContract.Presenter {
                                     FaceSearchBean.ResultsBean resultsBean = searchBean.getResults().get(0);
                                     if (resultsBean.getConfidence() >= 60) {
                                         ToastUtil.showToast("登录成功");
+                                        EventBus.getDefault().postSticky(new Message());
+                                        mView.finshActivity();
                                         searchTag.set(true);
                                     } else {
                                         if (index == (tokenBeans.size() - 1)) {
