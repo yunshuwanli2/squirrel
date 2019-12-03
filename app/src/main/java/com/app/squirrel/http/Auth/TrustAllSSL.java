@@ -21,7 +21,7 @@ public class TrustAllSSL {
 
     public static SSLSocketFactory getSSLSocketFactory() {
         try {
-            SSLContext sc = SSLContext.getInstance("TLS");//"SSL"
+            SSLContext sc = SSLContext.getInstance("SSL");//"SSL"
             sc.init(null, new TrustManager[]{new TrustAllManager()},
                     new SecureRandom());
             return  sc.getSocketFactory();

@@ -25,7 +25,7 @@ public class HeaderInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request oldRequest = chain.request();
         Request.Builder builder = oldRequest.newBuilder();
-//        addHeaders3(builder);
+        addHeaders3(builder);
         Request newRequest = builder.build();
         return chain.proceed(newRequest);
     }
