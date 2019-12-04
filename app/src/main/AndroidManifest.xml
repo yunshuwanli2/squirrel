@@ -21,11 +21,8 @@
         android:name=".application.SquirrelApplication"
         android:icon="@mipmap/ic_sm"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
-<!--
         android:networkSecurityConfig="@xml/network_config"
--->
-
+        android:theme="@style/Theme.AppCompat.NoActionBar">
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>

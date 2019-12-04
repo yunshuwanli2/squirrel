@@ -44,10 +44,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainPresenter implements MainContract.Presenter {
 
     private static final String TAG = "MainPresenter";
-
-
     private MainContract.View mView;
-    RequestQueue mQueue;
+    private RequestQueue mQueue;
 
     public MainPresenter(MainContract.View mView) {
         this.mView = mView;
@@ -56,9 +54,9 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void getDetectResultFromServer(final Bitmap photo) {
+        Utils.delectCacheImg(Utils.getCachePicturePath());
         final String s = Utils.base64(photo);
         String url = "https://api-cn.faceplusplus.com/facepp/v3/detect";
-
         mView.showProgress();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -82,6 +80,7 @@ public class MainPresenter implements MainContract.Presenter {
                 map.put("api_secret", BuildConfig.API_SECRET);
                 map.put("image_base64", s);
                 map.put("return_attributes", "gender,age,facequality");
+                L.d(TAG, "getParams:" + map.toString());
                 return map;
             }
         };
@@ -89,9 +88,6 @@ public class MainPresenter implements MainContract.Presenter {
 
     }
 
-    @Override
-    public void getDetectResultFromServer(final File file) {
-    }
 
     private void handleDetectResult(Bitmap photo, FaceppBean faceppBean) {
         List<FaceppBean.FacesBean> faces = faceppBean.getFaces();
@@ -168,7 +164,9 @@ public class MainPresenter implements MainContract.Presenter {
                                 map.put("api_key", BuildConfig.API_KEY);
                                 map.put("api_secret", BuildConfig.API_SECRET);
                                 map.put("face_token", currFaceToken);
-                                map.put("faceset_token", tokenBeans.get(index).getFacesetToken());
+//                                map.put("faceset_token", tokenBeans.get(index).getFacesetToken());
+                                map.put("outer_id", tokenBeans.get(index).getOuterId());
+                                L.d(TAG, "getParams:" + map.toString());
                                 return map;
                             }
                         };
