@@ -23,6 +23,9 @@ import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
 import com.bumain.plc.ModbusService;
 import com.bumain.plc.ModbusTime;
+import com.serotonin.modbus4j.exception.ErrorResponseException;
+import com.serotonin.modbus4j.exception.ModbusInitException;
+import com.serotonin.modbus4j.exception.ModbusTransportException;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -90,6 +93,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
+        findViewById(R.id.wx_code).setOnClickListener(this);
         tv_dry_hint = findViewById(R.id.tv_dry_hint);
         tv_harm_hint = findViewById(R.id.tv_harmful_hint);
         tv_recy_hint = findViewById(R.id.tv_recy_hint);
@@ -168,14 +172,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case MSG_CHECK_PLC_STATUES:
                     L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
                     //每隔一分钟检查 投放门的状态
-                    if (!test) {
+                     if (!test) {
                         for (int i = 1; i <= 4; i++) {
 //                            ModbusService.getWeight(i);
 //                            ModbusService.isFull(i);
-                            ModbusService.isOn(i);
-                            if (ModbusService.isOn(i)) {
-                                ModbusService.setOnOff(false, i);
+                            try {
+                                if (ModbusService.isOn(i)) {
+                                    ModbusService.setOnOff(false, i);
+                                }
+                            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+                                e.printStackTrace();
+                                ToastUtil.showToast(e.getMessage());
                             }
+
                         }
                     }
 
@@ -283,6 +292,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
                 openDoor(4);
                 break;
+             case R.id.wx_code:
+                 ModbusService.setOnOff(true, 1);
+                break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
                 if (!UserManager.isLogin()) {
@@ -325,21 +337,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (isOpen[numb - 1]) return;
             isOpen[numb - 1] = true;
         } else {
-            if (ModbusService.isOn(numb)) return;
-            isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
+            try {
+                if (ModbusService.isOn(numb)) return;
+                isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
+            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+                e.printStackTrace();
+                ToastUtil.showToast(e.getMessage());
+            }
+
         }
 
         if (isOpen[numb - 1]) {
             ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
-                int time = getTime(ModbusService.getTime(numb));
-                Message message = Message.obtain();
-                message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
-                message.arg1 = numb;
-                message.arg2 = time;
-                mSafeHandle.sendMessage(message);
-                long weight = ModbusService.getWeight(numb);
-                recordOperateRequest(1, numb, weight, 1);
+                int time = 0;
+                long weight = 0;
+                try {
+                    time = getTime(ModbusService.getTime(numb));
+                    Message message = Message.obtain();
+                    message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
+                    message.arg1 = numb;
+                    message.arg2 = time;
+                    mSafeHandle.sendMessage(message);
+                    weight = ModbusService.getWeight(numb);
+                    recordOperateRequest(1, numb, weight, 1);
+                } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
+                    e.printStackTrace();
+                    ToastUtil.showToast(e.getMessage());
+                }
+
 
             } else {
                 int time = 38;
@@ -362,11 +388,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 Thread.sleep(1000);
                                 boolean isOn = ModbusService.isOn(openDoorNumb);
-                                if (!isOn) {
-                                    long weight = ModbusService.getWeight(openDoorNumb);
-                                    recordOperateRequest(2, openDoorNumb, weight, 0);
-                                    break;
-                                }
+                                    if (!isOn) {
+                                        long weight = ModbusService.getWeight(openDoorNumb);
+                                        recordOperateRequest(2, openDoorNumb, weight, 0);
+                                        break;
+                                    }
+
+                            } catch (ModbusTransportException e) {
+                                e.printStackTrace();
+                                L.e(TAG,"ModbusTransportException "+ e.getMessage());
+                            } catch (ModbusInitException e) {
+                                e.printStackTrace();
+                            } catch (ErrorResponseException e) {
+                                e.printStackTrace();
+                                L.e(TAG,"ErrorResponseException "+ e.getMessage());
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                                 L.d(TAG, "[ModbusService getWeight Exception] exc:" + e.getMessage());

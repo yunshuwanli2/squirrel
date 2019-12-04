@@ -4,10 +4,10 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.app.squirrel"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 28
-        versionCode 5
-        versionName "3.2"
+        versionCode 7
+        versionName "3.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -60,6 +60,7 @@ android {
 
 dependencies {
     implementation files('libs/plc-1.0-SNAPSHOT.jar')
+    implementation files('libs/modbus4j-3.0.3.jar')
     implementation files('libs/volley-release.aar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
