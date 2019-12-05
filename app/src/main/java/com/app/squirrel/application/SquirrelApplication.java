@@ -1,9 +1,7 @@
 package com.app.squirrel.application;
 
-import com.app.squirrel.http.okhttp.MDeviceUtil;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.http.okhttp.OkHttpClientManager;
-import com.app.squirrel.tool.L;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cn.jpush.android.api.JPushInterface;
