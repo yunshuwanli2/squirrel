@@ -136,8 +136,8 @@ public class MainPresenter implements MainContract.Presenter {
                                     FaceSearchBean.ResultsBean resultsBean = searchBean.getResults().get(0);
                                     if (resultsBean.getConfidence() >= 60) {
                                         ToastUtil.showToast("登录成功");
+                                        UserManager.setLoginStatus(true);
                                         EventBus.getDefault().postSticky(new Message());
-                                        mView.finshActivity();
                                         searchTag.set(true);
                                     } else {
                                         if (index == (tokenBeans.size() - 1)) {
