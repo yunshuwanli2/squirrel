@@ -19,7 +19,10 @@ android {
                 JPUSH_CHANNEL : "developer-default"
         ]
     }
-
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     lintOptions {
         abortOnError false
     }
@@ -59,7 +62,7 @@ android {
 }
 
 dependencies {
-    implementation files('libs/plc-1.0-SNAPSHOT.jar')
+    implementation files('libs/plc2.0.jar')
     implementation files('libs/modbus4j-3.0.3.jar')
     implementation files('libs/volley-release.aar')
     implementation fileTree(include: ['*.jar'], dir: 'libs')

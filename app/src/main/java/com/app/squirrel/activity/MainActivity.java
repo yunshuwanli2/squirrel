@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
+import com.app.squirrel.application.SquirrelApplication;
 import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
@@ -58,13 +59,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public ImageView iv_recy_img;
     public ImageView iv_dry_img;
     public ImageView iv_harm_img;
-    CountDownTimer timer;
 
     @Override
     public boolean getEventBusSetting() {
         return true;
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onEventMessage(Message message) {
@@ -143,6 +142,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
+        public static final int MSG_OPEN_DOOR = 0x6;
         public static final int MSG_UPDATE_COUNTDOWN_TIME = 0x3;
         public static final int MSG_CHECK_PLC_STATUES = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
@@ -158,6 +158,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             final MainActivity activity = mWeakReference.get();
             if (activity == null) return;
             switch (msg.what) {
+                case MSG_OPEN_DOOR:
+                    int doorNumb = msg.arg1;
+                    activity.openDoor(doorNumb);
+                    break;
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -172,7 +176,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case MSG_CHECK_PLC_STATUES:
                     L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
                     //每隔一分钟检查 投放门的状态
-                     if (!test) {
+                    if (!test) {
                         for (int i = 1; i <= 4; i++) {
 //                            ModbusService.getWeight(i);
 //                            ModbusService.isFull(i);
@@ -283,6 +287,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
+        Message message;
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
                 openNumb = 4;
@@ -290,10 +295,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     LoginActivity.JumpAct(this);
                     return;
                 }
-                openDoor(4);
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 4;
+                mSafeHandle.sendMessage(message);
+
                 break;
-             case R.id.wx_code:
-                 ModbusService.setOnOff(true, 1);
+            case R.id.wx_code:
+                 if(SquirrelApplication.getApplication().getDebugSetting()){
+                     new Thread(new Runnable() {
+                         @Override
+                         public void run() {
+                             ModbusService.setOnOff(true, 1);
+                         }
+                     }).start();
+                 }
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
@@ -301,7 +317,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     LoginActivity.JumpAct(this);
                     return;
                 }
-                openDoor(3);
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 3;
+                mSafeHandle.sendMessage(message);
                 break;
             case R.id.ll_recy_garbage:
                 openNumb = 1;
@@ -309,7 +328,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     LoginActivity.JumpAct(this);
                     return;
                 }
-                openDoor(1);
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 1;
+                mSafeHandle.sendMessage(message);
                 break;
             case R.id.ll_wet_garbage:
                 openNumb = 2;
@@ -317,7 +339,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     LoginActivity.JumpAct(this);
                     return;
                 }
-                openDoor(2);
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 2;
+                mSafeHandle.sendMessage(message);
                 break;
             case R.id.ll_logout:
                 setLogoutStatues();
@@ -328,11 +353,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     boolean[] isOpen = {false, false, false, false};
-
     private void openDoor(int numb) {
-
         L.d(TAG, "[openDoor] numb" + numb);
-
         if (test) {
             if (isOpen[numb - 1]) return;
             isOpen[numb - 1] = true;
@@ -360,6 +382,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     message.arg2 = time;
                     mSafeHandle.sendMessage(message);
                     weight = ModbusService.getWeight(numb);
+                    //提交服务器记录
                     recordOperateRequest(1, numb, weight, 1);
                 } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
                     e.printStackTrace();
@@ -374,6 +397,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 message.arg1 = numb;
                 message.arg2 = time;
                 mSafeHandle.sendMessage(message);
+                //提交服务器记录
                 recordOperateRequest(1, numb, 20, 1);
             }
 
@@ -388,20 +412,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 Thread.sleep(1000);
                                 boolean isOn = ModbusService.isOn(openDoorNumb);
-                                    if (!isOn) {
-                                        long weight = ModbusService.getWeight(openDoorNumb);
-                                        recordOperateRequest(2, openDoorNumb, weight, 0);
-                                        break;
-                                    }
+                                if (!isOn) {
+                                    long weight = ModbusService.getWeight(openDoorNumb);
+                                    recordOperateRequest(2, openDoorNumb, weight, 0);
+                                    break;
+                                }
 
                             } catch (ModbusTransportException e) {
                                 e.printStackTrace();
-                                L.e(TAG,"ModbusTransportException "+ e.getMessage());
+                                L.e(TAG, "ModbusTransportException " + e.getMessage());
                             } catch (ModbusInitException e) {
                                 e.printStackTrace();
                             } catch (ErrorResponseException e) {
                                 e.printStackTrace();
-                                L.e(TAG,"ErrorResponseException "+ e.getMessage());
+                                L.e(TAG, "ErrorResponseException " + e.getMessage());
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                                 L.d(TAG, "[ModbusService getWeight Exception] exc:" + e.getMessage());
@@ -428,6 +452,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
+    //提交记录请求
     private void recordOperateRequest(int requestId, int numb, float weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
