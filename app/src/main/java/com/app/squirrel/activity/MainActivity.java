@@ -24,6 +24,7 @@ import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
 import com.bumain.plc.ModbusService;
 import com.bumain.plc.ModbusTime;
+import com.megvii.livenesslib.LivenessActivity;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
@@ -37,10 +38,15 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import permission.PermissionListener;
+import permission.PermissionUtil;
 
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
 import static com.app.squirrel.application.SquirrelApplication.test;
+import static permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
@@ -108,7 +114,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread = new HandlerThread(getClass().getSimpleName());
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
+        requestPermiss();
+    }
 
+    private void requestPermiss() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            PermissionUtil permissionUtil = new PermissionUtil(this);
+            permissionUtil.requestPermissions(READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
+                @Override
+                public void onGranted() {
+
+                }
+
+                @Override
+                public void onDenied(List<String> deniedPermission) {
+
+                }
+
+                @Override
+                public void onDeniedForever(List<String> deniedPermission) {
+
+                }
+            });
+        }
     }
 
     @Override
@@ -292,7 +320,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.ll_dry_garbage:
                 openNumb = 4;
                 if (!UserManager.isLogin()) {
-                    LoginActivity.JumpAct(this);
+                    jumpLogin();
                     return;
                 }
                 message = Message.obtain();
@@ -302,19 +330,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 break;
             case R.id.wx_code:
-                 if(SquirrelApplication.getApplication().getDebugSetting()){
-                     new Thread(new Runnable() {
-                         @Override
-                         public void run() {
-                             ModbusService.setOnOff(true, 1);
-                         }
-                     }).start();
-                 }
+                if (SquirrelApplication.getApplication().getDebugSetting()) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ModbusService.setOnOff(true, 1);
+                        }
+                    }).start();
+                }
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
                 if (!UserManager.isLogin()) {
-                    LoginActivity.JumpAct(this);
+                    jumpLogin();
                     return;
                 }
                 message = Message.obtain();
@@ -325,7 +353,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.ll_recy_garbage:
                 openNumb = 1;
                 if (!UserManager.isLogin()) {
-                    LoginActivity.JumpAct(this);
+                    jumpLogin();
                     return;
                 }
                 message = Message.obtain();
@@ -336,7 +364,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.ll_wet_garbage:
                 openNumb = 2;
                 if (!UserManager.isLogin()) {
-                    LoginActivity.JumpAct(this);
+                    jumpLogin();
                     return;
                 }
                 message = Message.obtain();
@@ -352,7 +380,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    private void jumpLogin() {
+//        LoginActivity.JumpAct(this);
+        LivenessActivity.JumpAct(this);
+    }
+
     boolean[] isOpen = {false, false, false, false};
+
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
         if (test) {

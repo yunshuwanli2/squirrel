@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Message;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -16,7 +15,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.app.squirrel.BuildConfig;
 import com.app.squirrel.application.MApplication;
-import com.app.squirrel.application.SquirrelApplication;
 import com.app.squirrel.facedetect.entry.FaceSearchBean;
 import com.app.squirrel.facedetect.entry.FaceppBean;
 import com.app.squirrel.facedetect.entry.FacesetTokenBean;
@@ -28,11 +26,8 @@ import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

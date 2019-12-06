@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/livenessLib/livenessLib.iml" filepath="$PROJECT_DIR$/livenessLib/livenessLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/squirrel.iml" filepath="$PROJECT_DIR$/.idea/squirrel.iml" />
       <module fileurl="file://$PROJECT_DIR$/squirrel.iml" filepath="$PROJECT_DIR$/squirrel.iml" />
     </modules>
   </component>
