@@ -78,7 +78,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //开门
         if (openNumb == -1) return;
-        openDoor(openNumb);
+//        openDoor(openNumb);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Message message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = openNumb;
+                mSafeHandle.sendMessage(message);
+            }
+        });
+
 
     }
 
