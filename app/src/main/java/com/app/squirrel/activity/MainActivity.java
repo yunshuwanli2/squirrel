@@ -19,6 +19,7 @@ import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.tool.GsonUtil;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
@@ -479,7 +480,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         para.put("weight", weight);
         para.put("siteCode", 0);
         para.put("openStatus", openStatus);
-        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, para, this);
+        String str = GsonUtil.GsonString(para);
+        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
     }
 
     private void setLogoutStatues() {

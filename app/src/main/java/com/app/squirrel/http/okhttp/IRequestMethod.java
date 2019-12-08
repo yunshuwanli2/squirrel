@@ -15,7 +15,7 @@ public interface IRequestMethod<T> {
 
     void getAsyn(String url, int requestId, Map<String, Object> params, final HttpCallback<T> httpCallback);
 
-    void postJSONAsyn(String url, int requestId, Map<String, Object> params, final HttpCallback<T> httpCallback);
+    void postJSONAsyn(String url, int requestId, String jsonStr, final HttpCallback<T> httpCallback);
 
     void postAsyn(String url, int requestId, Map<String, Object> params, final HttpCallback<T> httpCallback);
 
