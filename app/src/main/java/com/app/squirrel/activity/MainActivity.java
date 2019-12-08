@@ -193,6 +193,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 if (ModbusService.isOn(i)) {
                                     ModbusService.setOnOff(false, i);
+                                    activity.isOpen[i-1] = false;
                                 }
                             } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
                                 e.printStackTrace();
@@ -200,6 +201,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                         }
+                    }else {
+                        for (int i = 1; i <= 4; i++) {
+                            activity.isOpen[i-1] = false;
+                         }
                     }
 
                     activity.mSafeHandle.removeMessages(MSG_CHECK_PLC_STATUES);
@@ -362,6 +367,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    /**
+     * 子线程调用
+     */
     boolean[] isOpen = {false, false, false, false};
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
@@ -380,6 +388,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         if (isOpen[numb - 1]) {
+            L.e(TAG,"垃圾箱已打开，请尽快投递！");
             ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
                 int time = 0;

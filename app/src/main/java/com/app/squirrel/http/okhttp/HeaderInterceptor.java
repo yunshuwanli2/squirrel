@@ -60,7 +60,6 @@ public class HeaderInterceptor implements Interceptor {
 
     private Request.Builder addHeaders3(Request.Builder builder) {
         return builder
-                .addHeader("Content-Type", "form-data; charset=utf-8")
                 .addHeader("Connection", "keep-alive")
                 .addHeader("appid", MDeviceUtil.getMAC(MApplication.getApplication()))
                 .addHeader("token", MSPUtils.getString("token", ""));
