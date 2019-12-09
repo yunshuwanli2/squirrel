@@ -8,6 +8,7 @@ import com.megvii.livenessdetection.Detector;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -104,7 +105,7 @@ public class IFile {
     }
 
     public static File byte2File(String fileName, byte[] bytes) {
-        if (bytes == null||bytes.length == 0 || TextUtils.isEmpty(fileName)) return null;
+        if (bytes == null || bytes.length == 0 || TextUtils.isEmpty(fileName)) return null;
 
         File file = new File(fileName);
         if (file.exists()) file.delete();
@@ -125,11 +126,30 @@ public class IFile {
         return file;
 
     }
+
     public static boolean fileDelete(String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
             return false;
         }
         return file.delete();
+    }
+
+
+    public static File byte2image(byte[] bytes, String path, String name) {
+        File file = new File(path, name);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bytes, 0, bytes.length);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+
     }
 }

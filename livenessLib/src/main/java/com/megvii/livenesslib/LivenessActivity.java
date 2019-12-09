@@ -2,18 +2,20 @@ package com.megvii.livenesslib;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
+import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -22,14 +24,12 @@ import android.widget.TextView;
 import com.megvii.livenessdetection.DetectionConfig;
 import com.megvii.livenessdetection.DetectionFrame;
 import com.megvii.livenessdetection.Detector;
-import com.megvii.livenessdetection.Detector.DetectionFailedType;
-import com.megvii.livenessdetection.Detector.DetectionListener;
-import com.megvii.livenessdetection.Detector.DetectionType;
 import com.megvii.livenessdetection.FaceQualityManager;
 import com.megvii.livenessdetection.FaceQualityManager.FaceQualityErrorType;
 import com.megvii.livenessdetection.bean.FaceIDDataStruct;
 import com.megvii.livenessdetection.bean.FaceInfo;
 import com.megvii.livenesslib.util.ConUtil;
+import com.megvii.livenesslib.util.Constant;
 import com.megvii.livenesslib.util.DialogUtil;
 import com.megvii.livenesslib.util.ICamera;
 import com.megvii.livenesslib.util.IDetection;
@@ -41,47 +41,32 @@ import com.megvii.livenesslib.util.SensorUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-
-import permission.PermissionListener;
-import permission.PermissionUtil;
-
-import static permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
 
 /**
  *
  */
-public class LivenessActivity extends FragmentActivity implements PermissionListener {
+public class LivenessActivity extends FragmentActivity {
 
     private static final String TAG = LivenessActivity.class.getSimpleName();
 
-    public static void JumpAct(Activity context) {
+    public static void JumpActForResult(Activity context) {
         Intent intent = new Intent(context, LivenessActivity.class);
-        context.startActivity(intent);
+        context.startActivityForResult(intent, 2);
     }
+
     private TextureView camerapreview;
     private FaceMask mFaceMask;// 画脸位置的类（调试时会用到）
     private ProgressBar mProgressBar;// 网络上传请求验证时出现的ProgressBar
-    private LinearLayout headViewLinear;// "请在光线充足的情况下进行检测"这个视图
-    private RelativeLayout rootView;// 根视图
-    private TextView timeOutText;
-    private LinearLayout timeOutLinear;
 
-    private Detector mDetector;// 实体检测器
     private Handler mainHandler;
-    private JSONObject jsonObject;
     private IMediaPlayer mIMediaPlayer;// 多媒体工具类
     private ICamera mICamera;// 照相机工具类
-    private IFile mIFile;// 文件工具类
-    private IDetection mIDetection;
     private DialogUtil mDialogUtil;
-
-    private TextView promptText;
-    private boolean isHandleStart;// 是否开始检测
     private Camera mCamera;
-    private String mSession;
-    private FaceQualityManager mFaceQualityManager;
     private SensorUtil sensorUtil;
 
     @Override
@@ -89,150 +74,78 @@ public class LivenessActivity extends FragmentActivity implements PermissionList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.liveness_layout);
         init();
-        initData();
     }
-
 
 
     private void init() {
         sensorUtil = new SensorUtil(this);
         Screen.initialize(this);
-        mSession = ConUtil.getFormatterTime(System.currentTimeMillis());
         mainHandler = new Handler();
         mIMediaPlayer = new IMediaPlayer(this);
-        mIFile = new IFile();
         mDialogUtil = new DialogUtil(this);
-        rootView = (RelativeLayout) findViewById(R.id.liveness_layout_rootRel);
-        mIDetection = new IDetection(this, rootView);
         mFaceMask = (FaceMask) findViewById(R.id.liveness_layout_facemask);
         mICamera = new ICamera();
-        promptText = (TextView) findViewById(R.id.liveness_layout_promptText);
         camerapreview = (TextureView) findViewById(R.id.liveness_layout_textureview);
         camerapreview.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                Log.d(TAG, "[onSurfaceTextureAvailable]" + surfaceTexture);
                 mHasSurface = true;
                 doPreview();
-                // 添加活体检测回调
-                mDetector.setDetectionListener(new DetectionListener() {
-                    /**
-                     * 实体验证成功
-                     */
-                    @Override
-                    public DetectionType onDetectionSuccess(DetectionFrame detectionFrame) {
-                        mIMediaPlayer.reset();
-                        mCurStep++;
-                        mFaceMask.setFaceInfo(null);
 
-//
-                        if (mCurStep >= mIDetection.mDetectionSteps.size()) {
-                            mProgressBar.setVisibility(View.VISIBLE);
-                            handleResult(R.string.verify_success);
-                        } else {
-                            changeType(mIDetection.mDetectionSteps.get(mCurStep), 10);
-                        }
-                        // 检测器返回值：如果不希望检测器检测则返回DetectionType.DONE，如果希望检测器检测动作则返回要检测的动作
-                        return mCurStep >= mIDetection.mDetectionSteps.size() ? DetectionType.DONE
-                                : mIDetection.mDetectionSteps.get(mCurStep);
-                    }
-
-                    /**
-                     * 活体检测失败
-                     */
-                    @Override
-                    public void onDetectionFailed(final DetectionFailedType detectionFailedType) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mIFile.saveLog(mSession, detectionFailedType.name());
-                            }
-                        }).start();
-                        int resourceID = R.string.liveness_detection_failed;
-                        switch (detectionFailedType) {
-                            case ACTIONBLEND:
-                                resourceID = R.string.liveness_detection_failed_action_blend;
-                                break;
-                            case NOTVIDEO:
-                                resourceID = R.string.liveness_detection_failed_not_video;
-                                break;
-                            case TIMEOUT:
-                                resourceID = R.string.liveness_detection_failed_timeout;
-                                break;
-                        }
-                        handleResult(resourceID);
-                    }
-
-                    /**
-                     * 活体验证中
-                     */
-                    @Override
-                    public void onFrameDetected(long timeout, DetectionFrame detectionFrame) {
-                        if (sensorUtil.isVertical()) {
-                            faceOcclusion(detectionFrame);
-                            handleNotPass(timeout);
-                            mFaceMask.setFaceInfo(detectionFrame);
-                        } else
-                            promptText.setText("请竖直握紧手机");
-                    }
-                });
+                final int[] count = {0};
                 mICamera.actionDetect(new PreviewCallback() {
                     @Override
                     public void onPreviewFrame(byte[] data, Camera camera) {
+                        Log.d(TAG, "[onPreviewFrame] data:" + data);
                         Size previewsize = camera.getParameters().getPreviewSize();
-                        mDetector.doDetection(data, previewsize.width, previewsize.height,
-                                360 - mICamera.getCameraAngle(LivenessActivity.this));
+
+                        count[0]++;
+                        if (count[0] == 50)
+                            LivenessActivity.this.setParmBackFinish(data);
                     }
                 });
             }
 
             @Override
             public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+                Log.d(TAG, "[onSurfaceTextureSizeChanged] surfaceTexture:" + surfaceTexture);
             }
 
             @Override
             public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                Log.d(TAG, "[onSurfaceTextureDestroyed] surfaceTexture:" + surfaceTexture);
                 mHasSurface = false;
                 return false;
             }
 
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
+                Log.d(TAG, "[onSurfaceTextureUpdated] surfaceTexture:" + surfaceTexture);
             }
         });
         mProgressBar = (ProgressBar) findViewById(R.id.liveness_layout_progressbar);
         mProgressBar.setVisibility(View.INVISIBLE);
-        headViewLinear = (LinearLayout) findViewById(R.id.liveness_layout_bottom_tips_head);
-        headViewLinear.setVisibility(View.VISIBLE);
-        timeOutLinear = (LinearLayout) findViewById(R.id.detection_step_timeoutLinear);
-        timeOutText = (TextView) findViewById(R.id.detection_step_timeout);
 
-        mIDetection.viewsInit();
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        DetectionConfig config = new DetectionConfig.Builder().build();
-        mDetector = new Detector(this, config);
-        boolean initSuccess = mDetector.init(this, ConUtil.readModel(this), "");
-//        if (!initSuccess) {
-//            mDialogUtil.showDialog("检测器初始化失败");
-//        }
+    protected void setParmBackFinish(byte[] bytes) {
+        Log.e(TAG, "setParmBackFinish");
+        File file = IFile.byte2File(Constant.dirName,bytes);
+        if (file.exists()) {
+            Intent intent = new Intent();
+            intent.putExtra("FACE_PRE_IMG", file.getAbsolutePath());
+            setResult(1, intent);
+            LivenessActivity.this.finish();
+        } else {
+            Log.e(TAG, "file not exists");
+        }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mIDetection.animationInit();
-            }
-        }).start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        isHandleStart = false;
         mCamera = mICamera.openCamera(this); // 任意可能被拒绝权限程序崩溃的代码
         if (mCamera != null) {
             CameraInfo cameraInfo = new CameraInfo();
@@ -241,202 +154,11 @@ public class LivenessActivity extends FragmentActivity implements PermissionList
             RelativeLayout.LayoutParams layout_params = mICamera.getLayoutParam();
             camerapreview.setLayoutParams(layout_params);
             mFaceMask.setLayoutParams(layout_params);
-            mFaceQualityManager = new FaceQualityManager(1 - 0.5f, 0.5f);
-            mIDetection.mCurShowIndex = -1;
         } else {
             mDialogUtil.showDialog("打开前置摄像头失败");
         }
     }
 
-    /**
-     * 开始检测
-     */
-    private void handleStart() {
-        if (isHandleStart)
-            return;
-        isHandleStart = true;
-        Animation animationIN = AnimationUtils.loadAnimation(
-                LivenessActivity.this, R.anim.liveness_rightin);
-        Animation animationOut = AnimationUtils.loadAnimation(
-                LivenessActivity.this, R.anim.liveness_leftout);
-        headViewLinear.startAnimation(animationOut);
-        mIDetection.mAnimViews[0].setVisibility(View.VISIBLE);
-        mIDetection.mAnimViews[0].startAnimation(animationIN);
-        animationOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                timeOutLinear.setVisibility(View.VISIBLE);
-            }
-        });
-        mainHandler.post(mTimeoutRunnable);
-
-        try {
-            jsonObject = new JSONObject();
-            JSONObject obj = new JSONObject();
-            jsonObject.put("imgs", obj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Runnable mTimeoutRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // 倒计时开始
-            initDetecteSession();
-            if (mIDetection.mDetectionSteps != null)
-                changeType(mIDetection.mDetectionSteps.get(0), 10);
-        }
-    };
-
-    private void initDetecteSession() {
-        if (mICamera.mCamera == null)
-            return;
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mIDetection.detectionTypeInit();
-        mCurStep = 0;
-        mDetector.reset();
-        mDetector.changeDetectionType(mIDetection.mDetectionSteps.get(0));
-    }
-
-    private void faceOcclusion(DetectionFrame detectionFrame) {
-        mFailFrame++;
-        if (detectionFrame != null) {
-            FaceInfo faceInfo = detectionFrame.getFaceInfo();
-            if (faceInfo != null) {
-                if (faceInfo.eyeLeftOcclusion > 0.5
-                        || faceInfo.eyeRightOcclusion > 0.5) {
-                    if (mFailFrame > 10) {
-                        mFailFrame = 0;
-                        promptText.setText("请勿用手遮挡眼睛");
-                    }
-                    return;
-                }
-                if (faceInfo.mouthOcclusion > 0.5) {
-                    if (mFailFrame > 10) {
-                        mFailFrame = 0;
-                        promptText.setText("请勿用手遮挡嘴巴");
-                    }
-                    return;
-                }
-            }
-        }
-        faceInfoChecker(mFaceQualityManager.feedFrame(detectionFrame));
-    }
-
-    private int mFailFrame = 0;
-
-    public void faceInfoChecker(List<FaceQualityErrorType> errorTypeList) {
-        if (errorTypeList == null || errorTypeList.size() == 0)
-            handleStart();
-        else {
-            String infoStr = "";
-            FaceQualityErrorType errorType = errorTypeList.get(0);
-            if (errorType == FaceQualityErrorType.FACE_NOT_FOUND) {
-                infoStr = "请让我看到你的正脸";
-            } else if (errorType == FaceQualityErrorType.FACE_POS_DEVIATED) {
-                infoStr = "请让我看到你的正脸";
-            } else if (errorType == FaceQualityErrorType.FACE_NONINTEGRITY) {
-                infoStr = "请让我看到你的正脸";
-            } else if (errorType == FaceQualityErrorType.FACE_TOO_DARK) {
-                infoStr = "请让光线再亮点";
-            } else if (errorType == FaceQualityErrorType.FACE_TOO_BRIGHT) {
-                infoStr = "请让光线再暗点";
-            } else if (errorType == FaceQualityErrorType.FACE_TOO_SMALL) {
-                infoStr = "请再靠近一些";
-            } else if (errorType == FaceQualityErrorType.FACE_TOO_LARGE) {
-                infoStr = "请再离远一些";
-            } else if (errorType == FaceQualityErrorType.FACE_TOO_BLURRY) {
-                infoStr = "请避免侧光和背光";
-            } else if (errorType == FaceQualityErrorType.FACE_OUT_OF_RECT) {
-                infoStr = "请保持脸在人脸框中";
-            }
-
-            // mFailFrame++;
-            if (mFailFrame > 10) {
-                mFailFrame = 0;
-                promptText.setText(infoStr);
-            }
-        }
-    }
-
-    /**
-     * 跳转Activity传递信息
-     */
-    private void handleResult(final int resID) {
-        String resultString = getResources().getString(resID);
-        LiveBean bean = null;
-        try {
-            if (resID == R.string.verify_success) {
-                bean = getBestImageAndDelta(mDetector.getFaceIDDataStruct(), jsonObject);
-            }
-            jsonObject.put("result", resultString);
-            jsonObject.put("resultcode", resID);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent();
-        intent.putExtra("result", jsonObject.toString());
-        intent.putExtra("data", bean);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    public LiveBean getBestImageAndDelta(FaceIDDataStruct idDataStruct, JSONObject jsonObject) throws JSONException {
-        if (idDataStruct == null || jsonObject == null) return null;
-        LiveBean liveBean = new LiveBean();
-        liveBean.delta = idDataStruct.delta; // 获取delta；
-        HashMap<String, byte[]> images = (HashMap<String, byte[]>) idDataStruct.images;// 获取所有图片
-        for (String key : images.keySet()) {
-            byte[] data = images.get(key);
-            if (key.equals("image_best")) {
-                liveBean.image_best = data;
-            } else if (key.equals("image_env")) {
-                liveBean.image_env = data;
-            } else if (key.equals("image_action1")) {
-                liveBean.action1 = data;
-            } else if (key.equals("image_action2")) {
-                liveBean.action2 = data;
-            } else if (key.equals("image_action3")) {
-                liveBean.action3 = data;
-            }
-        }
-        return liveBean;
-    }
-
-    private int mCurStep = 0;// 检测动作的次数
-
-    public void changeType(final Detector.DetectionType detectiontype,
-                           long timeout) {
-        mIDetection.changeType(detectiontype, timeout);
-        mFaceMask.setFaceInfo(null);
-
-        if (mCurStep == 0) {
-            mIMediaPlayer.doPlay(mIMediaPlayer.getSoundRes(detectiontype));
-        } else {
-            mIMediaPlayer.doPlay(R.raw.meglive_well_done);
-            mIMediaPlayer.setOnCompletionListener(detectiontype);
-        }
-    }
-
-    public void handleNotPass(final long remainTime) {
-        if (remainTime > 0) {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    timeOutText.setText(remainTime / 1000 + "");
-                }
-            });
-        }
-    }
 
     private boolean mHasSurface = false;
 
@@ -460,25 +182,9 @@ public class LivenessActivity extends FragmentActivity implements PermissionList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDetector != null)
-            mDetector.release();
         mDialogUtil.onDestory();
-        mIDetection.onDestroy();
         sensorUtil.release();
     }
 
-    @Override
-    public void onGranted() {
 
-    }
-
-    @Override
-    public void onDenied(List<String> deniedPermission) {
-
-    }
-
-    @Override
-    public void onDeniedForever(List<String> deniedPermission) {
-
-    }
 }

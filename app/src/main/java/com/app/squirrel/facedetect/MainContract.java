@@ -29,5 +29,6 @@ public interface MainContract {
 
     interface Presenter {
         void getDetectResultFromServer(Bitmap photo);
+        void getDetectResultFromServer(File photoStr);
     }
 }

@@ -8,8 +8,9 @@ public class Constant {
 
     public static String cacheText = "livenessDemo_text";
     public static String cacheImage = "livenessDemo_image";
+    public static String sq_cach = "yswl.jpg";
     public static String cacheCampareImage = "livenessDemo_campareimage";
-    public static String dirName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/yht-auth/";
+    public static String dirName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/ysl.jpg";
 
 
 

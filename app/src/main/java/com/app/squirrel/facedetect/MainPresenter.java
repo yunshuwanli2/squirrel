@@ -28,6 +28,7 @@ import com.app.squirrel.tool.UserManager;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,10 @@ public class MainPresenter implements MainContract.Presenter {
 
     }
 
+    @Override
+    public void getDetectResultFromServer(final File photoStr) {
+    }
+
 
     private void handleDetectResult(Bitmap photo, FaceppBean faceppBean) {
         List<FaceppBean.FacesBean> faces = faceppBean.getFaces();
@@ -92,6 +97,18 @@ public class MainPresenter implements MainContract.Presenter {
             Bitmap photoMarkedFaces = markFacesInThePhoto(photo, faces);
             mView.displayPhoto(photoMarkedFaces);
             mView.displayFaceInfo(faces);
+            FaceppBean.FacesBean.AttributesBean attributesBean = faces.get(0).getAttributes();
+            FaceppBean.FacesBean.AttributesBean.FacequalityBean facequalityBean = attributesBean.getFacequality();
+            if (facequalityBean != null && facequalityBean.getThreshold() >= 60) {
+                requestFaceSet(faces.get(0).getFace_token());
+            }
+        }
+    }
+    private void handleDetectResult( FaceppBean faceppBean) {
+        List<FaceppBean.FacesBean> faces = faceppBean.getFaces();
+        if (faces == null || faces.size() == 0) {
+            mView.displayFaceInfo(null);
+        } else {
             FaceppBean.FacesBean.AttributesBean attributesBean = faces.get(0).getAttributes();
             FaceppBean.FacesBean.AttributesBean.FacequalityBean facequalityBean = attributesBean.getFacequality();
             if (facequalityBean != null && facequalityBean.getThreshold() >= 60) {

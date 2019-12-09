@@ -70,9 +70,9 @@ public class ICamera {
 	/**
 	 * 开始检测脸
 	 */
-	public void actionDetect(Camera.PreviewCallback mActivity) {
+	public void actionDetect(Camera.PreviewCallback callback) {
 		if (mCamera != null) {
-			mCamera.setPreviewCallback(mActivity);
+			mCamera.setPreviewCallback(callback);
 		}
 	}
 

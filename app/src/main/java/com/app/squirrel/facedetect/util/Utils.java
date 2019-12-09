@@ -34,9 +34,9 @@ public class Utils {
         String path;
         File tempFile;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SQ";
+            path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SQ/";
         } else {
-            path = MApplication.getApplication().getCacheDir() + "/SQ";
+            path = MApplication.getApplication().getCacheDir() + "/SQ/";
         }
         String filePath = path + "YSWL.jpg";
         tempFile = new File(filePath);

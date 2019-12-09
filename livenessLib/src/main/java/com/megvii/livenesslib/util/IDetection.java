@@ -44,14 +44,6 @@ public class IDetection {
 		}
 	}
 
-	public void viewsInit() {
-		mAnimViews = new View[2];
-		mAnimViews[0] = (rootView.findViewById(R.id.liveness_layout_first_layout));
-		mAnimViews[1] = (rootView.findViewById(R.id.liveness_layout_second_layout));
-		for (View tmpView : mAnimViews) {
-			tmpView.setVisibility(View.INVISIBLE);
-		}
-	}
 
 	public void changeType(final Detector.DetectionType detectiontype,
 			long timeout) {

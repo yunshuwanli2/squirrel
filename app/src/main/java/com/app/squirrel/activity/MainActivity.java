@@ -1,11 +1,15 @@
 package com.app.squirrel.activity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -13,9 +17,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
+import com.app.squirrel.application.MApplication;
 import com.app.squirrel.application.SquirrelApplication;
 import com.app.squirrel.facedetect.FaceDetectActivity;
+import com.app.squirrel.facedetect.entry.FaceppBean;
+import com.app.squirrel.facedetect.util.Utils;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
@@ -222,7 +237,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 if (ModbusService.isOn(i)) {
                                     ModbusService.setOnOff(false, i);
-                                    activity.isOpen[i-1] = false;
+                                    activity.isOpen[i - 1] = false;
                                 }
                             } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
                                 e.printStackTrace();
@@ -230,10 +245,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                         }
-                    }else {
+                    } else {
                         for (int i = 1; i <= 4; i++) {
-                            activity.isOpen[i-1] = false;
-                         }
+                            activity.isOpen[i - 1] = false;
+                        }
                     }
 
                     activity.mSafeHandle.removeMessages(MSG_CHECK_PLC_STATUES);
@@ -346,14 +361,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 break;
             case R.id.wx_code:
-                 if(SquirrelApplication.getApplication().getDebugSetting()){
-                     new Thread(new Runnable() {
-                         @Override
-                         public void run() {
-                             ModbusService.setOnOff(true, 1);
-                         }
-                     }).start();
-                 }
+                if (SquirrelApplication.getApplication().getDebugSetting()) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ModbusService.setOnOff(true, 1);
+                        }
+                    }).start();
+                }
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
@@ -401,10 +416,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void jumpLogin() {
 //        LoginActivity.JumpAct(this);
-        LivenessActivity.JumpAct(this);
+        LivenessActivity.JumpActForResult(this);
     }
 
     boolean[] isOpen = {false, false, false, false};
+
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
         if (test) {
@@ -422,7 +438,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         if (isOpen[numb - 1]) {
-            L.e(TAG,"垃圾箱已打开，请尽快投递！");
+            L.e(TAG, "垃圾箱已打开，请尽快投递！");
             ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
                 int time = 0;
@@ -548,4 +564,45 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.quit();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2 && data != null) {
+            RequestQueue mQueue = Volley.newRequestQueue(MApplication.getApplication());
+            final String imgPath = data.getStringExtra("FACE_PRE_IMG");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap photo = BitmapFactory.decodeFile(imgPath, options);
+            int bitmapDegree = Utils.getBitmapDegree(imgPath);
+            if (bitmapDegree != 0) {
+                photo = Utils.rotateBitmapByDegree(photo, bitmapDegree);
+            }
+            String base64 = Utils.base64(photo);
+            String url = "https://api-cn.faceplusplus.com/facepp/v3/detect";
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    L.e(TAG, "face detect request  onResponse:" + response);
+                    FaceppBean faceppBean = FaceppBean.jsonToBean(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    L.e(TAG, "face detect request onErrorResponse:" + new String(error.networkResponse.data));
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("api_key", BuildConfig.API_KEY);
+                    map.put("api_secret", BuildConfig.API_SECRET);
+                    map.put("image_base64", base64);
+                    map.put("return_attributes", "gender,age,facequality");
+                    L.d(TAG, "getParams:" + map.toString());
+                    return map;
+                }
+            };
+            mQueue.add(stringRequest);
+        }
+    }
 }
