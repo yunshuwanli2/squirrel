@@ -81,7 +81,7 @@ public class HttpClientProxy2 implements IRequestMethod<String> {
     }
 
     @Override
-    public void postJSONAsyn(String url, int requestId, Map<String, Object> params, HttpCallback<String> httpCallback) {
+    public void postJSONAsyn(String url, int requestId, String params, HttpCallback<String> httpCallback) {
 
     }
 

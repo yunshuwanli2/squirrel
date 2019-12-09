@@ -50,10 +50,10 @@ public class OkHttpClientManager {
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-                .addInterceptor(new HeaderInterceptor())
+                .addInterceptor(new HeaderInterceptor());
 //                .addNetworkInterceptor(new NewNetWorkInterceptor())
-                .hostnameVerifier(new TrustAllSSL.TrustAllHostnameVerifier())
-                .sslSocketFactory(TrustAllSSL.getSSLSocketFactory(),new TrustAllSSL.TrustAllManager());
+//                .hostnameVerifier(new TrustAllSSL.TrustAllHostnameVerifier())
+//                .sslSocketFactory(TrustAllSSL.getSSLSocketFactory(),new TrustAllSSL.TrustAllManager());
         if (MApplication.getApplication().getDebugSetting()) {
             builder.addNetworkInterceptor(new HttpLog());
         }

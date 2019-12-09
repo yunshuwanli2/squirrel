@@ -19,6 +19,7 @@ import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
 import com.app.squirrel.http.okhttp.MSPUtils;
+import com.app.squirrel.tool.GsonUtil;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
@@ -84,7 +85,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //开门
         if (openNumb == -1) return;
-        openDoor(openNumb);
+//        openDoor(openNumb);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Message message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = openNumb;
+                mSafeHandle.sendMessage(message);
+            }
+        });
+
 
     }
 
@@ -211,6 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 if (ModbusService.isOn(i)) {
                                     ModbusService.setOnOff(false, i);
+                                    activity.isOpen[i-1] = false;
                                 }
                             } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
                                 e.printStackTrace();
@@ -218,6 +230,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                         }
+                    }else {
+                        for (int i = 1; i <= 4; i++) {
+                            activity.isOpen[i-1] = false;
+                         }
                     }
 
                     activity.mSafeHandle.removeMessages(MSG_CHECK_PLC_STATUES);
@@ -330,14 +346,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 break;
             case R.id.wx_code:
-                if (SquirrelApplication.getApplication().getDebugSetting()) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ModbusService.setOnOff(true, 1);
-                        }
-                    }).start();
-                }
+                 if(SquirrelApplication.getApplication().getDebugSetting()){
+                     new Thread(new Runnable() {
+                         @Override
+                         public void run() {
+                             ModbusService.setOnOff(true, 1);
+                         }
+                     }).start();
+                 }
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
@@ -380,13 +396,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    /**
+     * 子线程调用
+     */
     private void jumpLogin() {
 //        LoginActivity.JumpAct(this);
         LivenessActivity.JumpAct(this);
     }
 
     boolean[] isOpen = {false, false, false, false};
-
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
         if (test) {
@@ -404,6 +422,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         if (isOpen[numb - 1]) {
+            L.e(TAG,"垃圾箱已打开，请尽快投递！");
             ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
                 int time = 0;
@@ -494,7 +513,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         para.put("weight", weight);
         para.put("siteCode", 0);
         para.put("openStatus", openStatus);
-        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, para, this);
+        String str = GsonUtil.GsonString(para);
+        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
     }
 
     private void setLogoutStatues() {

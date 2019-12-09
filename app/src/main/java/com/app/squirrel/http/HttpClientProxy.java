@@ -119,22 +119,10 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
 
 
     @Override
-    public void postJSONAsyn(String url, final int requestId, Map<String, Object> paramsMap, final HttpCallback<JSONObject> httpCallback) {
+    public void postJSONAsyn(String url, final int requestId, String jsonStr, final HttpCallback<JSONObject> httpCallback) {
         try {
-            StringBuilder tempParams = new StringBuilder();
-            int pos = 0;
-            if (paramsMap != null) {
-                for (String key : paramsMap.keySet()) {
-                    if (pos > 0) {
-                        tempParams.append("&");
-                    }
-                    Object obj = paramsMap.get(key);
-                    String value = (obj instanceof String) ? (String) obj : String.valueOf(obj);
-                    tempParams.append(String.format("%s=%s", key, URLEncoder.encode(value, "utf-8")));
-                    pos++;
-                }
-            }
-            String params = tempParams.toString();
+
+            String params = jsonStr;
             L.e(TAG, "http request params :" + params);
             RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, params);
             String requestUrl;
@@ -157,7 +145,7 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
                     analysisResponse(requestId, response, httpCallback);
                 }
             });
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
