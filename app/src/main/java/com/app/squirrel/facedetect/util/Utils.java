@@ -5,12 +5,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Base64;
 
 import com.app.squirrel.application.MApplication;
+import com.app.squirrel.tool.L;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -130,6 +135,22 @@ public class Utils {
             bm.recycle();
         }
         return returnBm;
+    }
+
+    public static Bitmap byte2Bitmap(byte[] bytes, int width, int height) {
+        Bitmap bmp = null;
+        try {
+            YuvImage image = new YuvImage(bytes, ImageFormat.NV21, width, height, null);
+            if (image != null) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                image.compressToJpeg(new Rect(0, 0, width, height), 80, stream);
+                bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+                stream.close();
+            }
+        } catch (Exception ex) {
+            L.e("Sys", "Error:" + ex.getMessage());
+        }
+        return bmp;
     }
 
 }

@@ -15,7 +15,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <application >
 
-        <activity android:name=".LivenessActivity" />
+        <activity android:name=".LivenessFragment" />
     </application>
 
 </manifest>

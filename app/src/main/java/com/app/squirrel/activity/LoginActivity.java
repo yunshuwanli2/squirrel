@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.app.squirrel.R;
 import com.app.squirrel.application.MApplication;
 import com.app.squirrel.facedetect.FaceDetectFragment;
+import com.app.squirrel.facedetect.FaceDetectFragment2;
 import com.app.squirrel.fragment.BaseFragment;
 import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login3Fragment;
@@ -206,7 +207,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     Login1Fragment login1Fragment;
     Login3Fragment login2Fragment;
-    FaceDetectFragment faceDetectFragment;
+    FaceDetectFragment2 faceDetectFragment;
 
     private void switchScanCodeLogin() {
         if (login1Fragment == null) {
@@ -232,7 +233,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void switchFaceDetect() {
         if (faceDetectFragment == null) {
-            faceDetectFragment = new FaceDetectFragment();
+            faceDetectFragment = new FaceDetectFragment2();
         }
         if (currentFragment == faceDetectFragment) return;
         setFacePressedBg();

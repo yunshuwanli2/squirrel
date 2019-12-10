@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
@@ -39,7 +40,9 @@ public class ICamera {
 			mCamera = Camera.open(cameraId);
 			CameraInfo cameraInfo = new CameraInfo();
 			Camera.getCameraInfo(cameraId, cameraInfo);
+
 			Camera.Parameters params = mCamera.getParameters();
+			params.setPictureFormat(PixelFormat.JPEG);
 			Camera.Size bestPreviewSize = calBestPreviewSize(
 					mCamera.getParameters(), 640, 480);
 			cameraWidth = bestPreviewSize.width;

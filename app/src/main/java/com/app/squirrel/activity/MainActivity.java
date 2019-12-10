@@ -10,7 +10,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,19 +27,17 @@ import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
 import com.app.squirrel.application.MApplication;
 import com.app.squirrel.application.SquirrelApplication;
-import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.app.squirrel.facedetect.entry.FaceppBean;
 import com.app.squirrel.facedetect.util.Utils;
 import com.app.squirrel.http.CallBack.HttpCallback;
 import com.app.squirrel.http.HttpClientProxy;
-import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.tool.GsonUtil;
 import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
 import com.bumain.plc.ModbusService;
 import com.bumain.plc.ModbusTime;
-import com.megvii.livenesslib.LivenessActivity;
+import com.megvii.livenesslib.LivenessFragment;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
@@ -415,8 +412,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 子线程调用
      */
     private void jumpLogin() {
-//        LoginActivity.JumpAct(this);
-        LivenessActivity.JumpActForResult(this);
+        LoginActivity.JumpAct(this);
+//        LivenessFragment.JumpActForResult(this);
     }
 
     boolean[] isOpen = {false, false, false, false};
