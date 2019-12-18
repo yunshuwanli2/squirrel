@@ -6,8 +6,8 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 10
-        versionName "3.7"
+        versionCode 12
+        versionName "3.8.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -44,6 +44,7 @@ android {
     buildTypes {
         release {
             buildConfigField "String", "API_KEY", '"62xXRy3S6tVNNUoFLXQlze-hQXTa-RPN"'
+            buildConfigField "boolean", "IS_TEST", 'false'
             buildConfigField "String", "API_SECRET", '"SSm555ZZm2CyZfb8g63yOanlCH1h5INl"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -51,6 +52,7 @@ android {
             zipAlignEnabled false
         }
         debug {
+            buildConfigField "boolean", "IS_TEST", 'true'
             buildConfigField "String", "API_KEY", '"62xXRy3S6tVNNUoFLXQlze-hQXTa-RPN"'
             buildConfigField "String", "API_SECRET", '"SSm555ZZm2CyZfb8g63yOanlCH1h5INl"'
             debuggable true

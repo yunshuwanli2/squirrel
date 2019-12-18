@@ -1,5 +1,6 @@
 package com.app.squirrel.application;
 
+import com.app.squirrel.BuildConfig;
 import com.app.squirrel.http.okhttp.MSPUtils;
 import com.app.squirrel.http.okhttp.OkHttpClientManager;
 
@@ -13,7 +14,7 @@ import cn.jpush.android.api.JPushInterface;
 public class SquirrelApplication extends MApplication {
     private static final String TAG ="SquirrelApplication" ;
 
-  public static boolean test = true;
+  public static boolean test = BuildConfig.IS_TEST;
     @Override
     public boolean getDebugSetting() {
         return true;

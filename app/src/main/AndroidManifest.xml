@@ -24,14 +24,14 @@
         android:networkSecurityConfig="@xml/network_config"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.MainActivity" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.LoginActivity" android:launchMode="singleTop"/>
 
 
         <!-- Since JCore2.0.0 Required SDK核心功能 -->

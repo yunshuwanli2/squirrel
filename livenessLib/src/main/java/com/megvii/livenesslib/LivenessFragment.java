@@ -39,11 +39,6 @@ public class LivenessFragment extends Fragment {
 
     private static final String TAG = LivenessFragment.class.getSimpleName();
 
-    public static void JumpActForResult(Activity context) {
-        Intent intent = new Intent(context, LivenessFragment.class);
-        context.startActivityForResult(intent, 2);
-    }
-
     private TextureView camerapreview;
     private FaceMask mFaceMask;// 画脸位置的类（调试时会用到）
     private ProgressBar mProgressBar;// 网络上传请求验证时出现的ProgressBar
@@ -101,8 +96,7 @@ public class LivenessFragment extends Fragment {
                         Size previewsize = camera.getParameters().getPreviewSize();
 
                         count[0]++;
-                        if (count[0] == 50)
-                            LivenessFragment.this.setParmBackFinish(data);
+                        if (count[0] == 50){}
                     }
                 });
             }
@@ -129,19 +123,6 @@ public class LivenessFragment extends Fragment {
 
     }
 
-    protected void setParmBackFinish(byte[] bytes) {
-        Log.e(TAG, "setParmBackFinish");
-        File file = IFile.byte2File(Constant.dirName, bytes);
-        if (file.exists()) {
-            Intent intent = new Intent();
-            intent.putExtra("FACE_PRE_IMG", file.getAbsolutePath());
-            activity.setResult(1, intent);
-            activity.finish();
-        } else {
-            Log.e(TAG, "file not exists");
-        }
-
-    }
 
     @Override
     public void onResume() {

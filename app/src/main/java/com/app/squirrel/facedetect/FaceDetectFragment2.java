@@ -108,6 +108,7 @@ public class FaceDetectFragment2 extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "[onViewCreated] ");
         init(view);
         mQueue = Volley.newRequestQueue(MApplication.getApplication());
         mHandlerThread = new HandlerThread("FaceUpdateThread");
@@ -219,7 +220,8 @@ public class FaceDetectFragment2 extends BaseFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                L.e(TAG, "face detect request onErrorResponse:" + new String(error.networkResponse.data));
+                if(error!=null && error.networkResponse!=null)
+                    L.e(TAG, "face detect request onErrorResponse:" + new String(error.networkResponse.data));
             }
         }) {
             @Override
@@ -330,6 +332,7 @@ public class FaceDetectFragment2 extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "[onResume] ");
         mCamera = mICamera.openCamera(activity); // 任意可能被拒绝权限程序崩溃的代码
         if (mCamera != null) {
             CameraInfo cameraInfo = new CameraInfo();
@@ -353,6 +356,7 @@ public class FaceDetectFragment2 extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "[onPause] ");
         mICamera.closeCamera();
         mCamera = null;
         mIMediaPlayer.close();
@@ -361,6 +365,7 @@ public class FaceDetectFragment2 extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "[onDestroy] ");
         sensorUtil.release();
     }
 

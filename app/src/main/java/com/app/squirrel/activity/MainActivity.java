@@ -16,14 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
 import com.app.squirrel.application.MApplication;
 import com.app.squirrel.application.SquirrelApplication;
@@ -65,6 +57,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String TAG = "MainActivity";
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
+    private static final long PLC_STATUES_TIME_DELAY = 3 * 60 * 1000;
+    private static final long WARN_TIME_DELAY = 5 * 1000;//五秒
+    private static final long PRC_STATUS_TIME_DELAY = 5 * 1000;//五秒
+    private static final long UPDATE_TIME_TIME_DELAY = 1000;//更新时间1秒
+    private static final long USER_AUTO_LOGOUT_TIME = 2 * 60 * 1000;//更新时间1秒
     private int openNumb = -1;
     public HandlerThread mHandleThread;
     public SafeHandler mSafeHandle;
@@ -116,7 +113,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
+        requestPermiss();
         findViewById(R.id.ll_dry_garbage).setOnClickListener(this);
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
@@ -137,7 +134,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread = new HandlerThread(getClass().getSimpleName());
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
-        requestPermiss();
+
     }
 
     private void requestPermiss() {
@@ -166,18 +163,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onResume() {
         super.onResume();
         L.d(TAG, "[onResume]");
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_CHECK_PLC_STATUES, 60 * 1000);
-        L.d(TAG, "[sendEmptyMessage MSG_CHECK_PLC_STATUES]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
         L.d(TAG, "[sendEmptyMessage MSG_UPDATE_TIME]");
+        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN,WARN_TIME_DELAY);
+        L.d(TAG, "[sendEmptyMessage MSG_IS_WARN]");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSafeHandle.removeMessages(SafeHandler.MSG_CHECK_PLC_STATUES);
         mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
+        mSafeHandle.removeMessages(SafeHandler.MSG_IS_WARN);
     }
 
     @Override
@@ -194,9 +191,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OPEN_DOOR = 0x6;
-        public static final int MSG_UPDATE_COUNTDOWN_TIME = 0x3;
-        public static final int MSG_CHECK_PLC_STATUES = 0x1;
+        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
+        public static final int MSG_CHECK_PRC_STATUS = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
+        public static final int MSG_IS_WARN = 0x7;//烟雾报警
         private WeakReference<MainActivity> mWeakReference;
 
         private SafeHandler(MainActivity service, Looper looper) {
@@ -213,48 +211,60 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     int doorNumb = msg.arg1;
                     activity.openDoor(doorNumb);
                     break;
+                case MSG_CHECK_PRC_STATUS:
+                    int doorNumb2 = msg.arg1;
+                    try {
+                        if(ModbusService.isOn(doorNumb2)){
+                            sendMessageDelayed(msg,PRC_STATUS_TIME_DELAY);
+                        }else {
+                            removeMessages(MSG_CHECK_PRC_STATUS);
+                            long weight = ModbusService.getWeight(doorNumb2);
+                            activity.recordOperateRequest(2,doorNumb2,weight,0);
+                            if(ModbusService.isFull(doorNumb2)){
+                                activity.requestRecoFullStatus(doorNumb2,true);
+                                ToastUtil.showToast("垃圾箱满啦！");
+                            }
+                        }
+                    } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    break;
+                case MSG_IS_WARN:
+
+                    if(!test){
+                        for(int i = 1;i<=4;i++){
+                            try {
+                                boolean isWarn = ModbusService.isWarn(i);
+                                if(isWarn){
+                                    activity.requestWarn(i);
+                                }
+                            } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
+                                e.printStackTrace();
+                            } {
+
+                            }
+                        }
+                    }
+
+                    sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN,WARN_TIME_DELAY);
+                    break;
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Date date = new Date(System.currentTimeMillis());
                             activity.tv_date.setText(TIME_FORMAT.format(date));
-                            activity.mSafeHandle.removeMessages(MSG_UPDATE_TIME);
-                            activity.mSafeHandle.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 1000);
+                            removeMessages(MSG_UPDATE_TIME);
+                            sendEmptyMessageDelayed(MSG_UPDATE_TIME, UPDATE_TIME_TIME_DELAY);
                         }
                     });
                     break;
-                case MSG_CHECK_PLC_STATUES:
-                    L.d(TAG, "[MSG_CHECK_PLC_STATUES]");
-                    //每隔一分钟检查 投放门的状态
-                    if (!test) {
-                        for (int i = 1; i <= 4; i++) {
-//                            ModbusService.getWeight(i);
-//                            ModbusService.isFull(i);
-                            try {
-                                if (ModbusService.isOn(i)) {
-                                    ModbusService.setOnOff(false, i);
-                                    activity.isOpen[i - 1] = false;
-                                }
-                            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-                                e.printStackTrace();
-                                ToastUtil.showToast(e.getMessage());
-                            }
-
-                        }
-                    } else {
-                        for (int i = 1; i <= 4; i++) {
-                            activity.isOpen[i - 1] = false;
-                        }
-                    }
-
-                    activity.mSafeHandle.removeMessages(MSG_CHECK_PLC_STATUES);
-                    activity.mSafeHandle.sendEmptyMessageDelayed(MSG_CHECK_PLC_STATUES, 60 * 1000);
-                    L.d(TAG, "sendEmptyMessageDelayed :[MSG_CHECK_PLC_STATUES]");
-                    break;
+//
                 case MSG_OVERTIME_USER_LOGOUT:
                     L.d(TAG, "[MSG_OVERTIME_USER_LOGOUT] begin");
-                    new CountDownTimer(2 * 60 * 1000, 1000) {
+                    new CountDownTimer(USER_AUTO_LOGOUT_TIME, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
 
@@ -272,7 +282,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }.start();
 
                     break;
-                case MSG_UPDATE_COUNTDOWN_TIME:
+                case MSG_AUTO_CLOSE_DOOR:
                     Message message = msg;
                     int time = message.arg2;
                     final int numb = message.arg1;
@@ -328,6 +338,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                         activity.tv_dry_hint.setVisibility(View.INVISIBLE);
                                     }
 
+                                    if (!test) {
+                                            try {
+                                                if (ModbusService.isOn(numb)) {
+                                                    ModbusService.setOnOff(false, numb);
+                                                    activity.isOpen[numb- 1] = false;
+                                                }
+                                            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+                                                e.printStackTrace();
+                                                ToastUtil.showToast(e.getMessage());
+                                            }
+                                    } else {
+                                            activity.isOpen[numb - 1] = false;
+                                    }
                                 }
                             });
                         }
@@ -413,11 +436,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void jumpLogin() {
         LoginActivity.JumpAct(this);
-//        LivenessFragment.JumpActForResult(this);
+
     }
 
-    boolean[] isOpen = {false, false, false, false};
-
+    private boolean[] isOpen = {false, false, false, false};
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
         if (test) {
@@ -425,7 +447,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             isOpen[numb - 1] = true;
         } else {
             try {
-                if (ModbusService.isOn(numb)) return;
+                if (ModbusService.isOn(numb)){
+                    ToastUtil.showToast("请不要重复开门");
+                    return;
+                }
+                if(ModbusService.isFull(numb)){
+                    ToastUtil.showToast(numb+"号门已经满了,请联系管理员");
+                    requestRecoFullStatus(numb,true);
+                    return;
+                }
                 isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
             } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
                 e.printStackTrace();
@@ -438,28 +468,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             L.e(TAG, "垃圾箱已打开，请尽快投递！");
             ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
             if (!test) {
-                int time = 0;
+
+                int time = 10;//10秒后自动关门
                 long weight = 0;
+
+                //倒计时假关门操作
+                Message message = Message.obtain();
+                message.what = SafeHandler.MSG_AUTO_CLOSE_DOOR;
+                message.arg1 = numb;
+                message.arg2 = time;
+                mSafeHandle.sendMessage(message);
                 try {
-                    time = getTime(ModbusService.getTime(numb));
-                    Message message = Message.obtain();
-                    message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
-                    message.arg1 = numb;
-                    message.arg2 = time;
-                    mSafeHandle.sendMessage(message);
                     weight = ModbusService.getWeight(numb);
-                    //提交服务器记录
+                    ToastUtil.showToast(numb+ "号门，重量："+weight+",已被打开");
                     recordOperateRequest(1, numb, weight, 1);
                 } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
                     e.printStackTrace();
                     ToastUtil.showToast(e.getMessage());
                 }
 
-
+                //prc 五秒一次读取关门状态
+                Message message2 = Message.obtain();
+                message2.what = SafeHandler.MSG_CHECK_PRC_STATUS;
+                message2.arg1 = numb;
+                mSafeHandle.sendMessageDelayed(message2,PRC_STATUS_TIME_DELAY);
             } else {
-                int time = 38;
+                int time = 10;
                 Message message = Message.obtain();
-                message.what = SafeHandler.MSG_UPDATE_COUNTDOWN_TIME;
+                message.what = SafeHandler.MSG_AUTO_CLOSE_DOOR;
                 message.arg1 = numb;
                 message.arg2 = time;
                 mSafeHandle.sendMessage(message);
@@ -468,43 +504,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
 
 
-            final int openDoorNumb = numb;
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    for (; ; ) {
-                        if (!test) {
-                            try {
-                                Thread.sleep(1000);
-                                boolean isOn = ModbusService.isOn(openDoorNumb);
-                                if (!isOn) {
-                                    long weight = ModbusService.getWeight(openDoorNumb);
-                                    recordOperateRequest(2, openDoorNumb, weight, 0);
-                                    break;
-                                }
-
-                            } catch (ModbusTransportException e) {
-                                e.printStackTrace();
-                                L.e(TAG, "ModbusTransportException " + e.getMessage());
-                            } catch (ModbusInitException e) {
-                                e.printStackTrace();
-                            } catch (ErrorResponseException e) {
-                                e.printStackTrace();
-                                L.e(TAG, "ErrorResponseException " + e.getMessage());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                                L.d(TAG, "[ModbusService getWeight Exception] exc:" + e.getMessage());
-                            }
-
-                        } else {
-                            recordOperateRequest(2, openDoorNumb, 24, 0);
-                            break;
-                        }
-
-                    }
-                }
-            }.start();
 
         }
 
@@ -524,10 +523,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
         para.put("weight", weight);
-        para.put("siteCode", 0);
+        para.put("siteCode", "A0001");
         para.put("openStatus", openStatus);
         String str = GsonUtil.GsonString(para);
+        ToastUtil.showToast("请求参数为："+str);
         HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
+    }
+
+    //TODO 请求报警
+    private void requestWarn(int doorNumb){
+
+
+    }
+
+    private void requestRecoFullStatus(int doorNumb,boolean isFull){
+        String url = "wxApi/binfs";
+        Map<String, Object> para = new HashMap<>();
+        para.put("number", doorNumb);
+        para.put("isFull", isFull);
+        para.put("siteCode", "A0001");
+        HttpClientProxy.getInstance().getAsyn(url, 3, para, this);
     }
 
     private void setLogoutStatues() {
@@ -561,45 +576,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.quit();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2 && data != null) {
-            RequestQueue mQueue = Volley.newRequestQueue(MApplication.getApplication());
-            final String imgPath = data.getStringExtra("FACE_PRE_IMG");
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
-            Bitmap photo = BitmapFactory.decodeFile(imgPath, options);
-            int bitmapDegree = Utils.getBitmapDegree(imgPath);
-            if (bitmapDegree != 0) {
-                photo = Utils.rotateBitmapByDegree(photo, bitmapDegree);
-            }
-            String base64 = Utils.base64(photo);
-            String url = "https://api-cn.faceplusplus.com/facepp/v3/detect";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    L.e(TAG, "face detect request  onResponse:" + response);
-                    FaceppBean faceppBean = FaceppBean.jsonToBean(response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    L.e(TAG, "face detect request onErrorResponse:" + new String(error.networkResponse.data));
-                }
-            }) {
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put("api_key", BuildConfig.API_KEY);
-                    map.put("api_secret", BuildConfig.API_SECRET);
-                    map.put("image_base64", base64);
-                    map.put("return_attributes", "gender,age,facequality");
-                    L.d(TAG, "getParams:" + map.toString());
-                    return map;
-                }
-            };
-            mQueue.add(stringRequest);
-        }
-    }
+
 }
