@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">lib_arcsoft</string>
+
+
+    <string name="specific_engine_init_failed">%s init failed, code is:%d</string>
+
+    <string name="recognize_failed_notice">DENIED:%s</string>
+    <string name="recognize_success_notice">PASS:%s</string>
+
+    <string name="low_confidence_level">face low confidence level</string>
+</resources>

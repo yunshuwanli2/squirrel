@@ -1,15 +1,11 @@
 package com.app.squirrel.activity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,19 +13,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
-import com.app.squirrel.application.MApplication;
 import com.app.squirrel.application.SquirrelApplication;
-import com.app.squirrel.facedetect.entry.FaceppBean;
-import com.app.squirrel.facedetect.util.Utils;
-import com.app.squirrel.http.CallBack.HttpCallback;
-import com.app.squirrel.http.HttpClientProxy;
-import com.app.squirrel.tool.GsonUtil;
-import com.app.squirrel.tool.L;
-import com.app.squirrel.tool.ToastUtil;
 import com.app.squirrel.tool.UserManager;
 import com.bumain.plc.ModbusService;
 import com.bumain.plc.ModbusTime;
-import com.megvii.livenesslib.LivenessFragment;
+import com.priv.arcsoft.ArcSoftFaceActivity;
+import com.priv.yswl.base.BaseActivity;
+import com.priv.yswl.base.network.CallBack.HttpCallback;
+import com.priv.yswl.base.network.HttpClientProxy;
+import com.priv.yswl.base.permission.PermissionListener;
+import com.priv.yswl.base.permission.PermissionUtil;
+import com.priv.yswl.base.tool.GsonUtil;
+import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.ToastUtil;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
@@ -46,12 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import permission.PermissionListener;
-import permission.PermissionUtil;
-
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
 import static com.app.squirrel.application.SquirrelApplication.test;
-import static permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
+import static com.priv.yswl.base.permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
@@ -118,7 +111,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
         findViewById(R.id.ll_wet_garbage).setOnClickListener(this);
-        findViewById(R.id.wx_code).setOnClickListener(this);
         tv_dry_hint = findViewById(R.id.tv_dry_hint);
         tv_harm_hint = findViewById(R.id.tv_harmful_hint);
         tv_recy_hint = findViewById(R.id.tv_recy_hint);
@@ -380,16 +372,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mSafeHandle.sendMessage(message);
 
                 break;
-            case R.id.wx_code:
-                if (SquirrelApplication.getApplication().getDebugSetting()) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ModbusService.setOnOff(true, 1);
-                        }
-                    }).start();
-                }
-                break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
                 if (!UserManager.isLogin()) {
@@ -435,8 +417,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 子线程调用
      */
     private void jumpLogin() {
-        LoginActivity.JumpAct(this);
+//        LoginActivity.JumpAct(this);
 
+        ArcSoftFaceActivity.JumpAct(this);
     }
 
     private boolean[] isOpen = {false, false, false, false};

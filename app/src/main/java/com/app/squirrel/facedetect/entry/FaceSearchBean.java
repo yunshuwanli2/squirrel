@@ -1,12 +1,10 @@
 package com.app.squirrel.facedetect.entry;
 
-import com.app.squirrel.tool.DateJsonDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
+import com.priv.yswl.base.tool.DateJsonDeserializer;
 
 import java.lang.reflect.Type;
 import java.util.Date;

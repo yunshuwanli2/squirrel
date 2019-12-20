@@ -22,9 +22,9 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':lib_base')
+    implementation files('libs/volley-release.aar')
     implementation files('libs/livenessdetection-proguard-2.4.1.jar')
     implementation files('libs/licensemanager-v1.1.jar')
-
-//    api 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.android.support:support-v4:28.0.0'
 }

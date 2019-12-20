@@ -24,7 +24,7 @@ public class LivenessActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content, new LivenessFragment()).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, new FaceDetectFragment2()).commitAllowingStateLoss();
     }
 
 

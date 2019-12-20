@@ -1,8 +1,6 @@
 package com.megvii.livenesslib;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -22,18 +20,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.megvii.livenesslib.util.Constant;
 import com.megvii.livenesslib.util.DialogUtil;
 import com.megvii.livenesslib.util.ICamera;
-import com.megvii.livenesslib.util.IFile;
 import com.megvii.livenesslib.util.IMediaPlayer;
 import com.megvii.livenesslib.util.Screen;
 import com.megvii.livenesslib.util.SensorUtil;
 
-import java.io.File;
-
 /**
- *
+ * face++ 中sdk提取的代码
+ * 付费服务
  */
 public class LivenessFragment extends Fragment {
 

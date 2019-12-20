@@ -14,11 +14,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.app.squirrel.R;
-import com.app.squirrel.http.CallBack.HttpCallback;
-import com.app.squirrel.http.HttpClientProxy;
-import com.app.squirrel.http.okhttp.MSPUtils;
-import com.app.squirrel.tool.L;
-import com.app.squirrel.tool.ToastUtil;
+import com.priv.yswl.base.BaseFragment;
+import com.priv.yswl.base.network.CallBack.HttpCallback;
+import com.priv.yswl.base.network.HttpClientProxy;
+import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.MSPUtils;
+import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;

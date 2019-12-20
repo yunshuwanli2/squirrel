@@ -12,13 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
-import com.app.squirrel.application.MApplication;
-import com.app.squirrel.facedetect.FaceDetectFragment;
-import com.app.squirrel.facedetect.FaceDetectFragment2;
-import com.app.squirrel.fragment.BaseFragment;
 import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login3Fragment;
-import com.app.squirrel.tool.L;
+import com.priv.arcsoft.FaceDetectFragment3;
+import com.priv.yswl.base.BaseActivity;
+import com.priv.yswl.base.BaseFragment;
+import com.priv.yswl.base.MApplication;
+import com.priv.yswl.base.tool.L;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -207,7 +207,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     Login1Fragment login1Fragment;
     Login3Fragment login2Fragment;
-    FaceDetectFragment2 faceDetectFragment;
+
 
     private void switchScanCodeLogin() {
         if (login1Fragment == null) {
@@ -231,9 +231,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         switchFragment(login2Fragment);
     }
 
+//    FaceDetectFragment2 faceDetectFragment;
+//    private void switchFaceDetect() {
+//        if (faceDetectFragment == null) {
+//            faceDetectFragment = new FaceDetectFragment2();
+//        }
+//        if (currentFragment == faceDetectFragment) return;
+//        setFacePressedBg();
+//        setNumbNormarBg();
+//        setScanCodeNormarBg();
+//
+//        switchFragment(faceDetectFragment);
+//    }
+    FaceDetectFragment3 faceDetectFragment;
     private void switchFaceDetect() {
         if (faceDetectFragment == null) {
-            faceDetectFragment = new FaceDetectFragment2();
+            faceDetectFragment = new FaceDetectFragment3();
         }
         if (currentFragment == faceDetectFragment) return;
         setFacePressedBg();
@@ -242,7 +255,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         switchFragment(faceDetectFragment);
     }
-
 
     private void switchFragment(BaseFragment targetFragment) {
         FragmentTransaction transaction = getSupportFragmentManager()

@@ -1,1 +1,1 @@
-include ':app', ':livenessLib'
+include ':app', ':lib_base',':lib_arcsoft'

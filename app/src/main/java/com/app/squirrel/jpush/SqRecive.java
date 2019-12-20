@@ -2,15 +2,13 @@ package com.app.squirrel.jpush;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Message;
-import android.provider.Settings;
 import android.text.TextUtils;
 
-import com.app.squirrel.http.okhttp.MDeviceUtil;
-import com.app.squirrel.http.okhttp.MSPUtils;
-import com.app.squirrel.tool.L;
 import com.app.squirrel.tool.UserManager;
+import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.MDeviceUtil;
+import com.priv.yswl.base.tool.MSPUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;

@@ -1,12 +1,17 @@
 package com.app.squirrel.facedetect;
 
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,12 +23,13 @@ import android.widget.ImageView;
 
 import com.app.squirrel.R;
 import com.app.squirrel.facedetect.entry.FaceppBean;
-import com.app.squirrel.facedetect.util.Utils;
-import com.app.squirrel.fragment.BaseFragment;
-import com.app.squirrel.tool.ToastUtil;
 import com.bumptech.glide.Glide;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
+import com.priv.yswl.base.BaseFragment;
+import com.priv.yswl.base.MApplication;
+import com.priv.yswl.base.tool.ImgUtil;
+import com.priv.yswl.base.tool.ToastUtil;
 
 import java.io.File;
 import java.util.List;
@@ -59,7 +65,7 @@ public class FaceDetectFragment extends BaseFragment implements MainContract.Vie
     File mTmpFile;
     Uri imageUri;
     Bitmap photo = null;
-    MainPresenter mPresenter;
+    //    MainPresenter mPresenter;
     FaceppBean.FacesBean face;
 
     @Override
@@ -75,7 +81,7 @@ public class FaceDetectFragment extends BaseFragment implements MainContract.Vie
                 takePhoto();
             }
         });
-        mPresenter = new MainPresenter(this);
+//        mPresenter = new MainPresenter(this);
     }
 
     @Override
@@ -101,12 +107,12 @@ public class FaceDetectFragment extends BaseFragment implements MainContract.Vie
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 2;
                     photo = BitmapFactory.decodeFile(mTmpFile.getAbsolutePath(), options);
-                    int bitmapDegree = Utils.getBitmapDegree(mTmpFile.getAbsolutePath());
+                    int bitmapDegree = ImgUtil.getBitmapDegree(mTmpFile.getAbsolutePath());
                     if (bitmapDegree != 0) {
-                        photo = Utils.rotateBitmapByDegree(this.photo, bitmapDegree);
+                        photo = ImgUtil.rotateBitmapByDegree(this.photo, bitmapDegree);
                     }
                     displayPhoto(this.photo);
-                    mPresenter.getDetectResultFromServer(this.photo);
+//                    mPresenter.getDetectResultFromServer(this.photo);
                     break;
                 default:
                     break;
@@ -114,17 +120,44 @@ public class FaceDetectFragment extends BaseFragment implements MainContract.Vie
         }
     }
 
+    public static boolean checkAndRequestPermission(Context context, int requestCode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || context.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ((Activity) context).requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, requestCode);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void takePhoto() {
-        if (!Utils.checkAndRequestPermission(getActivity(), PERMISSIONS_REQUEST_CODE)) {
+        if (!checkAndRequestPermission(getActivity(), PERMISSIONS_REQUEST_CODE)) {
             return;
         }
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        mTmpFile = new File(Utils.getCachePicturePath());
+        mTmpFile = new File(getCachePicturePath());
         String authority = getActivity().getPackageName() + ".provider";
         imageUri = FileProvider.getUriForFile(getActivity(), authority, mTmpFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, CAMERA_REQUEST_CODE);
+    }
+
+    public static String getCachePicturePath() {
+        String path;
+        File tempFile;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SQ/";
+        } else {
+            path = MApplication.getApplication().getCacheDir() + "/SQ/";
+        }
+        String filePath = path + "YSWL.jpg";
+        tempFile = new File(filePath);
+        tempFile.getParentFile().mkdirs();
+        return filePath;
+
     }
 
     @Override
