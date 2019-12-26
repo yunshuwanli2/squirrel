@@ -2,6 +2,8 @@ package com.priv.yswl.base.tool;
 
 import com.priv.yswl.base.MApplication;
 
+import java.io.File;
+
 /**
  * Created by kangpAdministrator on 2017/6/7 0007.
  * Emial kangpeng@yunhetong.net
@@ -13,6 +15,7 @@ public class L {
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
+
     /**
      * 打包注意
      * SessionAjaxCallback  agent svn version
@@ -21,22 +24,24 @@ public class L {
      * SVNCODE
      */
     public static final boolean DEGUG = MApplication.getApplication().getDebugSetting();
+    public static String Globle_TAG = MApplication.getApplication().getPackageName() + ": ";
 
     public static void d(String tag, String msg) {
-        if (DEGUG) android.util.Log.d(tag, msg);
+        if (DEGUG) android.util.Log.d(Globle_TAG + tag, msg);
     }
+
     public static void v(String tag, String msg) {
-        if (DEGUG) android.util.Log.v(tag, msg);
+        if (DEGUG) android.util.Log.v(Globle_TAG + tag, msg);
     }
+
     public static void e(String tag, String msg) {
         if (DEGUG) {
-            android.util.Log.e(tag, msg);
+            android.util.Log.e(Globle_TAG + tag, msg);
         }
     }
 
-
     public static void i(String tag, String msg) {
-        if (DEGUG) android.util.Log.i(tag, msg);
+        if (DEGUG) android.util.Log.i(Globle_TAG + tag, msg);
     }
 
 

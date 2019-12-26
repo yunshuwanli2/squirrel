@@ -2,7 +2,9 @@ package com.app.squirrel.application;
 
 import com.app.squirrel.BuildConfig;
 import com.priv.yswl.base.MApplication;
+import com.priv.yswl.base.log.LogCollector;
 import com.priv.yswl.base.network.okhttp.OkHttpClientManager;
+import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MSPUtils;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
@@ -13,9 +15,10 @@ import cn.jpush.android.api.JPushInterface;
  */
 
 public class SquirrelApplication extends MApplication {
-    private static final String TAG ="SquirrelApplication" ;
+    private static final String TAG = "SquirrelApplication";
 
-  public static boolean test = BuildConfig.IS_TEST;
+    public static boolean test = BuildConfig.IS_TEST;
+
     @Override
     public boolean getDebugSetting() {
         return true;
@@ -26,7 +29,11 @@ public class SquirrelApplication extends MApplication {
         super.onCreate();
         init();
         OkHttpClientManager.init();
-        CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
+        if (BuildConfig.DEBUG && BuildConfig.IS_TEST) {
+            CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
+            LogCollector.getInstance(this).setTag(getPackageName()).start();
+        }
+
     }
 
     private void init() {

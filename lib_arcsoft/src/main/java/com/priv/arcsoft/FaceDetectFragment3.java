@@ -511,7 +511,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
 
             @Override
             public void onCameraError(Exception e) {
-                Log.d(TAG, "[onCameraError]: " + e.getMessage());
+                L.d(TAG, "[onCameraError]: " + e.getMessage());
             }
 
             @Override
@@ -519,7 +519,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
                 if (drawHelper != null) {
                     drawHelper.setCameraDisplayOrientation(displayOrientation);
                 }
-                Log.d(TAG, "[onCameraConfigurationChanged]: " + cameraID + "  " + displayOrientation);
+                L.d(TAG, "[onCameraConfigurationChanged]: " + cameraID + "  " + displayOrientation);
             }
         };
 
@@ -672,7 +672,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
                             return;
                         }
 
-//                        Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
+//                         L.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
                             boolean isAdded = false;
                             if (compareResultList == null) {

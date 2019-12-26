@@ -43,6 +43,7 @@ android {
     }
     buildTypes {
         release {
+            debuggable
             buildConfigField "String", "API_KEY", '"62xXRy3S6tVNNUoFLXQlze-hQXTa-RPN"'
             buildConfigField "boolean", "IS_TEST", 'false'
             buildConfigField "String", "API_SECRET", '"SSm555ZZm2CyZfb8g63yOanlCH1h5INl"'
