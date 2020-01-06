@@ -44,6 +44,7 @@ import com.priv.arcsoft.util.face.LivenessType;
 import com.priv.arcsoft.util.face.RecognizeColor;
 import com.priv.arcsoft.util.face.RequestFeatureStatus;
 import com.priv.arcsoft.util.face.RequestLivenessStatus;
+import com.priv.arcsoft.util.soUtil;
 import com.priv.arcsoft.widget.FaceRectView;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.permission.PermissionListener;
@@ -75,16 +76,6 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
     private static final int WAIT_LIVENESS_INTERVAL = 100;
     private static final long FAIL_RETRY_INTERVAL = 1000;
     private static final int MAX_RETRY_TIME = 3;
-
-
-    // Demo 所需的动态库文件
-    private static final String[] LIBRARIES = new String[]{
-            // 人脸相关
-            "libarcsoft_face_engine.so",
-            "libarcsoft_face.so",
-            // 图像库相关
-            "libarcsoft_image_util.so",
-    };
 
 
     private CameraHelper cameraHelper;
@@ -130,55 +121,33 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
 
     private Switch switchLivenessDetect;
 
-    private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
-
     private static final float SIMILAR_THRESHOLD = 0.8F;
-
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkSoFile(LIBRARIES);
+        soUtil.checkSoFile(getActivity(),soUtil.LIBRARIES);
 
         RuntimeABI runtimeABI = FaceEngine.getRuntimeABI();
         L.d(TAG, "subscribe: getRuntimeABI() " + runtimeABI);
+
         int activeCode = FaceEngine.activeOnline(getActivity(), Constants.APP_ID, Constants.SDK_KEY);
         if (activeCode == ErrorInfo.MOK || activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-            L.e(TAG, "激活成功");
+            L.d(TAG, "激活成功");
         } else {
             //
-            L.e(TAG, "激活失败");
+            ToastUtil.showToast("引擎激活失败");
+            L.e(TAG, "引擎激活失败");
         }
-        //以下不清楚用途
+        //获取虹软sdk的一些基本信息
         ActiveFileInfo activeFileInfo = new ActiveFileInfo();
         int res = FaceEngine.getActiveFileInfo(getActivity(), activeFileInfo);
         if (res == ErrorInfo.MOK) {
             L.d(TAG, activeFileInfo.toString());
         }
     }
-    /**
-     * 检查能否找到动态链接库，如果找不到，请修改工程配置
-     *
-     * @param libraries 需要的动态链接库
-     * @return 动态库是否存在
-     */
-    private boolean checkSoFile(String[] libraries) {
-        File dir = new File(getActivity().getApplicationInfo().nativeLibraryDir);
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) {
-            return false;
-        }
-        List<String> libraryNameList = new ArrayList<>();
-        for (File file : files) {
-            libraryNameList.add(file.getName());
-        }
-        boolean exists = true;
-        for (String library : libraries) {
-            exists &= libraryNameList.contains(library);
-        }
-        return exists;
-    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -209,9 +178,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
         previewView = view.findViewById(R.id.single_camera_texture_preview);
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-
         faceRectView = view.findViewById(R.id.single_camera_face_rect_view);
-
         switchLivenessDetect = view.findViewById(R.id.single_camera_switch_liveness_detect);
         switchLivenessDetect.setChecked(livenessDetect);
         switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -323,7 +290,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
         final FaceListener faceListener = new FaceListener() {
             @Override
             public void onFail(Exception e) {
-                Log.e(TAG, "[onFail]: " + e.getMessage());
+                L.e(TAG, "[onFail]: " + e.getMessage());
             }
 
             //请求FR的回调
@@ -331,26 +298,28 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 //FR成功
                 if (faceFeature != null) {
-                    Log.e(TAG, "[onFaceFeatureInfoGet]: FaceFeature not null" + faceFeature);
+                    L.e(TAG, "[onFaceFeatureInfoGet]: FaceFeature not null" + faceFeature);
 //                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId);
                     Integer liveness = livenessMap.get(requestId);
                     //不做活体检测的情况，直接搜索
                     if (!livenessDetect) {
                         searchFace(faceFeature, requestId);
-                        Log.e(TAG, "[onFaceFeatureInfoGet] not liveness searchFace: " + faceFeature + " reID:" + requestId);
+                        L.e(TAG, "[onFaceFeatureInfoGet] not liveness searchFace: " + faceFeature + " reID:" + requestId);
                     }
+
                     //活体检测通过，搜索特征
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         searchFace(faceFeature, requestId);
-                        Log.e(TAG, "[onFaceFeatureInfoGet] have liveness searchFace: " + faceFeature + " reID:" + requestId);
+                        L.e(TAG, "[onFaceFeatureInfoGet] have liveness searchFace: " + faceFeature + " reID:" + requestId);
                     }
                     //活体检测未出结果，或者非活体，延迟执行该函数
                     else {
-                        Log.e(TAG, "[onFaceFeatureInfoGet] not result: " + faceFeature);
+                        L.e(TAG, "[onFaceFeatureInfoGet] not result: " + faceFeature);
                         if (requestFeatureStatusMap.containsKey(requestId)) {
                             Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
                                     .subscribe(new Observer<Long>() {
                                         Disposable disposable;
+
                                         @Override
                                         public void onSubscribe(Disposable d) {
                                             disposable = d;
@@ -378,7 +347,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
                 }
                 //特征提取失败
                 else {
-                    Log.e(TAG, "[onFaceFeatureInfoGet]: FaceFeature is null");
+                    L.e(TAG, "[onFaceFeatureInfoGet]: FaceFeature is null");
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
 
@@ -403,7 +372,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
             public void onFaceLivenessInfoGet(@Nullable LivenessInfo livenessInfo, final Integer requestId, Integer errorCode) {
 
                 if (livenessInfo != null) {
-                    Log.e(TAG, "[onFaceLivenessInfoGet]: " + livenessInfo.toString());
+                    L.e(TAG, "[onFaceLivenessInfoGet]: " + livenessInfo.toString());
                     int liveness = livenessInfo.getLiveness();
                     livenessMap.put(requestId, liveness);
                     // 非活体，重试
@@ -422,7 +391,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
                         } else {
                             msg = "ProcessCode:" + errorCode;
                         }
-                        Log.e(TAG, "[onFaceLivenessInfoGet]: " + msg);
+                        L.e(TAG, "[onFaceLivenessInfoGet]: " + msg);
                         faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         retryLivenessDetectDelayed(requestId);
                     } else {
@@ -442,10 +411,9 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
                 previewSize = camera.getParameters().getPreviewSize();
                 drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
                         , cameraId, isMirror, false, false);
-                Log.d(TAG, "onCameraOpened: " + drawHelper.toString());
+                L.d(TAG, "onCameraOpened: " + drawHelper.toString());
                 // 切换相机的时候可能会导致预览尺寸发生变化
-                if (faceHelper == null ||
-                        lastPreviewSize == null ||
+                if (faceHelper == null ||lastPreviewSize == null ||
                         lastPreviewSize.width != previewSize.width || lastPreviewSize.height != previewSize.height) {
                     Integer trackedFaceCount = null;
                     // 记录切换时的人脸序号
@@ -470,7 +438,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
 
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
-                Log.d(TAG, "[onPreview]");
+                L.d(TAG, "[onPreview]");
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
@@ -506,7 +474,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
 
             @Override
             public void onCameraClosed() {
-                Log.d(TAG, "[onCameraClosed]: ");
+                L.d(TAG, "[onCameraClosed]: ");
             }
 
             @Override
