@@ -13,10 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
-import com.app.squirrel.application.SquirrelApplication;
 import com.app.squirrel.tool.UserManager;
-import com.bumain.plc.ModbusService;
-import com.bumain.plc.ModbusTime;
+import com.bumain.rs232.HandlerService;
+import com.bumain.rs232.Rs232Handler;
+import com.bumain.rs232.Rs232OutService;
 import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
@@ -26,9 +26,6 @@ import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
-import com.serotonin.modbus4j.exception.ErrorResponseException;
-import com.serotonin.modbus4j.exception.ModbusInitException;
-import com.serotonin.modbus4j.exception.ModbusTransportException;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -127,6 +124,104 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
+        Rs232Handler.innit(new HandlerService() {
+            /**
+             *
+             * @param weight        重量，有小数点，单位kg
+             * @param temperature    温度
+             * @param smokeWarn        烟雾报警，01有报警，00表示正常
+             * @param fireWarn        灭火器状态，01有报警，00表示正常
+             * @param timeSet        时间状态，01有报警，00表示正常
+             * @param times            多个时间段，使用;分隔
+             */
+            @Override
+            public void receiveBordInfo(String weight, int temperature, String smokeWarn,
+                                        String fireWarn, String timeSet, String times) {
+
+            }
+
+            /**
+             * 成功设置 垃圾桶至0，即清空,返回结果到后台
+             */
+            @Override
+            public void reset() {
+
+            }
+
+            /**
+             * 成功设置 垃圾桶零点校准，返回结果到后台
+             */
+            @Override
+            public void reset0() {
+
+            }
+
+            /**
+             * 成功设置 垃圾桶负载校准，返回结果到后台。
+             */
+            @Override
+            public void setHeight() {
+
+            }
+
+            /**
+             * 成功设置时间返回标志
+             */
+            @Override
+            public void setTime() {
+
+            }
+
+            /**
+             *
+             * 获取重量
+             */
+            @Override
+            public void getHeight(String s) {
+
+            }
+
+            /**
+             * 火灾报警
+             */
+            @Override
+            public void fireWarn() {
+
+            }
+
+            /**
+             * 烟雾报警
+             */
+            @Override
+            public void smokeWarn() {
+
+            }
+
+            /**
+             * 满载报警
+             */
+            @Override
+            public void fullWarn() {
+
+            }
+
+            /**
+             * 灭火器溶剂不足报警
+             */
+            @Override
+            public void fireToolsEmptyWarn() {
+
+            }
+
+            /**
+             * 电机故障报警
+             */
+            @Override
+            public void machineWarn() {
+
+            }
+        });
+
     }
 
     private void requestPermiss() {
@@ -157,7 +252,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         L.d(TAG, "[onResume]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
         L.d(TAG, "[sendEmptyMessage MSG_UPDATE_TIME]");
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN,WARN_TIME_DELAY);
+        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN, WARN_TIME_DELAY);
         L.d(TAG, "[sendEmptyMessage MSG_IS_WARN]");
     }
 
@@ -206,14 +301,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case MSG_CHECK_PRC_STATUS:
                     int doorNumb2 = msg.arg1;
                     try {
-                        if(ModbusService.isOn(doorNumb2)){
-                            sendMessageDelayed(msg,PRC_STATUS_TIME_DELAY);
-                        }else {
+                        if (Rs232OutService.isOn(doorNumb2)) {
+                            sendMessageDelayed(msg, PRC_STATUS_TIME_DELAY);
+                        } else {
                             removeMessages(MSG_CHECK_PRC_STATUS);
-                            long weight = ModbusService.getWeight(doorNumb2);
-                            activity.recordOperateRequest(2,doorNumb2,weight,0);
-                            if(ModbusService.isFull(doorNumb2)){
-                                activity.requestRecoFullStatus(doorNumb2,true);
+                            long weight = Rs232OutService.getWeight(doorNumb2);
+                            activity.recordOperateRequest(2, doorNumb2, weight, 0);
+                            if (Rs232OutService.isFull(doorNumb2)) {
+                                activity.requestRecoFullStatus(doorNumb2, true);
                                 ToastUtil.showToast("垃圾箱满啦！");
                             }
                         }
@@ -225,22 +320,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     break;
                 case MSG_IS_WARN:
 
-                    if(!test){
-                        for(int i = 1;i<=4;i++){
+                    if (!test) {
+                        for (int i = 1; i <= 4; i++) {
                             try {
                                 boolean isWarn = ModbusService.isWarn(i);
-                                if(isWarn){
+                                if (isWarn) {
                                     activity.requestWarn(i);
                                 }
                             } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
                                 e.printStackTrace();
-                            } {
+                            }
+                            {
 
                             }
                         }
                     }
 
-                    sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN,WARN_TIME_DELAY);
+                    sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN, WARN_TIME_DELAY);
                     break;
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
@@ -331,17 +427,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     }
 
                                     if (!test) {
-                                            try {
-                                                if (ModbusService.isOn(numb)) {
-                                                    ModbusService.setOnOff(false, numb);
-                                                    activity.isOpen[numb- 1] = false;
-                                                }
-                                            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-                                                e.printStackTrace();
-                                                ToastUtil.showToast(e.getMessage());
+                                        try {
+                                            if (ModbusService.isOn(numb)) {
+                                                ModbusService.setOnOff(false, numb);
+                                                activity.isOpen[numb - 1] = false;
                                             }
+                                        } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+                                            e.printStackTrace();
+                                            ToastUtil.showToast(e.getMessage());
+                                        }
                                     } else {
-                                            activity.isOpen[numb - 1] = false;
+                                        activity.isOpen[numb - 1] = false;
                                     }
                                 }
                             });
@@ -423,6 +519,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private boolean[] isOpen = {false, false, false, false};
+
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
         if (test) {
@@ -430,13 +527,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             isOpen[numb - 1] = true;
         } else {
             try {
-                if (ModbusService.isOn(numb)){
+                if (ModbusService.isOn(numb)) {
                     ToastUtil.showToast("请不要重复开门");
                     return;
                 }
-                if(ModbusService.isFull(numb)){
-                    ToastUtil.showToast(numb+"号门已经满了,请联系管理员");
-                    requestRecoFullStatus(numb,true);
+                if (ModbusService.isFull(numb)) {
+                    ToastUtil.showToast(numb + "号门已经满了,请联系管理员");
+                    requestRecoFullStatus(numb, true);
                     return;
                 }
                 isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
@@ -463,7 +560,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mSafeHandle.sendMessage(message);
                 try {
                     weight = ModbusService.getWeight(numb);
-                    ToastUtil.showToast(numb+ "号门，重量："+weight+",已被打开");
+                    ToastUtil.showToast(numb + "号门，重量：" + weight + ",已被打开");
                     recordOperateRequest(1, numb, weight, 1);
                 } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
                     e.printStackTrace();
@@ -474,7 +571,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Message message2 = Message.obtain();
                 message2.what = SafeHandler.MSG_CHECK_PRC_STATUS;
                 message2.arg1 = numb;
-                mSafeHandle.sendMessageDelayed(message2,PRC_STATUS_TIME_DELAY);
+                mSafeHandle.sendMessageDelayed(message2, PRC_STATUS_TIME_DELAY);
             } else {
                 int time = 10;
                 Message message = Message.obtain();
@@ -485,7 +582,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //提交服务器记录
                 recordOperateRequest(1, numb, 20, 1);
             }
-
 
 
         }
@@ -509,17 +605,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         para.put("siteCode", "A0001");
         para.put("openStatus", openStatus);
         String str = GsonUtil.GsonString(para);
-        ToastUtil.showToast("请求参数为："+str);
+        ToastUtil.showToast("请求参数为：" + str);
         HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
     }
 
     //TODO 请求报警
-    private void requestWarn(int doorNumb){
+    private void requestWarn(int doorNumb) {
 
 
     }
 
-    private void requestRecoFullStatus(int doorNumb,boolean isFull){
+    private void requestRecoFullStatus(int doorNumb, boolean isFull) {
         String url = "wxApi/binfs";
         Map<String, Object> para = new HashMap<>();
         para.put("number", doorNumb);
