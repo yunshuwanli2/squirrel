@@ -98,6 +98,105 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
+    class RsHandlerService implements HandlerService {
+        /**
+         * @param weight      重量，有小数点，单位kg
+         * @param temperature 温度
+         * @param smokeWarn   烟雾报警，01有报警，00表示正常
+         * @param fireWarn    灭火器状态，01有报警，00表示正常
+         * @param timeSet     时间状态，01有报警，00表示正常
+         * @param times       多个时间段，使用;分隔
+         */
+        @Override
+        public void receiveBordInfo(String weight, int temperature, String smokeWarn,
+                                    String fireWarn, String timeSet, String times) {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶至0，即清空,返回结果到后台
+         */
+        @Override
+        public void reset() {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶零点校准，返回结果到后台
+         */
+        @Override
+        public void reset0() {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶负载校准，返回结果到后台。
+         */
+        @Override
+        public void resetWeight() {
+
+        }
+
+
+        /**
+         * 成功设置时间返回标志
+         */
+        @Override
+        public void setTime() {
+
+        }
+
+        /**
+         * 获取重量
+         */
+        @Override
+        public void receiveWeight(String s, String s1) {
+            long weight = 0;
+            ToastUtil.showToast(numb + "号门，重量：" + weight + ",已被打开");
+            recordOperateRequest(1, numb, weight, 1);
+
+        }
+
+        /**
+         * 火灾报警
+         */
+        @Override
+        public void fireWarn() {
+
+        }
+
+        /**
+         * 烟雾报警
+         */
+        @Override
+        public void smokeWarn() {
+
+        }
+
+        /**
+         * 满载报警
+         */
+        @Override
+        public void fullWarn() {
+
+        }
+
+        /**
+         * 灭火器溶剂不足报警
+         */
+        @Override
+        public void fireToolsEmptyWarn() {
+
+        }
+
+        /**
+         * 电机故障报警
+         */
+        @Override
+        public void machineWarn() {
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,103 +223,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-        Rs232Handler.innit(new HandlerService() {
-            /**
-             *
-             * @param weight        重量，有小数点，单位kg
-             * @param temperature    温度
-             * @param smokeWarn        烟雾报警，01有报警，00表示正常
-             * @param fireWarn        灭火器状态，01有报警，00表示正常
-             * @param timeSet        时间状态，01有报警，00表示正常
-             * @param times            多个时间段，使用;分隔
-             */
-            @Override
-            public void receiveBordInfo(String weight, int temperature, String smokeWarn,
-                                        String fireWarn, String timeSet, String times) {
-
-            }
-
-            /**
-             * 成功设置 垃圾桶至0，即清空,返回结果到后台
-             */
-            @Override
-            public void reset() {
-
-            }
-
-            /**
-             * 成功设置 垃圾桶零点校准，返回结果到后台
-             */
-            @Override
-            public void reset0() {
-
-            }
-
-            /**
-             * 成功设置 垃圾桶负载校准，返回结果到后台。
-             */
-            @Override
-            public void setHeight() {
-
-            }
-
-            /**
-             * 成功设置时间返回标志
-             */
-            @Override
-            public void setTime() {
-
-            }
-
-            /**
-             *
-             * 获取重量
-             */
-            @Override
-            public void getHeight(String s) {
-
-            }
-
-            /**
-             * 火灾报警
-             */
-            @Override
-            public void fireWarn() {
-
-            }
-
-            /**
-             * 烟雾报警
-             */
-            @Override
-            public void smokeWarn() {
-
-            }
-
-            /**
-             * 满载报警
-             */
-            @Override
-            public void fullWarn() {
-
-            }
-
-            /**
-             * 灭火器溶剂不足报警
-             */
-            @Override
-            public void fireToolsEmptyWarn() {
-
-            }
-
-            /**
-             * 电机故障报警
-             */
-            @Override
-            public void machineWarn() {
-
-            }
-        });
+        Rs232Handler.innit(new RsHandlerService());
 
     }
 
@@ -526,21 +529,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (isOpen[numb - 1]) return;
             isOpen[numb - 1] = true;
         } else {
-            try {
-                if (ModbusService.isOn(numb)) {
-                    ToastUtil.showToast("请不要重复开门");
-                    return;
-                }
-                if (ModbusService.isFull(numb)) {
-                    ToastUtil.showToast(numb + "号门已经满了,请联系管理员");
-                    requestRecoFullStatus(numb, true);
-                    return;
-                }
-                isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
-            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-                e.printStackTrace();
-                ToastUtil.showToast(e.getMessage());
-            }
+//            try {
+//                if (ModbusService.isOn(numb)) {
+//                    ToastUtil.showToast("请不要重复开门");
+//                    return;
+//                }
+//                if (ModbusService.isFull(numb)) {
+//                    ToastUtil.showToast(numb + "号门已经满了,请联系管理员");
+//                    requestRecoFullStatus(numb, true);
+//                    return;
+//                }
+//                isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
+//            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+//                e.printStackTrace();
+//                ToastUtil.showToast(e.getMessage());
+//            }
+
+            Rs232OutService.openDoor(numb);
 
         }
 
@@ -550,7 +555,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (!test) {
 
                 int time = 10;//10秒后自动关门
-                long weight = 0;
+
 
                 //倒计时假关门操作
                 Message message = Message.obtain();
@@ -558,14 +563,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 message.arg1 = numb;
                 message.arg2 = time;
                 mSafeHandle.sendMessage(message);
-                try {
-                    weight = ModbusService.getWeight(numb);
-                    ToastUtil.showToast(numb + "号门，重量：" + weight + ",已被打开");
-                    recordOperateRequest(1, numb, weight, 1);
-                } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
-                    e.printStackTrace();
-                    ToastUtil.showToast(e.getMessage());
-                }
+                Rs232OutService.getHeight(numb);
 
                 //prc 五秒一次读取关门状态
                 Message message2 = Message.obtain();
