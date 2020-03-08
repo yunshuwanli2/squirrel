@@ -98,103 +98,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    class RsHandlerService implements HandlerService {
-        /**
-         * @param weight      重量，有小数点，单位kg
-         * @param temperature 温度
-         * @param smokeWarn   烟雾报警，01有报警，00表示正常
-         * @param fireWarn    灭火器状态，01有报警，00表示正常
-         * @param timeSet     时间状态，01有报警，00表示正常
-         * @param times       多个时间段，使用;分隔
-         */
-        @Override
-        public void receiveBordInfo(String weight, int temperature, String smokeWarn,
-                                    String fireWarn, String timeSet, String times) {
+    private void requestPermiss() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            PermissionUtil permissionUtil = new PermissionUtil(this);
+            permissionUtil.requestPermissions(READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
+                @Override
+                public void onGranted() {
 
-        }
+                }
 
-        /**
-         * 成功设置 垃圾桶至0，即清空,返回结果到后台
-         */
-        @Override
-        public void reset() {
+                @Override
+                public void onDenied(List<String> deniedPermission) {
 
-        }
+                }
 
-        /**
-         * 成功设置 垃圾桶零点校准，返回结果到后台
-         */
-        @Override
-        public void reset0() {
+                @Override
+                public void onDeniedForever(List<String> deniedPermission) {
 
-        }
-
-        /**
-         * 成功设置 垃圾桶负载校准，返回结果到后台。
-         */
-        @Override
-        public void resetWeight() {
-
-        }
-
-
-        /**
-         * 成功设置时间返回标志
-         */
-        @Override
-        public void setTime() {
-
-        }
-
-        /**
-         * 获取重量
-         */
-        @Override
-        public void receiveWeight(String s, String s1) {
-            long weight = 0;
-            ToastUtil.showToast(numb + "号门，重量：" + weight + ",已被打开");
-            recordOperateRequest(1, numb, weight, 1);
-
-        }
-
-        /**
-         * 火灾报警
-         */
-        @Override
-        public void fireWarn() {
-
-        }
-
-        /**
-         * 烟雾报警
-         */
-        @Override
-        public void smokeWarn() {
-
-        }
-
-        /**
-         * 满载报警
-         */
-        @Override
-        public void fullWarn() {
-
-        }
-
-        /**
-         * 灭火器溶剂不足报警
-         */
-        @Override
-        public void fireToolsEmptyWarn() {
-
-        }
-
-        /**
-         * 电机故障报警
-         */
-        @Override
-        public void machineWarn() {
-
+                }
+            });
         }
     }
 
@@ -227,36 +149,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    private void requestPermiss() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            PermissionUtil permissionUtil = new PermissionUtil(this);
-            permissionUtil.requestPermissions(READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
-                @Override
-                public void onGranted() {
-
-                }
-
-                @Override
-                public void onDenied(List<String> deniedPermission) {
-
-                }
-
-                @Override
-                public void onDeniedForever(List<String> deniedPermission) {
-
-                }
-            });
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         L.d(TAG, "[onResume]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
         L.d(TAG, "[sendEmptyMessage MSG_UPDATE_TIME]");
-        mSafeHandle.sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN, WARN_TIME_DELAY);
-        L.d(TAG, "[sendEmptyMessage MSG_IS_WARN]");
     }
 
     @Override
@@ -264,7 +162,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onPause();
         mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
-        mSafeHandle.removeMessages(SafeHandler.MSG_IS_WARN);
     }
 
     @Override
@@ -281,10 +178,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OPEN_DOOR = 0x6;
-        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
-        public static final int MSG_CHECK_PRC_STATUS = 0x1;
+//        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
+//        public static final int MSG_CHECK_PRC_STATUS = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
-        public static final int MSG_IS_WARN = 0x7;//烟雾报警
         private WeakReference<MainActivity> mWeakReference;
 
         private SafeHandler(MainActivity service, Looper looper) {
@@ -301,46 +197,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     int doorNumb = msg.arg1;
                     activity.openDoor(doorNumb);
                     break;
-                case MSG_CHECK_PRC_STATUS:
-                    int doorNumb2 = msg.arg1;
-                    try {
-                        if (Rs232OutService.isOn(doorNumb2)) {
-                            sendMessageDelayed(msg, PRC_STATUS_TIME_DELAY);
-                        } else {
-                            removeMessages(MSG_CHECK_PRC_STATUS);
-                            long weight = Rs232OutService.getWeight(doorNumb2);
-                            activity.recordOperateRequest(2, doorNumb2, weight, 0);
-                            if (Rs232OutService.isFull(doorNumb2)) {
-                                activity.requestRecoFullStatus(doorNumb2, true);
-                                ToastUtil.showToast("垃圾箱满啦！");
-                            }
-                        }
-                    } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    break;
-                case MSG_IS_WARN:
-
-                    if (!test) {
-                        for (int i = 1; i <= 4; i++) {
-                            try {
-                                boolean isWarn = ModbusService.isWarn(i);
-                                if (isWarn) {
-                                    activity.requestWarn(i);
-                                }
-                            } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
-                                e.printStackTrace();
-                            }
-                            {
-
-                            }
-                        }
-                    }
-
-                    sendEmptyMessageDelayed(SafeHandler.MSG_IS_WARN, WARN_TIME_DELAY);
-                    break;
+//                case MSG_CHECK_PRC_STATUS:
+//                    int doorNumb2 = msg.arg1;
+//                    try {
+//                        if (Rs232OutService.isOn(doorNumb2)) {
+//                            sendMessageDelayed(msg, PRC_STATUS_TIME_DELAY);
+//                        } else {
+//                            removeMessages(MSG_CHECK_PRC_STATUS);
+//                            long weight = Rs232OutService.getWeight(doorNumb2);
+//                            activity.recordOperateRequest(2, doorNumb2, weight, 0);
+//                            if (Rs232OutService.isFull(doorNumb2)) {
+//                                activity.requestRecoFullStatus(doorNumb2, true);
+//                                ToastUtil.showToast("垃圾箱满啦！");
+//                            }
+//                        }
+//                    } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//
+//                    break;
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -373,82 +249,83 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }.start();
 
                     break;
-                case MSG_AUTO_CLOSE_DOOR:
-                    Message message = msg;
-                    int time = message.arg2;
-                    final int numb = message.arg1;
-                    CountDownTimer timer = new CountDownTimer(time * 1000, 1000) {
-                        public void onTick(final long millisUntilFinished) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (numb == 1) {
-                                        activity.tv_recy_hint.setVisibility(View.VISIBLE);
-                                        activity.iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
-                                        activity.tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-                                    }
-                                    if (numb == 2) {
-                                        activity.iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
-                                        activity.tv_wet_hint.setVisibility(View.VISIBLE);
-                                        activity.tv_wet_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-                                    }
-                                    if (numb == 3) {
-                                        activity.iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
-                                        activity.tv_harm_hint.setVisibility(View.VISIBLE);
-                                        activity.tv_harm_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-                                    }
-                                    if (numb == 4) {
-                                        activity.iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
-                                        activity.tv_dry_hint.setVisibility(View.VISIBLE);
-                                        activity.tv_dry_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-                                    }
-                                }
-                            });
-
-                        }
-
-                        public void onFinish() {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    if (numb == 1) {
-                                        activity.tv_recy_hint.setVisibility(View.INVISIBLE);
-                                        activity.iv_recy_img.setBackground(null);
-                                    }
-                                    if (numb == 2) {
-                                        activity.tv_wet_hint.setVisibility(View.INVISIBLE);
-                                        activity.iv_wet_img.setBackground(null);
-                                    }
-                                    if (numb == 3) {
-                                        activity.tv_harm_hint.setVisibility(View.INVISIBLE);
-                                        activity.iv_harm_img.setBackground(null);
-                                    }
-                                    if (numb == 4) {
-                                        activity.iv_dry_img.setBackground(null);
-                                        activity.tv_dry_hint.setVisibility(View.INVISIBLE);
-                                    }
-
-                                    if (!test) {
-                                        try {
-                                            if (ModbusService.isOn(numb)) {
-                                                ModbusService.setOnOff(false, numb);
-                                                activity.isOpen[numb - 1] = false;
-                                            }
-                                        } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-                                            e.printStackTrace();
-                                            ToastUtil.showToast(e.getMessage());
-                                        }
-                                    } else {
-                                        activity.isOpen[numb - 1] = false;
-                                    }
-                                }
-                            });
-                        }
-                    };
-                    timer.start();
-                    L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
-                    break;
+//                case MSG_AUTO_CLOSE_DOOR:
+//                    Message message = msg;
+//                    int time = message.arg2;
+//                    final int numb = message.arg1;
+//                    CountDownTimer timer = new CountDownTimer(time * 1000, 1000) {
+//                        public void onTick(final long millisUntilFinished) {
+//                            activity.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (numb == 1) {
+//                                        activity.tv_recy_hint.setVisibility(View.VISIBLE);
+//                                        activity.iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
+//                                        activity.tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+//                                    }
+//                                    if (numb == 2) {
+//                                        activity.iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
+//                                        activity.tv_wet_hint.setVisibility(View.VISIBLE);
+//                                        activity.tv_wet_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+//                                    }
+//                                    if (numb == 3) {
+//                                        activity.iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
+//                                        activity.tv_harm_hint.setVisibility(View.VISIBLE);
+//                                        activity.tv_harm_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+//                                    }
+//                                    if (numb == 4) {
+//                                        activity.iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
+//                                        activity.tv_dry_hint.setVisibility(View.VISIBLE);
+//                                        activity.tv_dry_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+//                                    }
+//                                }
+//                            });
+//
+//                        }
+//
+//                        public void onFinish() {
+//                            activity.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//
+//                                    if (numb == 1) {
+//                                        activity.tv_recy_hint.setVisibility(View.INVISIBLE);
+//                                        activity.iv_recy_img.setBackground(null);
+//                                    }
+//                                    if (numb == 2) {
+//                                        activity.tv_wet_hint.setVisibility(View.INVISIBLE);
+//                                        activity.iv_wet_img.setBackground(null);
+//                                    }
+//                                    if (numb == 3) {
+//                                        activity.tv_harm_hint.setVisibility(View.INVISIBLE);
+//                                        activity.iv_harm_img.setBackground(null);
+//                                    }
+//                                    if (numb == 4) {
+//                                        activity.iv_dry_img.setBackground(null);
+//                                        activity.tv_dry_hint.setVisibility(View.INVISIBLE);
+//                                    }
+//
+//                                    if (test) {
+//                                        activity.isOpen[numb - 1] = false;
+//
+//                                    } else {
+//                                        try {
+//                                            if (ModbusService.isOn(numb)) {
+//                                                ModbusService.setOnOff(false, numb);
+//                                                activity.isOpen[numb - 1] = false;
+//                                            }
+//                                        } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
+//                                            e.printStackTrace();
+//                                            ToastUtil.showToast(e.getMessage());
+//                                        }
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    };
+//                    timer.start();
+//                    L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
+//                    break;
             }
 
         }
@@ -529,73 +406,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (isOpen[numb - 1]) return;
             isOpen[numb - 1] = true;
         } else {
-//            try {
-//                if (ModbusService.isOn(numb)) {
-//                    ToastUtil.showToast("请不要重复开门");
-//                    return;
-//                }
-//                if (ModbusService.isFull(numb)) {
-//                    ToastUtil.showToast(numb + "号门已经满了,请联系管理员");
-//                    requestRecoFullStatus(numb, true);
-//                    return;
-//                }
-//                isOpen[numb - 1] = ModbusService.setOnOff(true, numb);
-//            } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-//                e.printStackTrace();
-//                ToastUtil.showToast(e.getMessage());
-//            }
-
             Rs232OutService.openDoor(numb);
 
         }
 
-        if (isOpen[numb - 1]) {
-            L.e(TAG, "垃圾箱已打开，请尽快投递！");
-            ToastUtil.showToast("垃圾箱已打开，请尽快投递！");
-            if (!test) {
-
-                int time = 10;//10秒后自动关门
-
-
-                //倒计时假关门操作
-                Message message = Message.obtain();
-                message.what = SafeHandler.MSG_AUTO_CLOSE_DOOR;
-                message.arg1 = numb;
-                message.arg2 = time;
-                mSafeHandle.sendMessage(message);
-                Rs232OutService.getHeight(numb);
-
-                //prc 五秒一次读取关门状态
-                Message message2 = Message.obtain();
-                message2.what = SafeHandler.MSG_CHECK_PRC_STATUS;
-                message2.arg1 = numb;
-                mSafeHandle.sendMessageDelayed(message2, PRC_STATUS_TIME_DELAY);
-            } else {
-                int time = 10;
-                Message message = Message.obtain();
-                message.what = SafeHandler.MSG_AUTO_CLOSE_DOOR;
-                message.arg1 = numb;
-                message.arg2 = time;
-                mSafeHandle.sendMessage(message);
-                //提交服务器记录
-                recordOperateRequest(1, numb, 20, 1);
-            }
-
-
-        }
-
     }
 
-    private int getTime(ModbusTime time) {
-        int startTime = time.getStartHour() * 60 * 60 + time.getStartMinute() * 60 + time.getStartSecond();
-        int endTime = time.getEndHour() * 60 * 60 + time.getEndMinute() * 60 + time.getEndSecond();
-        int second = endTime - startTime;
-        return second;
-
-    }
 
     //提交记录请求
-    private void recordOperateRequest(int requestId, int numb, float weight, int openStatus) {
+    private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
@@ -653,5 +472,145 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.quit();
     }
 
+    class RsHandlerService implements HandlerService {
+        @Override
+        public void receiveOpen(int numb) {
+            isOpen[numb - 1] = true;
+            ToastUtil.showToast(numb+"号门已经打开！");
+            if (numb == 1) {
+                tv_recy_hint.setVisibility(View.VISIBLE);
+                iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
+//               tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
+            }
+            if (numb == 2) {
+                iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_wet_hint.setVisibility(View.VISIBLE);
+            }
+            if (numb == 3) {
+                iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_harm_hint.setVisibility(View.VISIBLE);
+            }
+            if (numb == 4) {
+                iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_dry_hint.setVisibility(View.VISIBLE);
+            }
+        }
+
+        /**
+         * @param weight      重量，有小数点，单位kg
+         * @param temperature 温度
+         * @param smokeWarn   烟雾报警，01有报警，00表示正常
+         * @param fireWarn    灭火器状态，01有报警，00表示正常
+         * @param timeSet     时间状态，01有报警，00表示正常
+         * @param times       多个时间段，使用;分隔
+         */
+        @Override
+        public void receiveBordInfo(int numb,String weight, int temperature, String smokeWarn,
+                                    String fireWarn, String timeSet, String times) {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶至0，即清空,返回结果到后台
+         */
+        @Override
+        public void reset(int numb) {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶零点校准，返回结果到后台
+         */
+        @Override
+        public void reset0(int numb) {
+
+        }
+
+        /**
+         * 成功设置 垃圾桶负载校准，返回结果到后台。
+         */
+        @Override
+        public void resetWeight(int numb) {
+
+        }
+
+
+        /**
+         * 成功设置时间返回标志
+         */
+        @Override
+        public void setTime(int numb) {
+
+        }
+
+        /**
+         * 自动关门后，返回 重量
+         * weight 重量
+         * timeId 时间
+         */
+        @Override
+        public void receiveWeight(int numb,String weight,String timeID) {
+            ToastUtil.showToast(numb + "号门关闭，重量：" + weight);
+            isOpen[numb - 1] = false;
+            recordOperateRequest(1, numb, weight, 1);
+            if (numb == 1) {
+               tv_recy_hint.setVisibility(View.INVISIBLE);
+               iv_recy_img.setBackground(null);
+            }
+            if (numb == 2) {
+               tv_wet_hint.setVisibility(View.INVISIBLE);
+                iv_wet_img.setBackground(null);
+            }
+            if (numb == 3) {
+                tv_harm_hint.setVisibility(View.INVISIBLE);
+                iv_harm_img.setBackground(null);
+            }
+            if (numb == 4) {
+                iv_dry_img.setBackground(null);
+                tv_dry_hint.setVisibility(View.INVISIBLE);
+            }
+
+        }
+
+        /**
+         * 火灾报警
+         */
+        @Override
+        public void fireWarn(int numb) {
+
+        }
+
+        /**
+         * 烟雾报警
+         */
+        @Override
+        public void smokeWarn(int numb) {
+
+        }
+
+        /**
+         * 满载报警
+         */
+        @Override
+        public void fullWarn(int numb) {
+
+        }
+
+        /**
+         * 灭火器溶剂不足报警
+         */
+        @Override
+        public void fireToolsEmptyWarn(int numb) {
+
+        }
+
+        /**
+         * 电机故障报警
+         */
+        @Override
+        public void machineWarn(int numb) {
+
+        }
+    }
 
 }
