@@ -145,7 +145,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-        Rs232Handler.innit(new RsHandlerService());
+        try {
+            Rs232Handler.innit(new RsHandlerService());
+        } catch (Exception e) {
+            L.e(TAG, "Rs232Handler init is error! msg:" + e.getMessage());
+        }
+
 
     }
 
@@ -178,7 +183,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OPEN_DOOR = 0x6;
-//        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
+        //        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
 //        public static final int MSG_CHECK_PRC_STATUS = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
         private WeakReference<MainActivity> mWeakReference;
@@ -407,7 +412,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             isOpen[numb - 1] = true;
         } else {
             Rs232OutService.openDoor(numb);
-
         }
 
     }
@@ -476,7 +480,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void receiveOpen(int numb) {
             isOpen[numb - 1] = true;
-            ToastUtil.showToast(numb+"号门已经打开！");
+            ToastUtil.showToast(numb + "号门已经打开！");
             if (numb == 1) {
                 tv_recy_hint.setVisibility(View.VISIBLE);
                 iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
@@ -505,7 +509,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * @param times       多个时间段，使用;分隔
          */
         @Override
-        public void receiveBordInfo(int numb,String weight, int temperature, String smokeWarn,
+        public void receiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
                                     String fireWarn, String timeSet, String times) {
 
         }
@@ -549,16 +553,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * timeId 时间
          */
         @Override
-        public void receiveWeight(int numb,String weight,String timeID) {
+        public void receiveWeight(int numb, String weight, String timeID) {
             ToastUtil.showToast(numb + "号门关闭，重量：" + weight);
             isOpen[numb - 1] = false;
             recordOperateRequest(1, numb, weight, 1);
             if (numb == 1) {
-               tv_recy_hint.setVisibility(View.INVISIBLE);
-               iv_recy_img.setBackground(null);
+                tv_recy_hint.setVisibility(View.INVISIBLE);
+                iv_recy_img.setBackground(null);
             }
             if (numb == 2) {
-               tv_wet_hint.setVisibility(View.INVISIBLE);
+                tv_wet_hint.setVisibility(View.INVISIBLE);
                 iv_wet_img.setBackground(null);
             }
             if (numb == 3) {
