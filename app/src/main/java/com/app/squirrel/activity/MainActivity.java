@@ -13,10 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
+import com.app.squirrel.serial.Rs232Callback;
+import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
-import com.bumain.rs232.HandlerService;
-import com.bumain.rs232.Rs232Handler;
-import com.bumain.rs232.Rs232OutService;
 import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
@@ -145,7 +144,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-        Rs232Handler.innit(new RsHandlerService());
 
     }
 
@@ -472,9 +470,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.quit();
     }
 
-    class RsHandlerService implements HandlerService {
+    class RsHandlerService implements Rs232Callback {
         @Override
-        public void receiveOpen(int numb) {
+        public void onReceiveOpen(int numb) {
             isOpen[numb - 1] = true;
             ToastUtil.showToast(numb+"号门已经打开！");
             if (numb == 1) {
@@ -505,8 +503,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * @param times       多个时间段，使用;分隔
          */
         @Override
-        public void receiveBordInfo(int numb,String weight, int temperature, String smokeWarn,
-                                    String fireWarn, String timeSet, String times) {
+        public void onReceiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
+                                      String fireWarn, String timeSet, String times) {
 
         }
 
@@ -514,7 +512,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 成功设置 垃圾桶至0，即清空,返回结果到后台
          */
         @Override
-        public void reset(int numb) {
+        public void onReset(int numb) {
 
         }
 
@@ -522,7 +520,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 成功设置 垃圾桶零点校准，返回结果到后台
          */
         @Override
-        public void reset0(int numb) {
+        public void onReset0(int numb) {
 
         }
 
@@ -530,7 +528,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 成功设置 垃圾桶负载校准，返回结果到后台。
          */
         @Override
-        public void resetWeight(int numb) {
+        public void onResetWeight(int numb) {
 
         }
 
@@ -539,7 +537,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 成功设置时间返回标志
          */
         @Override
-        public void setTime(int numb) {
+        public void onSetTime(int numb) {
 
         }
 
@@ -549,7 +547,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * timeId 时间
          */
         @Override
-        public void receiveWeight(int numb,String weight,String timeID) {
+        public void onReceiveWeight(int numb, String weight, String timeID) {
             ToastUtil.showToast(numb + "号门关闭，重量：" + weight);
             isOpen[numb - 1] = false;
             recordOperateRequest(1, numb, weight, 1);
@@ -576,7 +574,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 火灾报警
          */
         @Override
-        public void fireWarn(int numb) {
+        public void onFireWarn(int numb) {
 
         }
 
@@ -584,7 +582,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 烟雾报警
          */
         @Override
-        public void smokeWarn(int numb) {
+        public void onSmokeWarn(int numb) {
 
         }
 
@@ -592,7 +590,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 满载报警
          */
         @Override
-        public void fullWarn(int numb) {
+        public void onFullWarn(int numb) {
 
         }
 
@@ -600,7 +598,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 灭火器溶剂不足报警
          */
         @Override
-        public void fireToolsEmptyWarn(int numb) {
+        public void onFireToolsEmptyWarn(int numb) {
 
         }
 
@@ -608,7 +606,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 电机故障报警
          */
         @Override
-        public void machineWarn(int numb) {
+        public void onMachineWarn(int numb) {
 
         }
     }
