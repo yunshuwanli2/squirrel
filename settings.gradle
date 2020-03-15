@@ -1,1 +1,3 @@
-include ':app', ':lib_base',':lib_arcsoft'
+include ':app', ':lib_base'
+//, ':serilComAssistantLib'
+//,':lib_arcsoft'

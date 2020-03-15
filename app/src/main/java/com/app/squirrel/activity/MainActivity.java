@@ -12,11 +12,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
 import com.app.squirrel.serial.Rs232Callback;
+import com.app.squirrel.serial.Rs232Contol;
 import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
-import com.priv.arcsoft.ArcSoftFaceActivity;
+//import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
@@ -98,12 +100,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void requestPermiss() {
+        L.d(TAG, "[requestPermiss]");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             PermissionUtil permissionUtil = new PermissionUtil(this);
             permissionUtil.requestPermissions(READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
                 @Override
                 public void onGranted() {
-
+                    L.d(TAG, "[onGranted]");
                 }
 
                 @Override
@@ -118,7 +121,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             });
         }
     }
-
+    Rs232OutService rs232OutService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,7 +148,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
 
+         rs232OutService = new Rs232OutService(new MyCallback());
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        rs232OutService.init();
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -336,7 +348,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
                 openNumb = 4;
-                if (!UserManager.isLogin()) {
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
                     jumpLogin();
                     return;
                 }
@@ -348,7 +360,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
-                if (!UserManager.isLogin()) {
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
                     jumpLogin();
                     return;
                 }
@@ -359,7 +371,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_recy_garbage:
                 openNumb = 1;
-                if (!UserManager.isLogin()) {
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
                     jumpLogin();
                     return;
                 }
@@ -370,7 +382,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_wet_garbage:
                 openNumb = 2;
-                if (!UserManager.isLogin()) {
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
                     jumpLogin();
                     return;
                 }
@@ -393,20 +405,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void jumpLogin() {
 //        LoginActivity.JumpAct(this);
 
-        ArcSoftFaceActivity.JumpAct(this);
+//        ArcSoftFaceActivity.JumpAct(this);
     }
 
     private boolean[] isOpen = {false, false, false, false};
 
     private void openDoor(int numb) {
         L.d(TAG, "[openDoor] numb" + numb);
-        if (test) {
-            if (isOpen[numb - 1]) return;
-            isOpen[numb - 1] = true;
-        } else {
+//        if (test) {
+//            if (isOpen[numb - 1]) return;
+//            isOpen[numb - 1] = true;
+//        } else {
             Rs232OutService.openDoor(numb);
 
-        }
+//        }
 
     }
 
@@ -467,10 +479,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        rs232OutService.release();
         mHandleThread.quit();
     }
 
-    class RsHandlerService implements Rs232Callback {
+    class MyCallback implements Rs232Callback {
         @Override
         public void onReceiveOpen(int numb) {
             isOpen[numb - 1] = true;

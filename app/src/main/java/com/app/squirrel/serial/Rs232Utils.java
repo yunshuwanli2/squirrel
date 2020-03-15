@@ -2,12 +2,16 @@ package com.app.squirrel.serial;
 
 
 
+import com.priv.yswl.base.tool.L;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.app.squirrel.serial.Rs232OutService.isBlank;
 
 public class Rs232Utils {
+    private static final String TAG = "Rs232Utils";
+
     public Rs232Utils() {
     }
 
@@ -80,7 +84,7 @@ public class Rs232Utils {
 
     public static void main(String[] arg) {
         String aa = "d5c8d5c8010008000114020C110E29";
-        System.out.print(sumCheck(aa));
+        L.d(TAG,sumCheck(aa));
     }
 
     public static String decToHex(String dec) {
@@ -95,7 +99,7 @@ public class Rs232Utils {
         for(int i = 0; i < n; ++i) {
             int value = Integer.parseInt(data.substring(i * 2, i * 2 + 2), 16);
             sum += value;
-            System.out.println("----------------------");
+            L.d(TAG,"----------------------");
         }
 
         String result = Integer.toHexString(sum);

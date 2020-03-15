@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lib_arcsoft/lib_arcsoft.iml" filepath="$PROJECT_DIR$/lib_arcsoft/lib_arcsoft.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib_base/lib_base.iml" filepath="$PROJECT_DIR$/lib_base/lib_base.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/squirrel.iml" filepath="$PROJECT_DIR$/.idea/squirrel.iml" />
     </modules>

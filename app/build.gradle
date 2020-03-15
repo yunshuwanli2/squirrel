@@ -7,17 +7,17 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 13
-        versionName "3.9.0"
+        versionCode 14
+        versionName "3.9.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a','x86', 'x86_64'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
         manifestPlaceholders = [
-                JPUSH_PKGNAME : "com.app.squirrel",
+                JPUSH_PKGNAME: "com.app.squirrel",
                 JPUSH_APPKEY : "bdb3822118da82603f2301db",
-                JPUSH_CHANNEL : "developer-default"
+                JPUSH_CHANNEL: "developer-default"
         ]
     }
     compileOptions {
@@ -44,7 +44,7 @@ android {
     }
     buildTypes {
         release {
-            debuggable
+            debuggable true
             buildConfigField "String", "API_KEY", '"62xXRy3S6tVNNUoFLXQlze-hQXTa-RPN"'
             buildConfigField "boolean", "IS_TEST", 'false'
             buildConfigField "String", "API_SECRET", '"SSm555ZZm2CyZfb8g63yOanlCH1h5INl"'
@@ -89,6 +89,6 @@ dependencies {
 
     implementation project(path: ':lib_base')
 //    api project(path: ':livenessLib')
-    api project(path: ':lib_arcsoft')
+//    api project(path: ':lib_arcsoft')
 
 }

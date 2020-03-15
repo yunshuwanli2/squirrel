@@ -1,12 +1,45 @@
 package com.app.squirrel.serial;
 
+import android.text.TextUtils;
+
+import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.ToastUtil;
+
+import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.Calendar;
 
 public class Rs232OutService {
+    private static final String TAG = "Rs232OutService";
     static Rs232Contol rs232Contol;
 
     public Rs232OutService(Rs232Callback callback) {
         rs232Contol = new Rs232Contol("/dev/ttyS1", 9600, callback);
+    }
+
+    public void init() {
+        try
+        {
+            rs232Contol.open();
+        } catch (SecurityException e) {
+            ToastUtil.showToast("打开串口失败:没有串口读/写权限!");
+        } catch (IOException e) {
+            ToastUtil.showToast("打开串口失败:未知错误!");
+        } catch (InvalidParameterException e) {
+            ToastUtil.showToast("打开串口失败:参数错误!");
+        }
+    }
+
+    public void release() {
+        rs232Contol.close();
+    }
+
+    public static boolean checkSerilIsOpen() {
+        if (rs232Contol.isOpen()) {
+            return true;
+        }
+        L.d(TAG, "串口没有打开");
+        return false;
     }
 
     public static void openDoor(int number) {
@@ -14,6 +47,7 @@ public class Rs232OutService {
     }
 
     public static void getBoardInfo(int number) {
+
         sendData(number, CommonConstant.OUT_BORDINFO, (String) null);
     }
 
@@ -103,10 +137,11 @@ public class Rs232OutService {
         String result = "";
         result = CommonConstant.startString + Rs232Utils.lengthStr(Rs232Utils.intToHex(number), 2) + dataLength + order + date + data;
         String sumStr = Rs232Utils.sumCheck(result);
-        result = result + sumStr + new String(CommonConstant.endString);
-        System.out.println(result);
-        if (rs232Contol != null) {
-            rs232Contol.sendTxt(result);
+        result = result + sumStr + CommonConstant.endString;
+        L.d(TAG, "num:" + number + "  order:" + order + "  data:" + data);
+        L.d(TAG, "num:" + number + "  order:" + order + "  new data:" + result);
+        if (rs232Contol != null && checkSerilIsOpen()) {
+            rs232Contol.sendHex(result);
         }
 
     }
