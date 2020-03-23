@@ -143,10 +143,10 @@ public class Rs232Contol extends SerialHelper {
                             mRs232Callback.onFullWarn(number, alertMSG);
                         } else if (order.equals(CommonConstant.IN_FIRE_TOOLS_EMPTY)) {
                             String alertMSG = "消防工具没有了，请联系管理员处理！";
-                            mRs232Callback.onFireToolsEmptyWarn(number,alertMSG);
+                            mRs232Callback.onFireToolsEmptyWarn(number, alertMSG);
                         } else if (order.equals(CommonConstant.IN_MACHINE_WARN)) {
                             String alertMSG = "机器故障，请联系管理员处理！";
-                            mRs232Callback.onMachineWarn(number,alertMSG);
+                            mRs232Callback.onMachineWarn(number, alertMSG);
                         }
                     }
 
@@ -184,6 +184,7 @@ public class Rs232Contol extends SerialHelper {
     @Override
     protected void onDataReceived(ComBean comBean) {
         L.d(TAG, "[onDataReceived] 接收到的数据为：" + comBean.bRec);
-        receiveData(new String(comBean.bRec));
+        String hexStr = bytesToHexString(comBean.bRec);
+        receiveData(hexStr);
     }
 }

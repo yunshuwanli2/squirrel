@@ -2,7 +2,6 @@ package com.priv.yswl.base.tool;
 
 import com.priv.yswl.base.MApplication;
 
-import java.io.File;
 
 /**
  * Created by kangpAdministrator on 2017/6/7 0007.
