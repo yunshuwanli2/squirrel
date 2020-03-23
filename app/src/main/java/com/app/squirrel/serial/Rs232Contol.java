@@ -13,8 +13,8 @@ public class Rs232Contol extends SerialHelper {
     private static Rs232Callback mRs232Callback;
     static OutputStream outputStream;
 
-    public Rs232Contol(String sPort, int iBaudRate,Rs232Callback rs232Callback) {
-        super(sPort,iBaudRate);
+    public Rs232Contol(String sPort, int iBaudRate, Rs232Callback rs232Callback) {
+        super(sPort, iBaudRate);
         mRs232Callback = rs232Callback;
     }
 
@@ -22,7 +22,7 @@ public class Rs232Contol extends SerialHelper {
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder("");
         if (src != null && src.length > 0) {
-            for(int i = 0; i < src.length; ++i) {
+            for (int i = 0; i < src.length; ++i) {
                 int v = src[i] & 255;
                 String hv = Integer.toHexString(v);
                 if (hv.length() < 2) {
@@ -42,10 +42,10 @@ public class Rs232Contol extends SerialHelper {
     @Deprecated
     public static boolean sendData(String data) {
         try {
-            L.d(TAG,"发出字节数：" + data.getBytes("utf-8").length);
-            L.d(TAG,data);
+            L.d(TAG, "发出字节数：" + data.getBytes("utf-8").length);
+            L.d(TAG, data);
             byte[] dataArr = hexStringToBytes(data);
-            L.d(TAG,new String(dataArr));
+            L.d(TAG, new String(dataArr));
             outputStream.write(dataArr, 0, dataArr.length);
             return true;
         } catch (IOException var2) {
@@ -55,23 +55,22 @@ public class Rs232Contol extends SerialHelper {
     }
 
 
-
     public static void receiveData(String data) {
         data = data.trim().replace("\r", "").replace("\n", "");
         int length = data.length();
         String endStrTmp = data.substring(length - 8, length);
         if (!endStrTmp.equals(CommonConstant.endString)) {
-            L.d(TAG,"结尾符数据错误：当前结尾符为：" + endStrTmp);
+            L.d(TAG, "结尾符数据错误：当前结尾符为：" + endStrTmp);
         } else {
             String checkString = data.substring(length - 10, length - 8);
             String prefix = data.substring(0, length - 10);
             String sumStr = Rs232Utils.sumCheck(prefix);
             if (!checkString.equals(sumStr)) {
-                L.d(TAG,"校验码错误，数据中校验码为：" + checkString + "，计算校验码为：" + sumStr);
+                L.d(TAG, "校验码错误，数据中校验码为：" + checkString + "，计算校验码为：" + sumStr);
             } else {
                 String startStrTmp = data.substring(0, 8);
                 if (!startStrTmp.equals(CommonConstant.startString)) {
-                    L.d(TAG,"开始字符数据错误：当前开始字符为：" + startStrTmp);
+                    L.d(TAG, "开始字符数据错误：当前开始字符为：" + startStrTmp);
                 } else {
                     String baseData = data.substring(8, length - 10);
                     String bordHex = baseData.substring(0, 2);
@@ -85,7 +84,7 @@ public class Rs232Contol extends SerialHelper {
                         dataStr = baseData.substring(22);
                     }
 
-                    L.d(TAG,"数据结果为：" + dataStr);
+                    L.d(TAG, "数据结果为：" + dataStr);
                     if (!order.equals(CommonConstant.IN_OPEN)) {
                         int height1;
                         int height2;
@@ -93,17 +92,17 @@ public class Rs232Contol extends SerialHelper {
                         if (order.equals(CommonConstant.IN_BORDINFO)) {
                             height1 = Integer.parseInt(dataStr.substring(0, 2), 16);
                             height2 = Integer.parseInt(dataStr.substring(2, 4), 16);
-                             fireWarn = height1 + "." + height2;
+                            fireWarn = height1 + "." + height2;
                             int temperature = Integer.parseInt(dataStr.substring(4, 6), 16);
                             String smokeWarn = dataStr.substring(6, 8);
-                             fireWarn = dataStr.substring(8, 10);
+                            fireWarn = dataStr.substring(8, 10);
                             String timeSet = dataStr.substring(10, 12);
                             String times = "";
                             int dataStrLength = dataStr.length();
                             if (dataStrLength > 12) {
                                 int n = (dataStrLength - 12) / 4;
 
-                                for(int i = 0; i < n; ++i) {
+                                for (int i = 0; i < n; ++i) {
                                     times = times + dataStr.substring(12 + i * 2, 12 + i * 2 + 2) + ":" + dataStr.substring(12 + i * 2 + 2, 12 + i * 2 + 4) + ";";
                                 }
 
@@ -129,22 +128,25 @@ public class Rs232Contol extends SerialHelper {
                             String temperature = dataStr.substring(0, 2);
                             fireWarn = dataStr.substring(2, 4);
                             if (temperature.equals("01")) {
-                                alertMSG = "垃圾桶温度过高警报，请联系管理员处理！";
-                                L.d(TAG,alertMSG);
-                                mRs232Callback.onFireWarn(number);
+                                alertMSG = "温度过高警报，请联系管理员处理！";
+                                L.d(TAG, alertMSG);
+                                mRs232Callback.onFireWarn(number, alertMSG);
                             }
 
                             if (fireWarn.equals("01")) {
-                                alertMSG = "垃圾桶有烟雾警报，请联系管理员处理！";
-                                L.d(TAG,alertMSG);
-                                mRs232Callback.onSmokeWarn(number);
+                                alertMSG = "有烟雾警报，请联系管理员处理！";
+                                L.d(TAG, alertMSG);
+                                mRs232Callback.onSmokeWarn(number, alertMSG);
                             }
                         } else if (order.equals(CommonConstant.IN_FULL_WARN)) {
-                            mRs232Callback.onFullWarn(number);
+                            String alertMSG = "满了，请联系管理员处理！";
+                            mRs232Callback.onFullWarn(number, alertMSG);
                         } else if (order.equals(CommonConstant.IN_FIRE_TOOLS_EMPTY)) {
-                            mRs232Callback.onFireToolsEmptyWarn(number);
+                            String alertMSG = "消防工具没有了，请联系管理员处理！";
+                            mRs232Callback.onFireToolsEmptyWarn(number,alertMSG);
                         } else if (order.equals(CommonConstant.IN_MACHINE_WARN)) {
-                            mRs232Callback.onMachineWarn(number);
+                            String alertMSG = "机器故障，请联系管理员处理！";
+                            mRs232Callback.onMachineWarn(number,alertMSG);
                         }
                     }
 
@@ -160,9 +162,9 @@ public class Rs232Contol extends SerialHelper {
             char[] hexChars = hexString.toCharArray();
             byte[] d = new byte[length];
 
-            for(int i = 0; i < length; ++i) {
+            for (int i = 0; i < length; ++i) {
                 int pos = i * 2;
-                d[i] = (byte)(charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+                d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
             }
 
             return d;
@@ -172,16 +174,16 @@ public class Rs232Contol extends SerialHelper {
     }
 
     private static byte charToByte(char c) {
-        return (byte)"0123456789ABCDEF".indexOf(c);
+        return (byte) "0123456789ABCDEF".indexOf(c);
     }
 
- /*   public static void main(String[] args) {
-        sendData("sendData");
-    }
-*/
+    /*   public static void main(String[] args) {
+           sendData("sendData");
+       }
+   */
     @Override
     protected void onDataReceived(ComBean comBean) {
-        L.d(TAG,"[onDataReceived] 接收到的数据为：" + comBean.bRec);
+        L.d(TAG, "[onDataReceived] 接收到的数据为：" + comBean.bRec);
         receiveData(new String(comBean.bRec));
     }
 }

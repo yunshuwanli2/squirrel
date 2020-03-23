@@ -49,23 +49,23 @@ public interface Rs232Callback {
 	/**
 	 * 火灾报警
 	 */
-	void onFireWarn(int number);
+	void onFireWarn(int number,String msg);
 	/**
 	 * 烟雾报警
 	 */
-	void onSmokeWarn(int number);
+	void onSmokeWarn(int number,String msg);
 	/**
 	 * 满载报警
 	 */
-	void onFullWarn(int number);
+	void onFullWarn(int number,String msg);
 	/**
 	 * 灭火器溶剂不足报警
 	 */
 	
-	void onFireToolsEmptyWarn(int number);
+	void onFireToolsEmptyWarn(int number,String msg);
 	/**
 	 * 电机故障报警
 	 */
-	void onMachineWarn(int number);
+	void onMachineWarn(int number,String msg);
 
 }

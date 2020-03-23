@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
@@ -121,7 +122,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             });
         }
     }
+
     Rs232OutService rs232OutService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,8 +150,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-
-         rs232OutService = new Rs232OutService(new MyCallback());
+        rs232OutService = new Rs232OutService(new MyCallback());
     }
 
     @Override
@@ -156,7 +158,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onStart();
         rs232OutService.init();
     }
-
 
 
     @Override
@@ -175,6 +176,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        L.d(TAG, "[onKeyDown]");
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        L.d(TAG, "[onBackPressed]");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rs232OutService.release();
+        mHandleThread.quit();
+    }
+
+    @Override
     public void onSucceed(int requestId, JSONObject result) {
         L.d(TAG, "[onSucceed]" + result);
     }
@@ -185,10 +207,122 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
+    @Override
+    public void onClick(View v) {
+        Message message;
+        switch (v.getId()) {
+            case R.id.ll_dry_garbage:
+                openNumb = 4;
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                    jumpLogin();
+                    return;
+                }
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 4;
+                mSafeHandle.sendMessage(message);
+
+                break;
+            case R.id.ll_harmful_garbage:
+                openNumb = 3;
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                    jumpLogin();
+                    return;
+                }
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 3;
+                mSafeHandle.sendMessage(message);
+                break;
+            case R.id.ll_recy_garbage:
+                openNumb = 1;
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                    jumpLogin();
+                    return;
+                }
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 1;
+                mSafeHandle.sendMessage(message);
+                break;
+            case R.id.ll_wet_garbage:
+                openNumb = 2;
+                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                    jumpLogin();
+                    return;
+                }
+                message = Message.obtain();
+                message.what = SafeHandler.MSG_OPEN_DOOR;
+                message.arg1 = 2;
+                mSafeHandle.sendMessage(message);
+                break;
+            case R.id.ll_logout:
+                setLogoutStatues();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 子线程调用
+     */
+    private void jumpLogin() {
+//        LoginActivity.JumpAct(this);
+
+//        ArcSoftFaceActivity.JumpAct(this);
+    }
+
+    private boolean[] isOpen = {false, false, false, false};
+
+    private void openDoor(int numb) {
+        L.d(TAG, "[openDoor] numb" + numb);
+        Rs232OutService.openDoor(numb);
+    }
+
+
+    //提交记录请求
+    private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
+        String url = "/wxApi/operateRecord";
+        Map<String, Object> para = new HashMap<>();
+        para.put("number", numb);
+        para.put("weight", weight);
+        para.put("siteCode", "A0001");
+        para.put("openStatus", openStatus);
+        String str = GsonUtil.GsonString(para);
+        ToastUtil.showToast("请求参数为：" + str);
+        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
+    }
+
+    //TODO 请求报警
+    private void requestWarn(int doorNumb) {
+
+
+    }
+
+    private void requestRecoFullStatus(int doorNumb, boolean isFull) {
+        String url = "wxApi/binfs";
+        Map<String, Object> para = new HashMap<>();
+        para.put("number", doorNumb);
+        para.put("isFull", isFull);
+        para.put("siteCode", "A0001");
+        HttpClientProxy.getInstance().getAsyn(url, 3, para, this);
+    }
+
+    private void setLogoutStatues() {
+        UserManager.setLoginStatus(false);
+        loginOrout.setVisibility(View.INVISIBLE);
+    }
+
+    private void setLoginStatues() {
+        loginOrout.setVisibility(View.VISIBLE);
+
+    }
+
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OPEN_DOOR = 0x6;
-//        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
+        //        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
 //        public static final int MSG_CHECK_PRC_STATUS = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
         private WeakReference<MainActivity> mWeakReference;
@@ -341,153 +475,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-
-    @Override
-    public void onClick(View v) {
-        Message message;
-        switch (v.getId()) {
-            case R.id.ll_dry_garbage:
-                openNumb = 4;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
-                    jumpLogin();
-                    return;
-                }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 4;
-                mSafeHandle.sendMessage(message);
-
-                break;
-            case R.id.ll_harmful_garbage:
-                openNumb = 3;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
-                    jumpLogin();
-                    return;
-                }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 3;
-                mSafeHandle.sendMessage(message);
-                break;
-            case R.id.ll_recy_garbage:
-                openNumb = 1;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
-                    jumpLogin();
-                    return;
-                }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 1;
-                mSafeHandle.sendMessage(message);
-                break;
-            case R.id.ll_wet_garbage:
-                openNumb = 2;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
-                    jumpLogin();
-                    return;
-                }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 2;
-                mSafeHandle.sendMessage(message);
-                break;
-            case R.id.ll_logout:
-                setLogoutStatues();
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * 子线程调用
-     */
-    private void jumpLogin() {
-//        LoginActivity.JumpAct(this);
-
-//        ArcSoftFaceActivity.JumpAct(this);
-    }
-
-    private boolean[] isOpen = {false, false, false, false};
-
-    private void openDoor(int numb) {
-        L.d(TAG, "[openDoor] numb" + numb);
-//        if (test) {
-//            if (isOpen[numb - 1]) return;
-//            isOpen[numb - 1] = true;
-//        } else {
-            Rs232OutService.openDoor(numb);
-
-//        }
-
-    }
-
-
-    //提交记录请求
-    private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
-        String url = "/wxApi/operateRecord";
-        Map<String, Object> para = new HashMap<>();
-        para.put("number", numb);
-        para.put("weight", weight);
-        para.put("siteCode", "A0001");
-        para.put("openStatus", openStatus);
-        String str = GsonUtil.GsonString(para);
-        ToastUtil.showToast("请求参数为：" + str);
-        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
-    }
-
-    //TODO 请求报警
-    private void requestWarn(int doorNumb) {
-
-
-    }
-
-    private void requestRecoFullStatus(int doorNumb, boolean isFull) {
-        String url = "wxApi/binfs";
-        Map<String, Object> para = new HashMap<>();
-        para.put("number", doorNumb);
-        para.put("isFull", isFull);
-        para.put("siteCode", "A0001");
-        HttpClientProxy.getInstance().getAsyn(url, 3, para, this);
-    }
-
-    private void setLogoutStatues() {
-        UserManager.setLoginStatus(false);
-        loginOrout.setVisibility(View.INVISIBLE);
-    }
-
-    private void setLoginStatues() {
-        loginOrout.setVisibility(View.VISIBLE);
-
-    }
-
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        L.d(TAG, "[onKeyDown]");
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public void onBackPressed() {
-        L.d(TAG, "[onBackPressed]");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        rs232OutService.release();
-        mHandleThread.quit();
-    }
-
     class MyCallback implements Rs232Callback {
         @Override
         public void onReceiveOpen(int numb) {
             isOpen[numb - 1] = true;
-            ToastUtil.showToast(numb+"号门已经打开！");
+            ToastUtil.showToast(numb + "号门已经打开！");
             if (numb == 1) {
                 tv_recy_hint.setVisibility(View.VISIBLE);
                 iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
@@ -518,7 +510,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onReceiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
                                       String fireWarn, String timeSet, String times) {
-
+            ToastUtil.showToast(String.format(Locale.CHINA, "%d 号门打开" +
+                            "，weight:%s,temperature:%d,smokeWarn:%s,fireWarn:%s,timeSet:%s,times:%s"
+                    , numb, weight, temperature, smokeWarn, fireWarn, timeSet, times));
         }
 
         /**
@@ -526,7 +520,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onReset(int numb) {
-
+            ToastUtil.showToast(numb + "号垃圾桶重置！");
         }
 
         /**
@@ -534,7 +528,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onReset0(int numb) {
-
+            ToastUtil.showToast(numb + "号垃圾桶0点校准！");
         }
 
         /**
@@ -542,7 +536,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onResetWeight(int numb) {
-
+            ToastUtil.showToast(numb + "号垃圾桶负载校准！");
         }
 
 
@@ -551,7 +545,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onSetTime(int numb) {
-
+            ToastUtil.showToast(numb + "号垃圾桶设置时间成功！");
         }
 
         /**
@@ -561,15 +555,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onReceiveWeight(int numb, String weight, String timeID) {
-            ToastUtil.showToast(numb + "号门关闭，重量：" + weight);
+            ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
             isOpen[numb - 1] = false;
             recordOperateRequest(1, numb, weight, 1);
             if (numb == 1) {
-               tv_recy_hint.setVisibility(View.INVISIBLE);
-               iv_recy_img.setBackground(null);
+                tv_recy_hint.setVisibility(View.INVISIBLE);
+                iv_recy_img.setBackground(null);
             }
             if (numb == 2) {
-               tv_wet_hint.setVisibility(View.INVISIBLE);
+                tv_wet_hint.setVisibility(View.INVISIBLE);
                 iv_wet_img.setBackground(null);
             }
             if (numb == 3) {
@@ -587,40 +581,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * 火灾报警
          */
         @Override
-        public void onFireWarn(int numb) {
-
+        public void onFireWarn(int numb, String msg) {
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
          * 烟雾报警
          */
         @Override
-        public void onSmokeWarn(int numb) {
-
+        public void onSmokeWarn(int numb, String msg) {
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
          * 满载报警
          */
         @Override
-        public void onFullWarn(int numb) {
-
+        public void onFullWarn(int numb, String msg) {
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
          * 灭火器溶剂不足报警
          */
         @Override
-        public void onFireToolsEmptyWarn(int numb) {
-
+        public void onFireToolsEmptyWarn(int numb, String msg) {
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
          * 电机故障报警
          */
         @Override
-        public void onMachineWarn(int numb) {
-
+        public void onMachineWarn(int numb, String msg) {
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
     }
 
