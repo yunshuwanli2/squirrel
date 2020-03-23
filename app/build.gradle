@@ -7,8 +7,8 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 15
-        versionName "4.0.0"
+        versionCode 17
+        versionName "4.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -44,7 +44,6 @@ android {
     }
     buildTypes {
         release {
-            debuggable true
             buildConfigField "String", "API_KEY", '"62xXRy3S6tVNNUoFLXQlze-hQXTa-RPN"'
             buildConfigField "boolean", "IS_TEST", 'false'
             buildConfigField "String", "API_SECRET", '"SSm555ZZm2CyZfb8g63yOanlCH1h5INl"'

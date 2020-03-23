@@ -3,19 +3,25 @@ package com.app.squirrel.serial;//package com.app.squirrel.serial;
 import com.bjw.bean.ComBean;
 import com.bjw.utils.SerialHelper;
 import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.ToastUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Rs232Contol extends SerialHelper {
 
     public static final String TAG = "Rs232Contol";
     private static Rs232Callback mRs232Callback;
     static OutputStream outputStream;
+    DispQueueThread mDispQueue;
 
     public Rs232Contol(String sPort, int iBaudRate, Rs232Callback rs232Callback) {
         super(sPort, iBaudRate);
         mRs232Callback = rs232Callback;
+        mDispQueue = new DispQueueThread();
+        mDispQueue.start();
     }
 
 
@@ -60,16 +66,19 @@ public class Rs232Contol extends SerialHelper {
         int length = data.length();
         String endStrTmp = data.substring(length - 8, length);
         if (!endStrTmp.equals(CommonConstant.endString)) {
+            ToastUtil.showToast("结尾符数据错误：当前结尾符为：" + endStrTmp);
             L.d(TAG, "结尾符数据错误：当前结尾符为：" + endStrTmp);
         } else {
             String checkString = data.substring(length - 10, length - 8);
             String prefix = data.substring(0, length - 10);
             String sumStr = Rs232Utils.sumCheck(prefix);
             if (!checkString.equals(sumStr)) {
+                ToastUtil.showToast("校验码错误，数据中校验码为：" + checkString + "，计算校验码为：" + sumStr);
                 L.d(TAG, "校验码错误，数据中校验码为：" + checkString + "，计算校验码为：" + sumStr);
             } else {
                 String startStrTmp = data.substring(0, 8);
                 if (!startStrTmp.equals(CommonConstant.startString)) {
+                    ToastUtil.showToast("开始字符数据错误：当前开始字符为：" + startStrTmp);
                     L.d(TAG, "开始字符数据错误：当前开始字符为：" + startStrTmp);
                 } else {
                     String baseData = data.substring(8, length - 10);
@@ -83,7 +92,7 @@ public class Rs232Contol extends SerialHelper {
                     if (dataLength10 > 8) {
                         dataStr = baseData.substring(22);
                     }
-
+                    ToastUtil.showToast("数据结果为：" + dataStr);
                     L.d(TAG, "数据结果为：" + dataStr);
                     if (!order.equals(CommonConstant.IN_OPEN)) {
                         int height1;
@@ -183,8 +192,36 @@ public class Rs232Contol extends SerialHelper {
    */
     @Override
     protected void onDataReceived(ComBean comBean) {
-        L.d(TAG, "[onDataReceived] 接收到的数据为：" + comBean.bRec);
-        String hexStr = bytesToHexString(comBean.bRec);
-        receiveData(hexStr);
+        ToastUtil.showToast("接收到数据");
+//        String hexStr = bytesToHexString(comBean.bRec);
+//        receiveData(hexStr);
+        mDispQueue.AddQueue(comBean);
+    }
+
+    //----------------------------------------------------刷新显示线程
+    private class DispQueueThread extends Thread {
+        private Queue<ComBean> QueueList = new LinkedList<ComBean>();
+
+        @Override
+        public void run() {
+            super.run();
+            while (!isInterrupted()) {
+                final ComBean ComData;
+                while ((ComData = QueueList.poll()) != null) {
+                    dispRecData(ComData);
+                    break;
+                }
+            }
+        }
+
+        public synchronized void AddQueue(ComBean ComData) {
+            QueueList.add(ComData);
+        }
+    }
+
+
+    //----------------------------------------------------显示接收数据
+    private void dispRecData(ComBean ComRecData) {
+        receiveData(Rs232Utils.ByteArrToHex(ComRecData.bRec));
     }
 }
