@@ -18,6 +18,12 @@ android {
         }
 
     }
+
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
     lintOptions {
         abortOnError false
     }
@@ -27,4 +33,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+}
+
+dependencies {
+    implementation project(path: ':lib_base')
 }

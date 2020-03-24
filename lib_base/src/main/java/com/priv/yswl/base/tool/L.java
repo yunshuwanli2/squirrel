@@ -23,7 +23,7 @@ public class L {
      * SVNCODE
      */
     public static final boolean DEGUG = MApplication.getApplication().getDebugSetting();
-    public static String Globle_TAG = MApplication.getApplication().getPackageName() + ": ";
+    public static String Globle_TAG = MApplication.getApplication().getGlobalTag() + ": ";
 
     public static void d(String tag, String msg) {
         if (DEGUG) android.util.Log.d(Globle_TAG + tag, msg);

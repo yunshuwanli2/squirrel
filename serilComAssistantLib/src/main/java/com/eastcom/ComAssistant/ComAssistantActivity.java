@@ -540,22 +540,27 @@ public class ComAssistantActivity extends Activity {
 		}
 
 		@Override
-		protected void onDataReceived(final ComBean ComRecData)
-		{
-			//数据接收量大或接收时弹出软键盘，界面会卡顿,可能和6410的显示性能有关
-			//直接刷新显示，接收数据量大时，卡顿明显，但接收与显示同步。
-			//用线程定时刷新显示可以获得较流畅的显示效果，但是接收数据速度快于显示速度时，显示会滞后。
-			//最终效果差不多-_-，线程定时刷新稍好一些。
-			DispQueue.AddQueue(ComRecData);//线程定时刷新显示(推荐)
-			/*
-			runOnUiThread(new Runnable()//直接刷新显示
-			{
-				public void run()
-				{
-					DispRecData(ComRecData);
-				}
-			});*/
+		protected void onDataReceived(String data) {
+
 		}
+
+//		@Override
+//		protected void onDataReceived(final ComBean ComRecData)
+//		{
+//			//数据接收量大或接收时弹出软键盘，界面会卡顿,可能和6410的显示性能有关
+//			//直接刷新显示，接收数据量大时，卡顿明显，但接收与显示同步。
+//			//用线程定时刷新显示可以获得较流畅的显示效果，但是接收数据速度快于显示速度时，显示会滞后。
+//			//最终效果差不多-_-，线程定时刷新稍好一些。
+//			DispQueue.AddQueue(ComRecData);//线程定时刷新显示(推荐)
+//			/*
+//			runOnUiThread(new Runnable()//直接刷新显示
+//			{
+//				public void run()
+//				{
+//					DispRecData(ComRecData);
+//				}
+//			});*/
+//		}
     }
     //----------------------------------------------------刷新显示线程
     private class DispQueueThread extends Thread{

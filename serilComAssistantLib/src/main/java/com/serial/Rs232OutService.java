@@ -1,4 +1,4 @@
-package com.app.squirrel.serial;
+package com.serial;
 
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
@@ -17,8 +17,7 @@ public class Rs232OutService {
     }
 
     public void init() {
-        try
-        {
+        try {
             rs232Contol.open();
         } catch (SecurityException e) {
             ToastUtil.showToast("打开串口失败:没有串口读/写权限!");
@@ -40,6 +39,7 @@ public class Rs232OutService {
         L.d(TAG, "串口没有打开");
         return false;
     }
+
     /**
      * app到单片机
      * 开门
@@ -220,9 +220,7 @@ public class Rs232OutService {
 
 
         String date = year + month + day + hour + minute + second;
-
-        System.out.println("时间：" + date);
-
+        L.d(TAG, "时间：" + date);
         dataLength = Rs232Utils.lengthStr(Rs232Utils.intToHex(((order + date + data).length()) / 2), 4);
 
 
@@ -236,7 +234,7 @@ public class Rs232OutService {
         //-----------字符串组装结束---------------------
 
         //-----------发送数据开始-------------------
-        System.out.println(result);
+        L.d(TAG, result);
         if (rs232Contol != null && checkSerilIsOpen()) {
             rs232Contol.sendHex(result);
         }

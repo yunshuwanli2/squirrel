@@ -25,13 +25,18 @@ public class SquirrelApplication extends MApplication {
     }
 
     @Override
+    public String getGlobalTag() {
+        return "KANG";
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         init();
         OkHttpClientManager.init();
         if (BuildConfig.DEBUG && BuildConfig.IS_TEST) {
             CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
-            LogCollector.getInstance(this).setTag(getPackageName()).start();
+            LogCollector.getInstance(this).setCleanCache(true).setString(getGlobalTag()).start();
         }
 
     }

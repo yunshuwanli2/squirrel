@@ -23,6 +23,7 @@ public abstract class MApplication extends Application /*implements DebugSetting
     }
 
     public abstract boolean getDebugSetting();
+    public abstract String  getGlobalTag();
 
     private static MApplication app;
     public static MApplication getApplication() {

@@ -1,12 +1,9 @@
 package com.priv.yswl.base.tool;
 
-import android.widget.Toast;
-
-import com.priv.yswl.base.MApplication;
+import com.hjq.toast.ToastUtils;
 
 
 public class ToastUtil {
-    private static Toast mToast = null;
 
     private static long lastClickTime;
 
@@ -20,26 +17,13 @@ public class ToastUtil {
         return false;
     }
 
-    static {
-        mToast = Toast.makeText(MApplication.getApplication(), "", Toast.LENGTH_SHORT);
-    }
 
     public static void showToast(String str) {
-        try {
-            mToast.setText(str);
-            mToast.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ToastUtils.show(str);
     }
 
     public static void showToast(int resId) {
-        try {
-            mToast.setText(resId);
-            mToast.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ToastUtils.show(resId);
     }
 
 }

@@ -14,9 +14,6 @@ import android.widget.TextView;
 
 import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
-import com.app.squirrel.serial.Rs232Callback;
-import com.app.squirrel.serial.Rs232Contol;
-import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
 //import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
@@ -27,6 +24,8 @@ import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
+import com.serial.Rs232Callback;
+import com.serial.Rs232OutService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,12 +41,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
-import static com.app.squirrel.application.SquirrelApplication.test;
 import static com.priv.yswl.base.permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
     private static final long PLC_STATUES_TIME_DELAY = 3 * 60 * 1000;
     private static final long WARN_TIME_DELAY = 5 * 1000;//五秒
@@ -67,6 +65,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public ImageView iv_recy_img;
     public ImageView iv_dry_img;
     public ImageView iv_harm_img;
+    public Rs232OutService rs232OutService;
 
     @Override
     public boolean getEventBusSetting() {
@@ -123,7 +122,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    Rs232OutService rs232OutService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +190,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        rs232OutService.release();
+//        rs232OutService.release();
         mHandleThread.quit();
     }
 
@@ -478,30 +476,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     class MyCallback implements Rs232Callback {
         @Override
         public void onReceiveOpen(int numb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    isOpen[numb - 1] = true;
-                    ToastUtil.showToast(numb + "号门已经打开！");
-                    if (numb == 1) {
-                        tv_recy_hint.setVisibility(View.VISIBLE);
-                        iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
+            ToastUtil.showToast(numb + "号门已经打开！");
+            isOpen[numb - 1] = true;
+            if (numb == 1) {
+                tv_recy_hint.setVisibility(View.VISIBLE);
+                iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
 //               tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-                    }
-                    if (numb == 2) {
-                        iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
-                        tv_wet_hint.setVisibility(View.VISIBLE);
-                    }
-                    if (numb == 3) {
-                        iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
-                        tv_harm_hint.setVisibility(View.VISIBLE);
-                    }
-                    if (numb == 4) {
-                        iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
-                        tv_dry_hint.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
+            }
+            if (numb == 2) {
+                iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_wet_hint.setVisibility(View.VISIBLE);
+            }
+            if (numb == 3) {
+                iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_harm_hint.setVisibility(View.VISIBLE);
+            }
+            if (numb == 4) {
+                iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
+                tv_dry_hint.setVisibility(View.VISIBLE);
+            }
 
         }
 
@@ -516,14 +509,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onReceiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
                                       String fireWarn, String timeSet, String times) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(String.format(Locale.CHINA, "%d 号门打开" +
-                                    "，weight:%s,temperature:%d,smokeWarn:%s,fireWarn:%s,timeSet:%s,times:%s"
-                            , numb, weight, temperature, smokeWarn, fireWarn, timeSet, times));
-                }
-            });
+            ToastUtil.showToast(String.format(Locale.CHINA, "%d 号门打开" +
+                            "，weight:%s,temperature:%d,smokeWarn:%s,fireWarn:%s,timeSet:%s,times:%s"
+                    , numb, weight, temperature, smokeWarn, fireWarn, timeSet, times));
 
         }
 
@@ -532,13 +520,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onReset(int numb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶重置！");
-                }
-            });
-
+            ToastUtil.showToast(numb + "号垃圾桶重置！");
         }
 
         /**
@@ -546,13 +528,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onReset0(int numb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶0点校准！");
-                }
-            });
-
+            ToastUtil.showToast(numb + "号垃圾桶0点校准！");
         }
 
         /**
@@ -560,13 +536,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onResetWeight(int numb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶负载校准！");
-                }
-            });
-
+            ToastUtil.showToast(numb + "号垃圾桶负载校准！");
         }
 
 
@@ -575,12 +545,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onSetTime(int numb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶设置时间成功！");
-                }
-            });
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    ToastUtil.showToast(numb + "号垃圾桶设置时间成功！");
+//                }
+//            });
 
         }
 
@@ -596,7 +566,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
                     isOpen[numb - 1] = false;
-                    recordOperateRequest(1, numb, weight, 1);
+//                    recordOperateRequest(1, numb, weight, 1);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
@@ -616,7 +586,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
 
-
         }
 
         /**
@@ -624,12 +593,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onFireWarn(int numb, String msg) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶" + msg);
-                }
-            });
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
 
         }
 
@@ -638,12 +602,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onSmokeWarn(int numb, String msg) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶" + msg);
-                }
-            });
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
@@ -651,12 +610,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onFullWarn(int numb, String msg) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶" + msg);
-                }
-            });
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
@@ -664,12 +618,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onFireToolsEmptyWarn(int numb, String msg) {
-             runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶" + msg);
-                }
-            });
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
 
         /**
@@ -677,12 +626,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onMachineWarn(int numb, String msg) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToast(numb + "号垃圾桶" + msg);
-                }
-            });
+            ToastUtil.showToast(numb + "号垃圾桶" + msg);
         }
     }
 

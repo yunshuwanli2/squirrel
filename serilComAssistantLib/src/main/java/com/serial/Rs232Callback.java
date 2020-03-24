@@ -1,4 +1,4 @@
-package com.app.squirrel.serial;
+package com.serial;
 
 /**
  * 单片机返回数据，处理信息接口
@@ -24,7 +24,7 @@ public interface Rs232Callback {
 	 * @param times			多个时间段，使用;分隔
 	 */
 	void onReceiveBordInfo(int number, String weight, int temperature, String smokeWarn, String fireWarn, String timeSet,
-						   String times);
+                           String times);
 	/**
 	 * 成功设置 垃圾桶至0，即清空,返回结果到后台
 	 */
@@ -42,30 +42,30 @@ public interface Rs232Callback {
 	 */
 	void onSetTime(int number);
 	/**
-	 * 
+	 *
 	 * @param weight 获取重量
 	 */
 	void onReceiveWeight(int number, String weight, String timeID);
 	/**
 	 * 火灾报警
 	 */
-	void onFireWarn(int number,String msg);
+	void onFireWarn(int number, String msg);
 	/**
 	 * 烟雾报警
 	 */
-	void onSmokeWarn(int number,String msg);
+	void onSmokeWarn(int number, String msg);
 	/**
 	 * 满载报警
 	 */
-	void onFullWarn(int number,String msg);
+	void onFullWarn(int number, String msg);
 	/**
 	 * 灭火器溶剂不足报警
 	 */
-	
-	void onFireToolsEmptyWarn(int number,String msg);
+
+	void onFireToolsEmptyWarn(int number, String msg);
 	/**
 	 * 电机故障报警
 	 */
-	void onMachineWarn(int number,String msg);
+	void onMachineWarn(int number, String msg);
 
 }
