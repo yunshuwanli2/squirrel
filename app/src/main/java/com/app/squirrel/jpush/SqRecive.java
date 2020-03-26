@@ -76,7 +76,7 @@ public class SqRecive extends JPushMessageReceiver {
     }
 
     public void onCommandResult(Context var1, CmdMessage var2) {
-        L.d(TAG, "[onCommandResult]");
+//        L.d(TAG, "[onCommandResult]");
     }
 
     public void onMultiActionClicked(Context var1, Intent var2) {

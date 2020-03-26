@@ -190,7 +190,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        rs232OutService.release();
+        rs232OutService.release();
         mHandleThread.quit();
     }
 

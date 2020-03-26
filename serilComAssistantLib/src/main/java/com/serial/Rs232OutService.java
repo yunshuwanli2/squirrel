@@ -10,7 +10,7 @@ import java.util.Calendar;
 public class Rs232OutService {
 
     private static final String TAG = "Rs232OutService";
-    static Rs232Contol rs232Contol;
+    private static Rs232Contol rs232Contol;
 
     public Rs232OutService(Rs232Callback callback) {
         rs232Contol = new Rs232Contol("/dev/ttyS1", 9600, callback);
@@ -36,7 +36,7 @@ public class Rs232OutService {
         if (rs232Contol.isOpen()) {
             return true;
         }
-        L.d(TAG, "串口没有打开");
+        L.d(TAG, "Serial Not open");
         return false;
     }
 
@@ -220,7 +220,7 @@ public class Rs232OutService {
 
 
         String date = year + month + day + hour + minute + second;
-        L.d(TAG, "时间：" + date);
+        L.d(TAG, "time：" + date);
         dataLength = Rs232Utils.lengthStr(Rs232Utils.intToHex(((order + date + data).length()) / 2), 4);
 
 
@@ -234,8 +234,8 @@ public class Rs232OutService {
         //-----------字符串组装结束---------------------
 
         //-----------发送数据开始-------------------
-        L.d(TAG, result);
         if (rs232Contol != null && checkSerilIsOpen()) {
+            L.d(TAG, "send data:" + result);
             rs232Contol.sendHex(result);
         }
     }
