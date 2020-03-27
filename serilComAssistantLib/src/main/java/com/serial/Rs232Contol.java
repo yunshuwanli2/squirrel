@@ -1,6 +1,7 @@
 package com.serial;
 
 import com.bjw.bean.ComBean;
+import com.eastcom.ComAssistant.MyFunc;
 import com.eastcom.ComAssistant.SerialHelper;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
@@ -39,7 +40,7 @@ public class Rs232Contol extends SerialHelper {
 
             return stringBuilder.toString();
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -362,41 +363,69 @@ public class Rs232Contol extends SerialHelper {
         return (byte) "0123456789ABCDEF".indexOf(c);
     }
 
-    /*   public static void main(String[] args) {
-           sendData("sendData");
-       }
-   */
+
+/*    public static void main(String[] args) {
+        sendData("sendData");
+    }*/
+
+/*    @Override
+    protected void onDataReceived(String data) {
+        receiveData(data);
+    }*/
 
     @Override
-    protected void onDataReceived(String data) {
-//        String hexStr = bytesToHexString(comBean.bRec);
-        receiveData(data);
+    protected void onDataReceived(ComBean ComRecData) {
+        String data = bytesToHexString(ComRecData.bRec).trim();
+        data = data.toLowerCase();
+        L.d(TAG, "[onDataReceived]:ByteArrToHex:" + data);
+        if (data.startsWith(CommonConstant.startString)) {
+            while (true) {
+                String dataLength = data.substring(10, 14);
+                int dataLengthInt = Integer.parseInt(dataLength, 16);
+                int allLength = (4 + 2 + 1 + 1 + 4 + dataLengthInt) * 2;
+                mDispQueue.AddQueue(data.substring(0, allLength));
+                if (allLength == data.length()) {
+                    L.d(TAG, "[onDataReceived]:allLength == data.length() is true");
+                    break;
+                } else {
+                    data = data.substring(allLength, data.length());
+                }
+            }
+        } else {
+            L.e(TAG, "[onDataReceived] receive data is error :" + data);
+        }
+
     }
 
-    //----------------------------------------------------刷新显示线程
     private class DispQueueThread extends Thread {
-        private Queue<ComBean> QueueList = new LinkedList<ComBean>();
+        private Queue<String> QueueList = new LinkedList<String>();
 
         @Override
         public void run() {
             super.run();
             while (!isInterrupted()) {
-                final ComBean ComData;
-                while ((ComData = QueueList.poll()) != null) {
-                    dispRecData(ComData);
+                final String data;
+                while ((data = QueueList.poll()) != null) {
+                    dispRecData(data);
+                    break;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    L.e(TAG, "队列线程出错了");
                     break;
                 }
             }
         }
 
-        public synchronized void AddQueue(ComBean ComData) {
-            QueueList.add(ComData);
+        public synchronized void AddQueue(String data) {
+            QueueList.add(data);
         }
     }
 
 
-    //----------------------------------------------------显示接收数据
-    private void dispRecData(ComBean ComRecData) {
-        receiveData(Rs232Utils.ByteArrToHex(ComRecData.bRec));
+    private void dispRecData(String data) {
+        receiveData(data);
     }
 }

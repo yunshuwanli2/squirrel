@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.hjq.toast.ToastUtils;
 import com.priv.yswl.base.tool.ActivityManager;
 
 /**
@@ -34,6 +35,7 @@ public abstract class MApplication extends Application /*implements DebugSetting
     public void onCreate() {
         MApplication.app = this;
         super.onCreate();
+        ToastUtils.init(this);
 //        DebugSetting debug = this;
 
     }
