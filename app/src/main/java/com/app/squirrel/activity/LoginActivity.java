@@ -15,6 +15,7 @@ import com.app.squirrel.R;
 import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login3Fragment;
 //import com.priv.arcsoft.FaceDetectFragment3;
+import com.priv.arcsoft.FaceDetectFragment3;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.MApplication;
@@ -198,7 +199,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 switchPhoneLogin();
                 break;
             case R.id.ll_switch3:
-//                switchFaceDetect();
+                switchFaceDetect();
                 break;
             default:
                 break;
@@ -231,22 +232,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         switchFragment(login2Fragment);
     }
 
-//    FaceDetectFragment2 faceDetectFragment;
-//    private void switchFaceDetect() {
-//        if (faceDetectFragment == null) {
-//            faceDetectFragment = new FaceDetectFragment2();
-//        }
-//        if (currentFragment == faceDetectFragment) return;
-//        setFacePressedBg();
-//        setNumbNormarBg();
-//        setScanCodeNormarBg();
-//
-//        switchFragment(faceDetectFragment);
-//    }
+   /* FaceDetectFragment2 faceDetectFragment;
+    private void switchFaceDetect() {
+        if (faceDetectFragment == null) {
+            faceDetectFragment = new FaceDetectFragment2();
+        }
+        if (currentFragment == faceDetectFragment) return;
+        setFacePressedBg();
+        setNumbNormarBg();
+        setScanCodeNormarBg();
+
+        switchFragment(faceDetectFragment);
+    }*/
 
 
 
-   /* FaceDetectFragment3 faceDetectFragment;
+    FaceDetectFragment3 faceDetectFragment;
     private void switchFaceDetect() {
         if (faceDetectFragment == null) {
             faceDetectFragment = new FaceDetectFragment3();
@@ -257,7 +258,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         setScanCodeNormarBg();
 
         switchFragment(faceDetectFragment);
-    }*/
+    }
 
     private void switchFragment(BaseFragment targetFragment) {
         FragmentTransaction transaction = getSupportFragmentManager()

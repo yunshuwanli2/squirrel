@@ -18,7 +18,7 @@ import java.util.Locale;
  */
 public class FileUtils {
 
-    private static final String DEFAULT_FORMAT = "yyyyMMdd_HHmmss_SSS";
+    private static final String DEFAULT_FORMAT = "yyyyMMddHH";
     private static final int SYSTEM = 1024;
     private static final int DIRECTORY_SIZE = 5;//5M 就清理
 

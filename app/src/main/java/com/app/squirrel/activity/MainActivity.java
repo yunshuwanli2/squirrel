@@ -211,7 +211,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
                 openNumb = 4;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                if (!UserManager.isLogin()) {
                     jumpLogin();
                     return;
                 }
@@ -223,7 +223,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                if (!UserManager.isLogin()) {
                     jumpLogin();
                     return;
                 }
@@ -234,7 +234,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_recy_garbage:
                 openNumb = 1;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                if (!UserManager.isLogin()) {
                     jumpLogin();
                     return;
                 }
@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.ll_wet_garbage:
                 openNumb = 2;
-                if (!UserManager.isLogin() && !BuildConfig.IS_TEST) {
+                if (!UserManager.isLogin()) {
                     jumpLogin();
                     return;
                 }
@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 子线程调用
      */
     private void jumpLogin() {
-//        LoginActivity.JumpAct(this);
+        LoginActivity.JumpAct(this);
 
 //        ArcSoftFaceActivity.JumpAct(this);
     }
@@ -545,13 +545,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          */
         @Override
         public void onSetTime(int numb) {
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    ToastUtil.showToast(numb + "号垃圾桶设置时间成功！");
-//                }
-//            });
-
+            ToastUtil.showToast(numb + "号垃圾桶设置时间成功！");
         }
 
         /**
@@ -566,7 +560,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
                     isOpen[numb - 1] = false;
-//                    recordOperateRequest(1, numb, weight, 1);
+                    recordOperateRequest(1, numb, weight, 1);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
@@ -611,6 +605,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFullWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
+            requestRecoFullStatus(numb, true);
         }
 
         /**

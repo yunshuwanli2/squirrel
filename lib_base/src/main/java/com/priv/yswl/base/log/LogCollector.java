@@ -57,7 +57,7 @@ public class LogCollector implements CrashHandlerListener {
     /**
      * 是否清除缓存日志文件
      */
-    private boolean mCleanCache = false;
+    private boolean mCleanCache = true;
     private LogRunnable mLogRunnable;
 
     private LogCollector(Application context) {
