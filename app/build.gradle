@@ -7,8 +7,8 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 32
-        versionName "4.3.4"
+        versionCode 34
+        versionName "4.3.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -90,5 +90,13 @@ dependencies {
 //    api project(path: ':livenessLib')
     api project(path: ':lib_arcsoft')
     api project(path: ':serilComAssistantLib')
+
+    //bugly
+    implementation 'com.tencent.bugly:crashreport:latest.release'
+
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
 
 }

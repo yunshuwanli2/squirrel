@@ -16,9 +16,10 @@ public class Rs232OutService {
         rs232Contol = new Rs232Contol("/dev/ttyS5", 9600, callback);
     }
 
-    public void init() {
+    public static void open() {
         try {
             rs232Contol.open();
+            rs232Contol.startSend();
         } catch (SecurityException e) {
             ToastUtil.showToast("打开串口失败:没有串口读/写权限!");
         } catch (IOException e) {
@@ -28,7 +29,8 @@ public class Rs232OutService {
         }
     }
 
-    public void release() {
+    public static void close() {
+        rs232Contol.stopSend();
         rs232Contol.close();
     }
 

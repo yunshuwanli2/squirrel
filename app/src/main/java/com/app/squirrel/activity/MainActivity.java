@@ -1,5 +1,6 @@
 package com.app.squirrel.activity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -26,6 +27,7 @@ import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
 import com.serial.Rs232Callback;
 import com.serial.Rs232OutService;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -148,12 +150,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
         rs232OutService = new Rs232OutService(new MyCallback());
+        //延迟打开串口
+        loginOrout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rs232OutService.open();
+            }
+        }, 1000);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        rs232OutService.init();
     }
 
 
@@ -187,9 +195,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        rs232OutService.close();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        rs232OutService.release();
+        rs232OutService.close();
         mHandleThread.quit();
     }
 
@@ -272,10 +286,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private boolean[] isOpen = {false, false, false, false};
 
-    private void openDoor(int numb) {
-        Rs232OutService.openDoor(numb);
-    }
-
 
     //提交记录请求
     private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
@@ -333,30 +343,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             final MainActivity activity = mWeakReference.get();
             if (activity == null) return;
             switch (msg.what) {
+                //开门
                 case MSG_OPEN_DOOR:
                     int doorNumb = msg.arg1;
-                    activity.openDoor(doorNumb);
+                    Rs232OutService.openDoor(doorNumb);
                     break;
-//                case MSG_CHECK_PRC_STATUS:
-//                    int doorNumb2 = msg.arg1;
-//                    try {
-//                        if (Rs232OutService.isOn(doorNumb2)) {
-//                            sendMessageDelayed(msg, PRC_STATUS_TIME_DELAY);
-//                        } else {
-//                            removeMessages(MSG_CHECK_PRC_STATUS);
-//                            long weight = Rs232OutService.getWeight(doorNumb2);
-//                            activity.recordOperateRequest(2, doorNumb2, weight, 0);
-//                            if (Rs232OutService.isFull(doorNumb2)) {
-//                                activity.requestRecoFullStatus(doorNumb2, true);
-//                                ToastUtil.showToast("垃圾箱满啦！");
-//                            }
-//                        }
-//                    } catch (ModbusTransportException | ErrorResponseException | ModbusInitException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//
-//                    break;
+                //更新时间
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -387,85 +379,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             });
                         }
                     }.start();
-
                     break;
-//                case MSG_AUTO_CLOSE_DOOR:
-//                    Message message = msg;
-//                    int time = message.arg2;
-//                    final int numb = message.arg1;
-//                    CountDownTimer timer = new CountDownTimer(time * 1000, 1000) {
-//                        public void onTick(final long millisUntilFinished) {
-//                            activity.runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (numb == 1) {
-//                                        activity.tv_recy_hint.setVisibility(View.VISIBLE);
-//                                        activity.iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
-//                                        activity.tv_recy_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-//                                    }
-//                                    if (numb == 2) {
-//                                        activity.iv_wet_img.setBackgroundResource(R.drawable.bg_dash);
-//                                        activity.tv_wet_hint.setVisibility(View.VISIBLE);
-//                                        activity.tv_wet_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-//                                    }
-//                                    if (numb == 3) {
-//                                        activity.iv_harm_img.setBackgroundResource(R.drawable.bg_dash);
-//                                        activity.tv_harm_hint.setVisibility(View.VISIBLE);
-//                                        activity.tv_harm_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-//                                    }
-//                                    if (numb == 4) {
-//                                        activity.iv_dry_img.setBackgroundResource(R.drawable.bg_dash);
-//                                        activity.tv_dry_hint.setVisibility(View.VISIBLE);
-//                                        activity.tv_dry_hint.setText("开门后" + millisUntilFinished / 1000 + "秒内关闭");
-//                                    }
-//                                }
-//                            });
-//
-//                        }
-//
-//                        public void onFinish() {
-//                            activity.runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//
-//                                    if (numb == 1) {
-//                                        activity.tv_recy_hint.setVisibility(View.INVISIBLE);
-//                                        activity.iv_recy_img.setBackground(null);
-//                                    }
-//                                    if (numb == 2) {
-//                                        activity.tv_wet_hint.setVisibility(View.INVISIBLE);
-//                                        activity.iv_wet_img.setBackground(null);
-//                                    }
-//                                    if (numb == 3) {
-//                                        activity.tv_harm_hint.setVisibility(View.INVISIBLE);
-//                                        activity.iv_harm_img.setBackground(null);
-//                                    }
-//                                    if (numb == 4) {
-//                                        activity.iv_dry_img.setBackground(null);
-//                                        activity.tv_dry_hint.setVisibility(View.INVISIBLE);
-//                                    }
-//
-//                                    if (test) {
-//                                        activity.isOpen[numb - 1] = false;
-//
-//                                    } else {
-//                                        try {
-//                                            if (ModbusService.isOn(numb)) {
-//                                                ModbusService.setOnOff(false, numb);
-//                                                activity.isOpen[numb - 1] = false;
-//                                            }
-//                                        } catch (ModbusTransportException | ModbusInitException | ErrorResponseException e) {
-//                                            e.printStackTrace();
-//                                            ToastUtil.showToast(e.getMessage());
-//                                        }
-//                                    }
-//                                }
-//                            });
-//                        }
-//                    };
-//                    timer.start();
-//                    L.d(TAG, "[MSG_UPDATE_COUNTDOWN_TIME]");
-//                    break;
             }
 
         }

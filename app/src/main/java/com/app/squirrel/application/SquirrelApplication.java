@@ -6,6 +6,8 @@ import com.priv.yswl.base.log.LogCollector;
 import com.priv.yswl.base.network.okhttp.OkHttpClientManager;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MSPUtils;
+import com.squareup.leakcanary.LeakCanary;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cn.jpush.android.api.JPushInterface;
@@ -36,8 +38,12 @@ public class SquirrelApplication extends MApplication {
         OkHttpClientManager.init();
         if (BuildConfig.DEBUG && BuildConfig.IS_TEST) {
             CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
-            LogCollector.getInstance(this).setCleanCache(true).setString(getGlobalTag()).start();
+            CrashReport.initCrashReport(getApplicationContext(), "e88f339fe8", true);
+            LeakCanary.install(this);
+        } else {
+            CrashReport.initCrashReport(getApplicationContext(), "e88f339fe8", false);
         }
+        LogCollector.getInstance(this).setCleanCache(true).setString(getGlobalTag()).start();
 
     }
 
