@@ -316,7 +316,7 @@ public class LogCollector implements CrashHandlerListener {
                 reader = new BufferedReader(
                         new InputStreamReader(process.getInputStream(), UTF8));
                 writer = new BufferedWriter(
-                        new OutputStreamWriter(new FileOutputStream(mCacheFile), UTF8));
+                        new OutputStreamWriter(new FileOutputStream(mCacheFile, true), UTF8));
 
                 String str;
                 while (!isCrash && ((str = reader.readLine()) != null)) {

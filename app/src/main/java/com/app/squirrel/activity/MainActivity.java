@@ -85,7 +85,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //开门
         if (openNumb == -1) return;
-//        openDoor(openNumb);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -274,7 +273,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private boolean[] isOpen = {false, false, false, false};
 
     private void openDoor(int numb) {
-        L.d(TAG, "[openDoor] numb" + numb);
         Rs232OutService.openDoor(numb);
     }
 

@@ -99,13 +99,12 @@ public class FileUtils {
      */
     @NonNull
     private static File createFile(File file) {
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return file;
     }

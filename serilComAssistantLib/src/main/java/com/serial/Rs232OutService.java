@@ -13,7 +13,7 @@ public class Rs232OutService {
     private static Rs232Contol rs232Contol;
 
     public Rs232OutService(Rs232Callback callback) {
-        rs232Contol = new Rs232Contol("/dev/ttyS1", 9600, callback);
+        rs232Contol = new Rs232Contol("/dev/ttyS5", 9600, callback);
     }
 
     public void init() {

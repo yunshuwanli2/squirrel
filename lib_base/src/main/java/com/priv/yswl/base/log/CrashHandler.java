@@ -24,7 +24,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private CrashHandlerListener mCrashHandlerListener;
     private Thread.UncaughtExceptionHandler mUncaughtExceptionHandler;
 
-    private CrashHandler() {}
+    private CrashHandler() {
+    }
 
     public static CrashHandler getInstance() {
         return sCrashHandler;
@@ -68,7 +69,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         PrintWriter printWriter = null;
         try {
-            printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
             printWriter.println();
             e.printStackTrace(printWriter);
         } catch (IOException e1) {

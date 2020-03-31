@@ -138,7 +138,7 @@ public class Rs232Contol extends SerialHelper {
         //通过命令判断功能
         if (order.equals(CommonConstant.IN_OPEN)) {
             //返回开门，时间为请求开门的发送时间，用来判断门是否开了
-            //更新开门状态到后台TODO
+            //更新开门状态到后台
             L.d(TAG, "开门返回：" + dataStr);
         } else if (order.equals(CommonConstant.IN_BORDINFO)) {
             //返回读取板子信息，发送信息到后台
@@ -209,12 +209,12 @@ public class Rs232Contol extends SerialHelper {
             String temperature = dataStr.substring(0, 2);
             String fireWarn = dataStr.substring(2, 4);
             if (temperature.equals("01")) {
-                alertMSG = "垃圾桶温度过高警报，请联系管理员处理！";
+                alertMSG = "温度过高警报，请联系管理员处理！";
                 //TODO ，提示到显示器见面，并发送到后台
                 mRs232Callback.onFireWarn(number, alertMSG);
             }
             if (fireWarn.equals("01")) {
-                alertMSG = "垃圾桶有烟雾警报，请联系管理员处理！";
+                alertMSG = "有烟雾警报，请联系管理员处理！";
                 mRs232Callback.onSmokeWarn(number, alertMSG);
             }
 
@@ -230,11 +230,12 @@ public class Rs232Contol extends SerialHelper {
             mRs232Callback.onFireToolsEmptyWarn(number, alertMSG);
         } else if (order.equals(CommonConstant.IN_MACHINE_WARN)) {
             //TODO 上传电机故障，界面提示，并发送到后台
+            L.d(TAG, "order： CommonConstant.IN_MACHINE_WARN");
             String alertMSG = "机器故障，请联系管理员处理！";
             Rs232OutService.getmachineWarn(number);
             mRs232Callback.onMachineWarn(number, alertMSG);
         } else {
-            L.e(TAG, "other order");
+            L.e(TAG, "other order:" + order);
         }
 
     }
