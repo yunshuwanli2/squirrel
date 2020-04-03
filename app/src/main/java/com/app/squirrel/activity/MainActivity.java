@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
+import com.app.squirrel.serial.Rs232Callback;
+import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
 //import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
@@ -25,8 +27,6 @@ import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
-import com.serial.Rs232Callback;
-import com.serial.Rs232OutService;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
@@ -97,7 +97,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
-
     }
 
     private void requestPermiss() {
@@ -128,7 +127,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        requestPermiss();
+
         findViewById(R.id.ll_dry_garbage).setOnClickListener(this);
         findViewById(R.id.ll_harmful_garbage).setOnClickListener(this);
         findViewById(R.id.ll_recy_garbage).setOnClickListener(this);
@@ -145,37 +144,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         loginOrout.setOnClickListener(this);
         loginOrout.setVisibility(View.INVISIBLE);
         tv_date = findViewById(R.id.tv_date);
-        mHandleThread = new HandlerThread(getClass().getSimpleName());
+        mHandleThread = new HandlerThread(TAG);
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
         rs232OutService = new Rs232OutService(new MyCallback());
-        //延迟打开串口
-        loginOrout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rs232OutService.open();
-            }
-        }, 1000);
+        requestPermiss();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        rs232OutService.start();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        L.d(TAG, "[onResume]");
         mSafeHandle.sendEmptyMessage(MSG_UPDATE_TIME);
-        L.d(TAG, "[sendEmptyMessage MSG_UPDATE_TIME]");
+        L.d(TAG, "[onResume] sendEmptyMessage :MSG_UPDATE_TIME");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        L.d(TAG, "[onResume]");
         mSafeHandle.removeMessages(SafeHandler.MSG_UPDATE_TIME);
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
     }
@@ -197,13 +191,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        rs232OutService.close();
+        rs232OutService.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        rs232OutService.close();
+        rs232OutService.stop();
         mHandleThread.quit();
     }
 
@@ -328,8 +322,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OPEN_DOOR = 0x6;
-        //        public static final int MSG_AUTO_CLOSE_DOOR = 0x3;
-//        public static final int MSG_CHECK_PRC_STATUS = 0x1;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
         private WeakReference<MainActivity> mWeakReference;
 
@@ -346,7 +338,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //开门
                 case MSG_OPEN_DOOR:
                     int doorNumb = msg.arg1;
-                    Rs232OutService.openDoor(doorNumb);
+                    activity.openDoor(doorNumb);
                     break;
                 //更新时间
                 case MSG_UPDATE_TIME:
@@ -383,6 +375,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
 
         }
+
+
+    }
+
+    private void openDoor(int doorNumb) {
+//        rs232OutService.start();
+        Rs232OutService.openDoor(doorNumb);
     }
 
     class MyCallback implements Rs232Callback {
@@ -517,7 +516,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFullWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestRecoFullStatus(numb, true);
+//            requestRecoFullStatus(numb, true);
         }
 
         /**

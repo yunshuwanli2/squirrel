@@ -1,4 +1,4 @@
-package com.serial;
+package com.app.squirrel.serial;
 
 
 import com.priv.yswl.base.tool.L;
@@ -6,7 +6,7 @@ import com.priv.yswl.base.tool.L;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.serial.Rs232OutService.isBlank;
+import static com.app.squirrel.serial.Rs232OutService.isBlank;
 
 public class Rs232Utils {
     private static final String TAG = "Rs232Utils";

@@ -39,7 +39,7 @@ public class SquirrelApplication extends MApplication {
         if (BuildConfig.DEBUG && BuildConfig.IS_TEST) {
             CustomActivityOnCrash.install(this);//自定义奔溃界面初始化
             CrashReport.initCrashReport(getApplicationContext(), "e88f339fe8", true);
-            LeakCanary.install(this);
+//            LeakCanary.install(this);
         } else {
             CrashReport.initCrashReport(getApplicationContext(), "e88f339fe8", false);
         }

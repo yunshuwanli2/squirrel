@@ -1,7 +1,6 @@
-package com.serial;
+package com.app.squirrel.serial;
 
 import com.priv.yswl.base.tool.L;
-import com.priv.yswl.base.tool.ToastUtil;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -13,23 +12,26 @@ public class Rs232OutService {
     private static Rs232Contol rs232Contol;
 
     public Rs232OutService(Rs232Callback callback) {
-        rs232Contol = new Rs232Contol("/dev/ttyS5", 9600, callback);
+        rs232Contol = new Rs232Contol("/dev/ttyS6", 9600, callback);
     }
 
-    public static void open() {
+    public void start() {
         try {
-            rs232Contol.open();
+            if (!rs232Contol.isOpen()) {
+                rs232Contol.open();
+            }
             rs232Contol.startSend();
         } catch (SecurityException e) {
-            ToastUtil.showToast("打开串口失败:没有串口读/写权限!");
+            L.e(TAG, "打开串口失败:没有串口读/写权限!");
         } catch (IOException e) {
-            ToastUtil.showToast("打开串口失败:未知错误!");
+            L.e(TAG, "打开串口失败:未知错误!");
         } catch (InvalidParameterException e) {
-            ToastUtil.showToast("打开串口失败:参数错误!");
+            L.e(TAG, "打开串口失败:参数错误!");
         }
+
     }
 
-    public static void close() {
+    public void stop() {
         rs232Contol.stopSend();
         rs232Contol.close();
     }
@@ -199,8 +201,15 @@ public class Rs232OutService {
      * @return 返回具体数据字符串
      */
     private static void sendData(int number, String order, String data) {
+        //-----------发送数据开始-------------------
+        if (rs232Contol != null && checkSerilIsOpen()) {
+            rs232Contol.sendHex(spellData(number, order, data));
+        }
+    }
 
-        //-----------开始组装主要发送的数据字符串------------
+    public static String spellData(int number, String order, String data) {
+
+//-----------开始组装主要发送的数据字符串------------
 
         String dataLength = "";
 
@@ -232,16 +241,10 @@ public class Rs232OutService {
 
         String sumStr = Rs232Utils.sumCheck(result);
 
-        result += sumStr + new String(CommonConstant.endString);
+        result += sumStr + CommonConstant.endString;
         //-----------字符串组装结束---------------------
-
-        //-----------发送数据开始-------------------
-        if (rs232Contol != null && checkSerilIsOpen()) {
-            L.d(TAG, "send data:" + result);
-            rs232Contol.sendHex(result);
-        }
+        return result;
     }
-
 
     public static boolean isNotBlank(String str) {
         return !isBlank(str);

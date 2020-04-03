@@ -1,4 +1,4 @@
-package com.serial;
+package com.app.squirrel.serial;
 
 public class CommonConstant {
 

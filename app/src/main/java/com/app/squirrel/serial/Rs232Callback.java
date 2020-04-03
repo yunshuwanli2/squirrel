@@ -1,4 +1,4 @@
-package com.serial;
+package com.app.squirrel.serial;
 
 /**
  * 单片机返回数据，处理信息接口
