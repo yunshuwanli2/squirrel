@@ -54,7 +54,6 @@ public class Rs232Contol extends SerialHelper {
         final String endStrTmp = data.substring(length - 8, length);
         if (!endStrTmp.equals(CommonConstant.endString)) {
             //数据错误，返回
-//            ToastUtil.showToast("The end operator number error：endStrTmp：" + endStrTmp);
             L.d(TAG, "结尾符数据错误：当前结尾符为：" + endStrTmp);
             return;
         }
@@ -68,7 +67,6 @@ public class Rs232Contol extends SerialHelper {
         //核对校验码是否正确
         if (!checkString.equals(sumStr)) {
             //数据错误，返回
-//            ToastUtil.showToast("Check code error，checkString：" + checkString + "，sumStr：" + sumStr);
             L.d(TAG, String.format("Check code error，checkString:%s,sumStr:%s", checkString, sumStr));
             return;
         }
@@ -78,30 +76,22 @@ public class Rs232Contol extends SerialHelper {
         final String startStrTmp = data.substring(0, 8);
         if (!startStrTmp.equals(CommonConstant.startString)) {
             //数据错误，返回
-//            ToastUtil.showToast("start srt error startStrTmp:" + startStrTmp);
-
             L.d(TAG, "开始字符数据错误：当前开始字符为：" + startStrTmp);
             return;
         }
 
-
         /**
          * 以下开始获取解析真实数据
          */
-
         String baseData = data.substring(8, length - 10);
-
         //主板地址,一个字节
         String bordHex = baseData.substring(0, 2);
         final int number = Integer.parseInt(bordHex, 16);
-
         //数据字节长度 两个字节
         String dataLength = baseData.substring(2, 6);
         final int dataLength10 = Integer.parseInt(dataLength, 16);
-
         //获取命令	两个字节
         final String order = baseData.substring(6, 10);
-
         //获取时间  六个字节
         final String dateTimeStr = baseData.substring(10, 22);
         //具体数据
@@ -122,7 +112,7 @@ public class Rs232Contol extends SerialHelper {
         if (order.equals(CommonConstant.IN_OPEN)) {
             //返回开门，时间为请求开门的发送时间，用来判断门是否开了
             //更新开门状态到后台
-            L.d(TAG, "开门返回：" + dataStr);
+            L.d(TAG, "CommonConstant.IN_OPEN：" + dataStr);
         } else if (order.equals(CommonConstant.IN_BORDINFO)) {
             //返回读取板子信息，发送信息到后台
             int height1 = Integer.parseInt(dataStr.substring(0, 2), 16);
@@ -156,21 +146,25 @@ public class Rs232Contol extends SerialHelper {
             }
 
             /**
-             * 以下发送数据到后台接口，TODO
+             * 以下发送数据到后台接口，
              */
+            L.d(TAG, "order： CommonConstant.IN_BORDINFO");
             mRs232Callback.onReceiveBordInfo(number, height, temperature, smokeWarn, fireWarn, timeSet, times);
         } else if (order.equals(CommonConstant.IN_RESET)) {
-            //返回垃圾桶置0，返回结果到后台。TODO
+            //返回垃圾桶置0，返回结果到后台。
+            L.d(TAG, "order： CommonConstant.IN_RESET");
             mRs232Callback.onReset(number);
         } else if (order.equals(CommonConstant.IN_RESET_0)) {
-            //返回垃圾桶零点校准，返回结果到后台。TODO
+            //返回垃圾桶零点校准，返回结果到后台。
+            L.d(TAG, "order： CommonConstant.IN_RESET_0");
             mRs232Callback.onReset0(number);
-
         } else if (order.equals(CommonConstant.IN_SET_WEIGHT)) {
-            //返回垃圾桶负载校准，返回结果到后台。TODO
+            //返回垃圾桶负载校准，返回结果到后台。
+            L.d(TAG, "order： CommonConstant.IN_SET_WEIGHT");
             mRs232Callback.onResetWeight(number);
         } else if (order.equals(CommonConstant.IN_SET_TIME)) {
-            //返回时间段设置，返回结果到后台。TODO
+            //返回时间段设置，返回结果到后台。
+            L.d(TAG, "order： CommonConstant.IN_SET_TIME");
             mRs232Callback.onSetTime(number);
         } else if (order.equals(CommonConstant.IN_WEIGHT)) {
             Rs232OutService.getHeight(number);
@@ -179,36 +173,38 @@ public class Rs232Contol extends SerialHelper {
 			int height2 = Integer.parseInt(dataStr.substring(2,4),16);
 			//投递重量,单位 kg
 			String height = height1+"."+height2;*/
+            L.d(TAG, "order： CommonConstant.IN_WEIGHT");
             String height = Integer.parseInt(dataStr.substring(0, 4), 16) + "";
-            /**
-             * TODO 发送结果到后台
-             */
             mRs232Callback.onReceiveWeight(number, height, dateTimeStr);
         } else if (order.equals(CommonConstant.IN_FIRE_WARN)) {
-            //上传防火报警，界面提示，并发送到后台 TODO
+            //TODO 上传防火报警，界面提示，并发送到后台
 
             Rs232OutService.getFireWarn(1);
             String alertMSG = "";
             String temperature = dataStr.substring(0, 2);
             int temperatureInt = Integer.parseInt(temperature, 16);
             if (temperatureInt >= 75) {
+                L.d(TAG, "order： onFireWarn");
                 alertMSG = "温度过高警报，请联系管理员处理！";
-                //TODO ，提示到显示器见面，并发送到后台
+                //TODO 提示到显示器见面，并发送到后台
                 mRs232Callback.onFireWarn(number, alertMSG);
             }
             String fireWarn = dataStr.substring(2, 4);
             if (fireWarn.equals("01")) {
+                L.d(TAG, "order： onSmokeWarn");
                 alertMSG = "有烟雾警报，请联系管理员处理！";
                 mRs232Callback.onSmokeWarn(number, alertMSG);
             }
 
         } else if (order.equals(CommonConstant.IN_FULL_WARN)) {
             //TODO 上传满载报警，界面提示，并发送到后台
+            L.d(TAG, "order： CommonConstant.IN_FULL_WARN");
             String alertMSG = "满了，请联系管理员处理！";
             Rs232OutService.getFullWarn(number);
             mRs232Callback.onFullWarn(number, alertMSG);
         } else if (order.equals(CommonConstant.IN_FIRE_TOOLS_EMPTY)) {
             //TODO 上传灭火溶剂不足，界面提示，并发送到后台
+            L.d(TAG, "order： CommonConstant.IN_FIRE_TOOLS_EMPTY");
             String alertMSG = "溶剂灭火器不足，请联系管理员处理！";
             Rs232OutService.getFireToolsNotEnough(number);
             mRs232Callback.onFireToolsEmptyWarn(number, alertMSG);
