@@ -9,25 +9,26 @@ import android.support.v4.app.FragmentManager;
 /**
  * 权限申请入口类
  */
+
 public class PermissionUtil {
 
     private static final String TAG = "PermissionsUtil";
     public static String[] READ_WRITE_CAMERA_PERMISSION = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.CAMERA
+            Manifest.permission.CAMERA,
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     private PermissionFragment fragment;
-
     public PermissionUtil(@NonNull FragmentActivity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             fragment = getPermissionsFragment(activity);
+        }
+
     }
 
     private PermissionFragment getPermissionsFragment(FragmentActivity activity) {
-        if(activity==null)return null;
+        if (activity == null) return null;
         PermissionFragment fragment = (PermissionFragment) activity.getSupportFragmentManager().findFragmentByTag(TAG);
         boolean isNewInstance = fragment == null;
         if (isNewInstance) {
@@ -50,7 +51,7 @@ public class PermissionUtil {
      * @param listener    监听权限接口 不允许为空
      */
     public void requestPermissions(String[] permissions, @NonNull PermissionListener listener) {
-        if (Build.VERSION.SDK_INT >= 26 || fragment != null) {
+        if (fragment != null) {
             fragment.setListener(listener);
             fragment.requestPermissions(permissions);
         } else {

@@ -1,6 +1,5 @@
 package com.priv.arcsoft;
 
-import android.Manifest;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -8,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,15 +42,12 @@ import com.priv.arcsoft.util.face.LivenessType;
 import com.priv.arcsoft.util.face.RecognizeColor;
 import com.priv.arcsoft.util.face.RequestFeatureStatus;
 import com.priv.arcsoft.util.face.RequestLivenessStatus;
-import com.priv.arcsoft.util.soUtil;
+import com.priv.arcsoft.util.SoUtil;
 import com.priv.arcsoft.widget.FaceRectView;
 import com.priv.yswl.base.BaseFragment;
-import com.priv.yswl.base.permission.PermissionListener;
-import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -70,7 +65,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener {
+public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "RegisterAndRecognize";
     private static final int MAX_DETECT_NUM = 10;
     private static final int WAIT_LIVENESS_INTERVAL = 100;
@@ -127,7 +122,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        soUtil.checkSoFile(getActivity(),soUtil.LIBRARIES);
+        SoUtil.checkSoFile(getActivity(), SoUtil.LIBRARIES);
 
         RuntimeABI runtimeABI = FaceEngine.getRuntimeABI();
         L.d(TAG, "subscribe: getRuntimeABI() " + runtimeABI);
@@ -284,8 +279,8 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
     }
 
     private void initCamera() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//        DisplayMetrics metrics = new DisplayMetrics();
+//        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         final FaceListener faceListener = new FaceListener() {
             @Override
@@ -494,6 +489,7 @@ public class FaceDetectFragment3 extends BaseFragment implements ViewTreeObserve
         cameraHelper = new CameraHelper.Builder()
                 .previewViewSize(new Point(previewView.getMeasuredWidth(), previewView.getMeasuredHeight()))
                 .rotation(getActivity().getWindowManager().getDefaultDisplay().getRotation())
+                //设置摄像头id (0-5 本地需求6个)
                 .specificCameraId(rgbCameraID != null ? rgbCameraID : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .isMirror(false)
                 .previewOn(previewView)

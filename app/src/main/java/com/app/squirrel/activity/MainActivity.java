@@ -13,21 +13,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
 import com.app.squirrel.serial.Rs232Callback;
 import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
-//import com.priv.arcsoft.ArcSoftFaceActivity;
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.XXPermissions;
+import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
-import com.priv.yswl.base.permission.PermissionListener;
 import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,7 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
-import static com.priv.yswl.base.permission.PermissionUtil.READ_WRITE_CAMERA_PERMISSION;
+
+//import com.priv.arcsoft.ArcSoftFaceActivity;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public ImageView iv_recy_img;
     public ImageView iv_dry_img;
     public ImageView iv_harm_img;
-    public Rs232OutService rs232OutService;
+//    public Rs232OutService rs232OutService;
 
     @Override
     public boolean getEventBusSetting() {
@@ -101,25 +101,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void requestPermiss() {
         L.d(TAG, "[requestPermiss]");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            PermissionUtil permissionUtil = new PermissionUtil(this);
-            permissionUtil.requestPermissions(READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
-                @Override
-                public void onGranted() {
-                    L.d(TAG, "[onGranted]");
-                }
+        XXPermissions.with(this)
+                // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+                .constantRequest()
+                // 支持请求6.0悬浮窗权限8.0请求安装权限
+                //.permission(Permission.SYSTEM_ALERT_WINDOW, Permission.REQUEST_INSTALL_PACKAGES)
+                // 不指定权限则自动获取清单中的危险权限
+                .permission(PermissionUtil.READ_WRITE_CAMERA_PERMISSION)
+                .request(new OnPermission() {
 
-                @Override
-                public void onDenied(List<String> deniedPermission) {
+                    @Override
+                    public void hasPermission(List<String> granted, boolean all) {
 
-                }
+                    }
 
-                @Override
-                public void onDeniedForever(List<String> deniedPermission) {
+                    @Override
+                    public void noPermission(List<String> denied, boolean quick) {
 
-                }
-            });
-        }
+                    }
+                });
     }
 
 
@@ -148,14 +148,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-        rs232OutService = new Rs232OutService(new MyCallback());
-        requestPermiss();
+//        rs232OutService = new Rs232OutService(new MyCallback());
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        rs232OutService.start();
+//        rs232OutService.start();
+        requestPermiss();
     }
 
 
@@ -191,13 +192,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        rs232OutService.stop();
+//        rs232OutService.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        rs232OutService.stop();
+//        rs232OutService.stop();
         mHandleThread.quit();
     }
 
@@ -273,9 +274,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 子线程调用
      */
     private void jumpLogin() {
-        LoginActivity.JumpAct(this);
+//        LoginActivity.JumpAct(this);
 
-//        ArcSoftFaceActivity.JumpAct(this);
+        ArcSoftFaceActivity.JumpAct(this);
     }
 
     private boolean[] isOpen = {false, false, false, false};

@@ -28,5 +28,6 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.2'
     api 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.hjq:toast:8.0' //ÍÂË¾¹¤¾ß
+    implementation 'com.hjq:toast:8.0' //toastUtil
+    api 'com.hjq:xxpermissions:6.2' //permissionUtil
 }

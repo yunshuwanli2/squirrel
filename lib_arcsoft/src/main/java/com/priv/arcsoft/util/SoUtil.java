@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class soUtil {
+public class SoUtil {
 
     // Demo 所需的动态库文件
     public static final String[] LIBRARIES = new String[]{

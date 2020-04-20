@@ -23,20 +23,15 @@ public class ArcSoftFaceActivity extends FragmentActivity {
         context.startActivity(intent);
     }
 
-    private static final String[] NEEDED_PERMISSIONS = new String[]{
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_PHONE_STATE
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
         PermissionUtil permissionUtil = new PermissionUtil(this);
-        permissionUtil.requestPermissions(NEEDED_PERMISSIONS, new PermissionListener() {
+        permissionUtil.requestPermissions(PermissionUtil.READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
             @Override
             public void onGranted() {
-                getSupportFragmentManager().beginTransaction().replace(R.id.content, new FaceDetectFragment3()).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content, new MultiCameraFaceDetectFragment()).commitAllowingStateLoss();
             }
 
             @Override

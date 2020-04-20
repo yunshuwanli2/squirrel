@@ -88,7 +88,7 @@ dependencies {
 
     implementation project(path: ':lib_base')
 //   remove api project(path: ':livenessLib')
-//    api project(path: ':lib_arcsoft')
+    api project(path: ':lib_arcsoft')
 //    api project(path: ':serilComAssistantLib')
 
     //bugly
