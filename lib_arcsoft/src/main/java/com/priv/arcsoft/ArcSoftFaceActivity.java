@@ -2,6 +2,7 @@ package com.priv.arcsoft;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ArcSoftFaceActivity extends FragmentActivity {
     public static void JumpAct(Activity context) {
         Intent intent = new Intent(context, ArcSoftFaceActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -31,7 +33,7 @@ public class ArcSoftFaceActivity extends FragmentActivity {
         permissionUtil.requestPermissions(PermissionUtil.READ_WRITE_CAMERA_PERMISSION, new PermissionListener() {
             @Override
             public void onGranted() {
-                getSupportFragmentManager().beginTransaction().replace(R.id.content, new MultiCameraFaceDetectFragment()).commitAllowingStateLoss();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content, new FaceDetectFragment3()).commitAllowingStateLoss();
             }
 
             @Override

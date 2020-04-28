@@ -14,11 +14,18 @@ import android.widget.TextView;
 import com.app.squirrel.R;
 import com.app.squirrel.fragment.Login1Fragment;
 import com.app.squirrel.fragment.Login3Fragment;
+import com.arcsoft.face.ActiveFileInfo;
+import com.arcsoft.face.ErrorInfo;
+import com.arcsoft.face.FaceEngine;
+import com.arcsoft.face.enums.RuntimeABI;
 import com.priv.arcsoft.FaceDetectFragment3;
+import com.priv.arcsoft.common.Constants;
+import com.priv.arcsoft.util.SoUtil;
 import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.MApplication;
 import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -86,7 +93,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mSafeHandle = new SafeHandler(this);
+        initUI();
+        switchScanCodeLogin();
+        initArcSoft();
+    }
 
+    private void initUI() {
         tv_date = findViewById(R.id.tv_date);
         findViewById(R.id.tv_back).setOnClickListener(this);
 
@@ -100,9 +113,27 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         ll_switch1.setOnClickListener(this);
         ll_switch2.setOnClickListener(this);
         ll_switch3.setOnClickListener(this);
-        mSafeHandle = new SafeHandler(this);
+    }
 
-        switchScanCodeLogin();
+    private void initArcSoft() {
+        SoUtil.checkSoFile(this, SoUtil.LIBRARIES);
+        RuntimeABI runtimeABI = FaceEngine.getRuntimeABI();
+        L.d(TAG, "subscribe: getRuntimeABI() " + runtimeABI);
+
+        int activeCode = FaceEngine.activeOnline(this, Constants.APP_ID, Constants.SDK_KEY);
+        if (activeCode == ErrorInfo.MOK || activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
+            L.d(TAG, "激活成功");
+        } else {
+            //
+            ToastUtil.showToast("引擎激活失败");
+            L.e(TAG, "引擎激活失败");
+        }
+        //获取虹软sdk的一些基本信息
+        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
+        int res = FaceEngine.getActiveFileInfo(this, activeFileInfo);
+        if (res == ErrorInfo.MOK) {
+            L.d(TAG, activeFileInfo.toString());
+        }
     }
 
     void setScanCodePressedBg() {
@@ -245,7 +276,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }*/
 
 
-       FaceDetectFragment3 faceDetectFragment;
+    FaceDetectFragment3 faceDetectFragment;
+
     private void switchFaceDetect() {
         if (faceDetectFragment == null) {
             faceDetectFragment = new FaceDetectFragment3();

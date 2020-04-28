@@ -116,16 +116,16 @@ public class Login3Fragment extends BaseFragment implements View.OnClickListener
         L.e(TAG, "[onSucceed] result:" + result);
 
         String token = null;
+        int isFace = 0;
         String code = result.optString("code");
         if (code.equals("0")) {
             JSONObject data = result.optJSONObject("data");
             token = data.optString("token");
+            isFace = data.optInt("isFace");
         }
         if (!TextUtils.isEmpty(token)) {
             L.e(TAG, "获取token成功，postSticky");
-            MSPUtils.put("token", token);
-            UserManager.setLoginStatus(true);
-            EventBus.getDefault().postSticky(new Message());
+            UserManager.login(token,isFace);
         } else {
             L.e(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));

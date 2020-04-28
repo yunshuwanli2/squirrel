@@ -78,24 +78,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onEventMessage(Message message) {
         L.d(TAG, "[onEventMessage]");
         ToastUtil.showToast("登录成功");
-        //
         EventBus.getDefault().removeStickyEvent(message);
         setLoginStatues();
+
         //登录成功2分钟后自动登出
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
-        //开门
-        if (openNumb == -1) return;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Message message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = openNumb;
-                mSafeHandle.sendMessage(message);
-            }
-        });
+        if (message.arg1 == 0) {
+            loginOrout.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ArcSoftFaceActivity.JumpAct(MainActivity.this);
+                }
+            },1000);
+        }
+//        //开门
+//        if (openNumb == -1) return;
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Message message = Message.obtain();
+//                message.what = SafeHandler.MSG_OPEN_DOOR;
+//                message.arg1 = openNumb;
+//                mSafeHandle.sendMessage(message);
+//            }
+//        });
 
     }
 
@@ -274,9 +282,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 子线程调用
      */
     private void jumpLogin() {
-//        LoginActivity.JumpAct(this);
+        LoginActivity.JumpAct(this);
 
-        ArcSoftFaceActivity.JumpAct(this);
+//        ArcSoftFaceActivity.JumpAct(this);
     }
 
     private boolean[] isOpen = {false, false, false, false};

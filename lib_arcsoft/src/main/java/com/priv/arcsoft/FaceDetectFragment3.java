@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,11 +46,17 @@ import com.priv.arcsoft.util.face.RequestLivenessStatus;
 import com.priv.arcsoft.util.SoUtil;
 import com.priv.arcsoft.widget.FaceRectView;
 import com.priv.yswl.base.BaseFragment;
+import com.priv.yswl.base.network.CallBack.HttpCallback;
+import com.priv.yswl.base.network.HttpClientProxy;
+import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,25 +129,8 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SoUtil.checkSoFile(getActivity(), SoUtil.LIBRARIES);
-
-        RuntimeABI runtimeABI = FaceEngine.getRuntimeABI();
-        L.d(TAG, "subscribe: getRuntimeABI() " + runtimeABI);
-
-        int activeCode = FaceEngine.activeOnline(getActivity(), Constants.APP_ID, Constants.SDK_KEY);
-        if (activeCode == ErrorInfo.MOK || activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-            L.d(TAG, "激活成功");
-        } else {
-            //
-            ToastUtil.showToast("引擎激活失败");
-            L.e(TAG, "引擎激活失败");
-        }
-        //获取虹软sdk的一些基本信息
-        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-        int res = FaceEngine.getActiveFileInfo(getActivity(), activeFileInfo);
-        if (res == ErrorInfo.MOK) {
-            L.d(TAG, activeFileInfo.toString());
-        }
+        //本地人脸库初始化
+        FaceServer.getInstance().init(getActivity());
     }
 
     @Nullable
@@ -163,8 +153,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //本地人脸库初始化
-        FaceServer.getInstance().init(getActivity());
+
         initView(view);
     }
 
@@ -408,7 +397,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                         , cameraId, isMirror, false, false);
                 L.d(TAG, "onCameraOpened: " + drawHelper.toString());
                 // 切换相机的时候可能会导致预览尺寸发生变化
-                if (faceHelper == null ||lastPreviewSize == null ||
+                if (faceHelper == null || lastPreviewSize == null ||
                         lastPreviewSize.width != previewSize.width || lastPreviewSize.height != previewSize.height) {
                     Integer trackedFaceCount = null;
                     // 记录切换时的人脸序号
@@ -433,7 +422,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
-                L.d(TAG, "[onPreview]");
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
@@ -443,7 +431,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                 }
                 registerFace(nv21, facePreviewInfoList);
                 clearLeftFace(facePreviewInfoList);
-
                 if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
                     for (int i = 0; i < facePreviewInfoList.size(); i++) {
                         Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
@@ -504,10 +491,22 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
             registerStatus = REGISTER_STATUS_PROCESSING;
             Observable.create(new ObservableOnSubscribe<Boolean>() {
                 @Override
-                public void subscribe(ObservableEmitter<Boolean> emitter) {
-                    boolean success = FaceServer.getInstance().registerNv21(getContext(), nv21.clone(), previewSize.width, previewSize.height,
-                            facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount());
-                    emitter.onNext(success);
+                public void subscribe(final ObservableEmitter<Boolean> emitter) {
+                    FaceServer.getInstance().registerNv21Network(getContext(), nv21.clone(), previewSize.width, previewSize.height,
+                            facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount(),new HttpCallback<JSONObject>() {
+                                @Override
+                                public void onSucceed(int requestId, JSONObject result) {
+                                    L.d(TAG, "[onSucceed]人脸注册成功" + result.toString());
+                                    emitter.onNext(true );
+                                }
+
+                                @Override
+                                public void onFail(int requestId, String errorMsg) {
+                                    L.d(TAG, "[onFail]人脸注册失败：" + errorMsg);
+                                    emitter.onNext(false );
+                                }
+                            });
+
                 }
             }).subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -608,15 +607,33 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
     }
 
+
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
                     public void subscribe(ObservableEmitter<CompareResult> emitter) {
 //                        Log.i(TAG, "subscribe: fr search start = " + System.currentTimeMillis() + " trackId = " + requestId);
-                        CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
+//                        CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
 //                        Log.i(TAG, "subscribe: fr search end = " + System.currentTimeMillis() + " trackId = " + requestId);
-                        emitter.onNext(compareResult);
+                        String url = "wxApi/searcheface";
+                        Map<String, Object> para = new HashMap<>();
+                        para.put("faceFeature", Base64.decode(frFace.getFeatureData(), Base64.DEFAULT));
+                        String str = GsonUtil.GsonString(para);
+                        L.d(TAG, "searcheface :请求参数为：" + str);
+                        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, new HttpCallback<JSONObject>() {
+                            @Override
+                            public void onSucceed(int requestId, JSONObject result) {
+                                L.d(TAG, "人脸注册成功" + result.toString());
+                            }
+
+                            @Override
+                            public void onFail(int requestId, String errorMsg) {
+                                L.d(TAG, "人脸注册失败：" + errorMsg);
+                            }
+                        });
+
+//                        emitter.onNext(compareResult);
 
                     }
                 })

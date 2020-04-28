@@ -3,6 +3,7 @@ package com.priv.arcsoft.faceserver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Base64;
 import android.util.Log;
 
 import com.arcsoft.face.ErrorInfo;
@@ -17,13 +18,21 @@ import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.arcsoft.imageutil.ArcSoftRotateDegree;
 import com.priv.arcsoft.model.FaceRegisterInfo;
+import com.priv.yswl.base.network.CallBack.HttpCallback;
+import com.priv.yswl.base.network.HttpClientProxy;
+import com.priv.yswl.base.tool.GsonUtil;
+import com.priv.yswl.base.tool.L;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 人脸库操作类，包含注册和搜索
@@ -282,7 +291,46 @@ public class FaceServer {
         }
 
     }
+    public void registerNv21Network(Context context, byte[] nv21, int width, int height, FaceInfo faceInfo, String name,HttpCallback callback) {
+        synchronized (this) {
+            if (faceEngine == null || context == null || nv21 == null || width % 4 != 0 || nv21.length != width * height * 3 / 2) {
+                Log.e(TAG, "registerNv21: invalid params");
+                return;
+            }
 
+            if (ROOT_PATH == null) {
+                ROOT_PATH = context.getFilesDir().getAbsolutePath();
+            }
+            //特征存储的文件夹
+            File featureDir = new File(ROOT_PATH + File.separator + SAVE_FEATURE_DIR);
+            if (!featureDir.exists() && !featureDir.mkdirs()) {
+                Log.e(TAG, "registerNv21: can not create feature directory");
+                return;
+            }
+            //图片存储的文件夹
+            File imgDir = new File(ROOT_PATH + File.separator + SAVE_IMG_DIR);
+            if (!imgDir.exists() && !imgDir.mkdirs()) {
+                Log.e(TAG, "registerNv21: can not create image directory");
+                return;
+            }
+            FaceFeature faceFeature = new FaceFeature();
+            //特征提取
+            int code = faceEngine.extractFaceFeature(nv21, width, height, FaceEngine.CP_PAF_NV21, faceInfo, faceFeature);
+            if (code != ErrorInfo.MOK) {
+                Log.e(TAG, "registerNv21: extractFaceFeature failed , code is " + code);
+            } else {
+                String userName = name == null ? String.valueOf(System.currentTimeMillis()) : name;
+                String url = "wxApi/registerFace";
+                Map<String, Object> para = new HashMap<>();
+                para.put("faceFeature", Base64.encodeToString(faceFeature.getFeatureData(), Base64.DEFAULT));
+                String str = GsonUtil.GsonString(para);
+                L.d(TAG, "registerFace :请求参数为：" + str);
+                HttpClientProxy.getInstance().postJSONAsyn(url, 1, str, callback);
+
+            }
+        }
+
+    }
     /**
      * 用于注册照片人脸
      *
