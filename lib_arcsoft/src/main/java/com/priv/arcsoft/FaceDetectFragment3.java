@@ -46,6 +46,7 @@ import com.priv.arcsoft.util.face.RequestLivenessStatus;
 import com.priv.arcsoft.util.SoUtil;
 import com.priv.arcsoft.widget.FaceRectView;
 import com.priv.yswl.base.BaseFragment;
+import com.priv.yswl.base.UserManager;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.tool.GsonUtil;
@@ -125,12 +126,19 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
     private static final float SIMILAR_THRESHOLD = 0.8F;
 
+    boolean isLogin, isFace;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //本地人脸库初始化
         FaceServer.getInstance().init(getActivity());
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            isLogin = bundle.getBoolean(ArcSoftFaceActivity.isLogin_key);
+            isFace = bundle.getBoolean(ArcSoftFaceActivity.isFace_key);
+        }
+
     }
 
     @Nullable
@@ -164,22 +172,29 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         faceRectView = view.findViewById(R.id.single_camera_face_rect_view);
         switchLivenessDetect = view.findViewById(R.id.single_camera_switch_liveness_detect);
-        switchLivenessDetect.setChecked(livenessDetect);
-        switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                livenessDetect = isChecked;
-            }
-        });
+        switchLivenessDetect.setVisibility(View.GONE);
+//        switchLivenessDetect.setChecked(livenessDetect);
+//        switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                livenessDetect = isChecked;
+//            }
+//        });
         compareResultList = new ArrayList<>();
-        view.findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (registerStatus == REGISTER_STATUS_DONE) {
-                    registerStatus = REGISTER_STATUS_READY;
-                }
-            }
-        });
+        if (isFace) {
+            registerStatus = REGISTER_STATUS_DONE;
+        } else {
+            registerStatus = REGISTER_STATUS_READY;
+        }
+        view.findViewById(R.id.register).setVisibility(View.GONE);
+//        view.findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (registerStatus == REGISTER_STATUS_DONE) {
+//                    registerStatus = REGISTER_STATUS_READY;
+//                }
+//            }
+//        });
     }
 
     private void initEngine() {
@@ -489,50 +504,22 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
     private void registerFace(final byte[] nv21, final List<FacePreviewInfo> facePreviewInfoList) {
         if (registerStatus == REGISTER_STATUS_READY && facePreviewInfoList != null && facePreviewInfoList.size() > 0) {
             registerStatus = REGISTER_STATUS_PROCESSING;
-            Observable.create(new ObservableOnSubscribe<Boolean>() {
-                @Override
-                public void subscribe(final ObservableEmitter<Boolean> emitter) {
-                    FaceServer.getInstance().registerNv21Network(getContext(), nv21.clone(), previewSize.width, previewSize.height,
-                            facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount(),new HttpCallback<JSONObject>() {
-                                @Override
-                                public void onSucceed(int requestId, JSONObject result) {
-                                    L.d(TAG, "[onSucceed]人脸注册成功" + result.toString());
-                                    emitter.onNext(true );
-                                }
-
-                                @Override
-                                public void onFail(int requestId, String errorMsg) {
-                                    L.d(TAG, "[onFail]人脸注册失败：" + errorMsg);
-                                    emitter.onNext(false );
-                                }
-                            });
-
-                }
-            }).subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<Boolean>() {
+            FaceServer.getInstance().registerNv21Network(getContext(), nv21.clone(), previewSize.width, previewSize.height,
+                    facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount(), new HttpCallback<JSONObject>() {
                         @Override
-                        public void onSubscribe(Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onNext(Boolean success) {
-                            String result = success ? "register success!" : "register failed!";
-                            showToast(result);
+                        public void onSucceed(int requestId, JSONObject result) {
+                            L.d(TAG, "[onSucceed]人脸注册成功" + result.toString());
+                            boolean success = result.optBoolean("",true);
+                            String str = success ? "register success!" : "register failed!";
+                            showToast(str);
                             registerStatus = REGISTER_STATUS_DONE;
                         }
 
                         @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
+                        public void onFail(int requestId, String errorMsg) {
+                            L.d(TAG, "[onFail]人脸注册失败：" + errorMsg);
                             showToast("register failed!");
                             registerStatus = REGISTER_STATUS_DONE;
-                        }
-
-                        @Override
-                        public void onComplete() {
-
                         }
                     });
         }
@@ -624,12 +611,12 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                         HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, new HttpCallback<JSONObject>() {
                             @Override
                             public void onSucceed(int requestId, JSONObject result) {
-                                L.d(TAG, "人脸注册成功" + result.toString());
+                                L.d(TAG, "人脸搜索成功" + result.toString());
                             }
 
                             @Override
                             public void onFail(int requestId, String errorMsg) {
-                                L.d(TAG, "人脸注册失败：" + errorMsg);
+                                L.d(TAG, "人脸搜索失败：" + errorMsg);
                             }
                         });
 
@@ -642,7 +629,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                 .subscribe(new Observer<CompareResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
                     }
 
                     @Override

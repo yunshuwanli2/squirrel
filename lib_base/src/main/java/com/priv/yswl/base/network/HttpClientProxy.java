@@ -382,7 +382,7 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
         final String newMsg = msg;
         final JSONObject newResult = result;
 
-        L.d(TAG, "onSucceed data:" + result);
+        L.d(TAG, "onSucceed data:" + newResult);
         MApplication.getApplication().getGolbalHander().post(new Runnable() {
             @Override
             public void run() {

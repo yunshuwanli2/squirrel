@@ -320,12 +320,43 @@ public class FaceServer {
                 Log.e(TAG, "registerNv21: extractFaceFeature failed , code is " + code);
             } else {
                 String userName = name == null ? String.valueOf(System.currentTimeMillis()) : name;
-                String url = "wxApi/registerFace";
-                Map<String, Object> para = new HashMap<>();
-                para.put("faceFeature", Base64.encodeToString(faceFeature.getFeatureData(), Base64.DEFAULT));
-                String str = GsonUtil.GsonString(para);
-                L.d(TAG, "registerFace :请求参数为：" + str);
-                HttpClientProxy.getInstance().postJSONAsyn(url, 1, str, callback);
+                try {
+                    // 保存注册结果（注册图、特征数据）
+                    // 为了美观，扩大rect截取注册图
+                    Rect cropRect = getBestRect(width, height, faceInfo.getRect());
+                    if (cropRect == null) {
+                        Log.e(TAG, "registerNv21: cropRect is null!");
+                        return;
+                    }
+
+                    cropRect.left &= ~3;
+                    cropRect.top &= ~3;
+                    cropRect.right &= ~3;
+                    cropRect.bottom &= ~3;
+
+                    File file = new File(imgDir + File.separator + userName + IMG_SUFFIX);
+
+                    // 创建一个头像的Bitmap，存放旋转结果图
+                    Bitmap headBmp = getHeadImage(nv21, width, height, faceInfo.getOrient(), cropRect, ArcSoftImageFormat.NV21);
+
+                    FileOutputStream fosImage = new FileOutputStream(file);
+                    headBmp.compress(Bitmap.CompressFormat.JPEG, 100, fosImage);
+                    fosImage.close();
+
+                    FileOutputStream fosFeature = new FileOutputStream(featureDir + File.separator + userName);
+                    fosFeature.write(faceFeature.getFeatureData());
+                    fosFeature.close();
+
+                    String url = "/wxApi/registerFace";
+                    Map<String, Object> para = new HashMap<>();
+                    para.put("file", file);
+                    HttpClientProxy.getInstance().postMultipart(url, 1, para, callback);
+                    L.e(TAG,"registerNv21Network");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    L.e(TAG,"registerNv21Network -- IOException"+e.getMessage());
+                }
+
 
             }
         }

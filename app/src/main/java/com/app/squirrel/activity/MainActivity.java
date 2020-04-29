@@ -89,7 +89,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             loginOrout.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ArcSoftFaceActivity.JumpAct(MainActivity.this);
+                    ArcSoftFaceActivity.JumpAct(MainActivity.this,UserManager.isLogin(),UserManager.isFace());
                 }
             },1000);
         }
@@ -157,14 +157,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
 //        rs232OutService = new Rs232OutService(new MyCallback());
-
+        requestPermiss();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 //        rs232OutService.start();
-        requestPermiss();
+
     }
 
 

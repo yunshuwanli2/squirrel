@@ -125,8 +125,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             L.d(TAG, "激活成功");
         } else {
             //
-            ToastUtil.showToast("引擎激活失败");
-            L.e(TAG, "引擎激活失败");
+            ToastUtil.showToast("引擎激活失败" + activeCode);
+            L.e(TAG, "引擎激活失败" + activeCode);
         }
         //获取虹软sdk的一些基本信息
         ActiveFileInfo activeFileInfo = new ActiveFileInfo();
