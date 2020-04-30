@@ -85,13 +85,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
-        if (message.arg1 == 0) {
+        int isFace = message.arg1;
+        if (isFace == 0) {
             loginOrout.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ArcSoftFaceActivity.JumpAct(MainActivity.this,UserManager.isLogin(),UserManager.isFace());
+                    ArcSoftFaceActivity.JumpAct(MainActivity.this, UserManager.isLogin(), UserManager.isFace());
                 }
-            },1000);
+            }, 1000);
         }
 //        //开门
 //        if (openNumb == -1) return;

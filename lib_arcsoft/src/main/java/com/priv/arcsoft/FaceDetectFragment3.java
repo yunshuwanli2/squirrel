@@ -5,9 +5,10 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Base64;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,12 +41,15 @@ import com.priv.arcsoft.util.face.RecognizeColor;
 import com.priv.arcsoft.util.face.RequestFeatureStatus;
 import com.priv.arcsoft.util.face.RequestLivenessStatus;
 import com.priv.arcsoft.widget.FaceRectView;
+import com.priv.yswl.base.UserManager;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
 
+import org.apache.commons.codec.binary.Base64;
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -598,18 +602,33 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         L.d(TAG, "searchFace :requestId：" + requestId);
         String url = "wxApi/searcheface";
         Map<String, Object> para = new HashMap<>();
-        para.put("facefeature", Base64.encodeToString(frFace.getFeatureData(), Base64.DEFAULT));
+        para.put("facefeature", Base64.encodeBase64String(frFace.getFeatureData()));
         String str = GsonUtil.GsonString(para);
         L.d(TAG, "searcheface :请求参数为：" + str);
         HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, new HttpCallback<JSONObject>() {
             @Override
             public void onSucceed(int requestId, JSONObject result) {
                 L.d(TAG, "searchFace 人脸搜索成功" + result.toString());
+                //TODO 登录成功
+
+                String code = result.optString("code");
+                if (code.equals("0")) {
+                    JSONObject data = result.optJSONObject("data");
+                    int isFace = data.optInt("isFace");
+                    Message message = Message.obtain();
+                    message.arg1 = isFace;
+                    EventBus.getDefault().postSticky(message);
+                }
+
             }
 
             @Override
             public void onFail(int requestId, String errorMsg) {
                 L.d(TAG, "searchFace 人脸搜索失败：" + errorMsg);
+                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+//                faceHelper.setName(requestId, "VISITOR " + requestId);
+                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                retryRecognizeDelayed(requestId);
             }
         });
 
