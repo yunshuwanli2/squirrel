@@ -16,7 +16,7 @@ public class PermissionUtil {
     public static String[] READ_WRITE_CAMERA_PERMISSION = new String[]{
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CAMERA,
-//            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     private PermissionFragment fragment;
