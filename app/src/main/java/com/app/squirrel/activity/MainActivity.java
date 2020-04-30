@@ -86,6 +86,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
         int isFace = message.arg1;
+        UserManager.setIsFace(isFace);
         if (isFace == 0) {
             loginOrout.postDelayed(new Runnable() {
                 @Override

@@ -39,7 +39,6 @@ public class UserManager {
     public static void login(String token, int isFace) {
         MSPUtils.put("token", token);
         UserManager.setLoginStatus(true);
-        UserManager.setIsFace(isFace);
         Message message = Message.obtain();
         message.arg1 = isFace;
         EventBus.getDefault().postSticky(message);
