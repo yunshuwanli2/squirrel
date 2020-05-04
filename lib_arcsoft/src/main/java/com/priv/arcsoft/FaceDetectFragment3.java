@@ -605,7 +605,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         para.put("facefeature", Base64.encodeBase64String(frFace.getFeatureData()));
         String str = GsonUtil.GsonString(para);
         L.d(TAG, "searcheface :请求参数为：" + str);
-        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, new HttpCallback<JSONObject>() {
+        HttpClientProxy.getInstance().postAsyn(url, requestId, para, new HttpCallback<JSONObject>() {
             @Override
             public void onSucceed(int requestId, JSONObject result) {
                 L.d(TAG, "searchFace 人脸搜索成功" + result.toString());
