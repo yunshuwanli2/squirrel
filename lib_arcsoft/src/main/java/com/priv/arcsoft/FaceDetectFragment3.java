@@ -603,8 +603,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         String url = "wxApi/searcheface";
         Map<String, Object> para = new HashMap<>();
         para.put("facefeature", Base64.encodeBase64String(frFace.getFeatureData()));
-        String str = GsonUtil.GsonString(para);
-        L.d(TAG, "searcheface :请求参数为：" + str);
         HttpClientProxy.getInstance().postAsyn(url, requestId, para, new HttpCallback<JSONObject>() {
             @Override
             public void onSucceed(int requestId, JSONObject result) {
@@ -618,6 +616,8 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     Message message = Message.obtain();
                     message.arg1 = isFace;
                     EventBus.getDefault().postSticky(message);
+                }else {
+                    onFail(requestId,"");
                 }
 
             }
