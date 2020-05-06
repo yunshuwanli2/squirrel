@@ -3,40 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <TextureView
+        android:id="@+id/single_camera_texture_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextureView
-            android:id="@+id/single_camera_texture_preview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_height="match_parent" />
 
-        <com.priv.arcsoft.widget.FaceRectView
-            android:id="@+id/single_camera_face_rect_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
-
-    <Switch
-        android:id="@+id/single_camera_switch_liveness_detect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="20dp"
-        android:text="活体检测" />
-
-    <LinearLayout
-        android:layout_margin="20dp"
-        android:layout_gravity="bottom|end"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="注册" />
-    </LinearLayout>
-
-
+    <com.priv.arcsoft.widget.FaceRectView
+        android:id="@+id/single_camera_face_rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>

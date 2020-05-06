@@ -65,6 +65,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
+import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_ALL_OUT;
+
 
 public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "RegisterAndRecognize";
@@ -114,8 +116,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
     private View previewView;
 
     private FaceRectView faceRectView;
-
-    private Switch switchLivenessDetect;
 
     private static final float SIMILAR_THRESHOLD = 0.8F;
 
@@ -167,35 +167,17 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         faceRectView = view.findViewById(R.id.single_camera_face_rect_view);
-        switchLivenessDetect = view.findViewById(R.id.single_camera_switch_liveness_detect);
-        switchLivenessDetect.setVisibility(View.GONE);
-//        switchLivenessDetect.setChecked(livenessDetect);
-//        switchLivenessDetect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                livenessDetect = isChecked;
-//            }
-//        });
         compareResultList = new ArrayList<>();
         if (isFace) {
             registerStatus = REGISTER_STATUS_DONE;
         } else {
             registerStatus = REGISTER_STATUS_READY;
         }
-        view.findViewById(R.id.register).setVisibility(View.GONE);
-//        view.findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (registerStatus == REGISTER_STATUS_DONE) {
-//                    registerStatus = REGISTER_STATUS_READY;
-//                }
-//            }
-//        });
     }
 
     private void initEngine() {
         long startT = System.currentTimeMillis();
-
+        ConfigUtil.setFtOrient(getActivity(), ASF_OP_ALL_OUT);
         ftEngine = new FaceEngine();
         ftInitCode = ftEngine.init(getActivity(), DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(getActivity()),
                 16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
@@ -356,7 +338,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                         } else {
                             msg = "ExtractCode:" + errorCode;
                         }
-                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
+//                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         // 在尝试最大次数后，特征提取仍然失败，则认为识别未通过
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         retryRecognizeDelayed(requestId);
@@ -375,7 +357,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     livenessMap.put(requestId, liveness);
                     // 非活体，重试
                     if (liveness == LivenessInfo.NOT_ALIVE) {
-                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
+//                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
                         // 延迟 FAIL_RETRY_INTERVAL 后，将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         retryLivenessDetectDelayed(requestId);
                     }
@@ -390,7 +372,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                             msg = "ProcessCode:" + errorCode;
                         }
                         L.e(TAG, "[onFaceLivenessInfoGet]: " + msg);
-                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
+//                        faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         retryLivenessDetectDelayed(requestId);
                     } else {
                         livenessMap.put(requestId, LivenessInfo.UNKNOWN);
@@ -616,8 +598,8 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     Message message = Message.obtain();
                     message.arg1 = isFace;
                     EventBus.getDefault().postSticky(message);
-                }else {
-                    onFail(requestId,"");
+                } else {
+                    onFail(requestId, "");
                 }
 
             }
@@ -627,7 +609,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                 L.d(TAG, "searchFace 人脸搜索失败：" + errorMsg);
                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
 //                faceHelper.setName(requestId, "VISITOR " + requestId);
-                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+//                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                 retryRecognizeDelayed(requestId);
             }
         });
@@ -754,7 +736,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     public void onComplete() {
                         // 将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         if (livenessDetect) {
-                            faceHelper.setName(requestId, Integer.toString(requestId));
+//                            faceHelper.setName(requestId, Integer.toString(requestId));
                         }
                         livenessMap.put(requestId, LivenessInfo.UNKNOWN);
                         delayFaceTaskCompositeDisposable.remove(disposable);
@@ -787,7 +769,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     @Override
                     public void onComplete() {
                         // 将该人脸特征提取状态置为FAILED，帧回调处理时会重新进行活体检测
-                        faceHelper.setName(requestId, Integer.toString(requestId));
+//                        faceHelper.setName(requestId, Integer.toString(requestId));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                         delayFaceTaskCompositeDisposable.remove(disposable);
                     }
