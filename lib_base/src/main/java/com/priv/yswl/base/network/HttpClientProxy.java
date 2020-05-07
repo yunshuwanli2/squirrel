@@ -410,31 +410,31 @@ public class HttpClientProxy implements IRequestMethod<JSONObject> {
             case 200:
                 httpCallback.onSucceed(requestId, object);
                 break;
-            case 600:
-                //帐号其它地方登录
-                break;
-            case -102:
-                //-102 与服务端协商定义 比如用户名密码错误，访问无权限等
-                ToastUtil.showToast(msg);
-                break;
-            case 401:
-                //TODO 登录超时，需要重新登录
-                break;
-            case -101:
-                httpCallback.onFail(requestId, "网络错误" + msg);
-                ToastUtil.showToast("网络错误" + msg);
-                break;
+//            case 600:
+//                //帐号其它地方登录
+//                break;
+//            case -102:
+//                //-102 与服务端协商定义 比如用户名密码错误，访问无权限等
+//                ToastUtil.showToast(msg);
+//                break;
+//            case 401:
+//                //TODO 登录超时，需要重新登录
+//                break;
+//            case -101:
+//                httpCallback.onFail(requestId, "网络错误" + msg);
+////                ToastUtil.showToast("网络错误" + msg);
+//                break;
             case 404:
                 httpCallback.onFail(requestId, msg);
-                ToastUtil.showToast(msg);
+//                ToastUtil.showToast(msg);
                 break;
             case -103:
                 httpCallback.onFail(requestId, msg);
-                ToastUtil.showToast(msg);
+//                ToastUtil.showToast(msg);
                 break;
             default:
                 httpCallback.onFail(requestId, "Undefined error " + msg);
-                ToastUtil.showToast("Undefined error " + msg + code);
+//                ToastUtil.showToast("Undefined error " + msg + code);
                 break;
         }
     }

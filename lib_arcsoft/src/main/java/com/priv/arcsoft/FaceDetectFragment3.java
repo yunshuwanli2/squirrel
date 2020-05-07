@@ -26,6 +26,7 @@ import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.VersionInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
+import com.priv.arcsoft.common.Base64;
 import com.priv.arcsoft.faceserver.CompareResult;
 import com.priv.arcsoft.faceserver.FaceServer;
 import com.priv.arcsoft.model.DrawInfo;
@@ -48,7 +49,6 @@ import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.ToastUtil;
 
-import org.apache.commons.codec.binary.Base64;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
@@ -119,8 +119,8 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
     private static final float SIMILAR_THRESHOLD = 0.8F;
 
-    boolean isLogin;
-    boolean isFace = true;
+    boolean isLogin = false;
+    boolean isRegistFace = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,7 +134,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         Bundle bundle = getArguments();
         if (bundle != null) {
             isLogin = bundle.getBoolean(ArcSoftFaceActivity.isLogin_key);
-            isFace = bundle.getBoolean(ArcSoftFaceActivity.isFace_key);
+            isRegistFace = bundle.getBoolean(ArcSoftFaceActivity.isFace_key);
         }
 
     }
@@ -168,7 +168,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         faceRectView = view.findViewById(R.id.single_camera_face_rect_view);
         compareResultList = new ArrayList<>();
-        if (isFace) {
+        if (isRegistFace) {
             registerStatus = REGISTER_STATUS_DONE;
         } else {
             registerStatus = REGISTER_STATUS_READY;
@@ -198,26 +198,23 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         if (ftInitCode != ErrorInfo.MOK) {
             String error = getString(R.string.specific_engine_init_failed, "ftEngine", ftInitCode);
             Log.i(TAG, "initEngine: " + error);
-            showToast(error);
+            ToastUtil.showToast(error);
         }
         if (frInitCode != ErrorInfo.MOK) {
             String error = getString(R.string.specific_engine_init_failed, "frEngine", frInitCode);
             Log.i(TAG, "initEngine: " + error);
-            showToast(error);
+            ToastUtil.showToast(error);
         }
         if (flInitCode != ErrorInfo.MOK) {
             String error = getString(R.string.specific_engine_init_failed, "flEngine", flInitCode);
             Log.i(TAG, "initEngine: " + error);
-            showToast(error);
+            ToastUtil.showToast(error);
         }
         long endT = System.currentTimeMillis();
         long Time = (endT - startT) / 1000;
         L.e(TAG, "initEngine Time = " + Time);
     }
 
-    protected void showToast(String s) {
-        ToastUtil.showToast(s);
-    }
 
     private void unInitEngine() {
         if (ftInitCode == ErrorInfo.MOK && ftEngine != null) {
@@ -263,6 +260,14 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
         FaceServer.getInstance().unInit();
         super.onDestroy();
+    }
+
+    boolean isVisibleToUser;
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        isVisibleToUser = !hidden;
     }
 
     private void initCamera() {
@@ -485,26 +490,30 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
     }
 
     private void registerFace(final byte[] nv21, final List<FacePreviewInfo> facePreviewInfoList) {
-        if (registerStatus == REGISTER_STATUS_READY && facePreviewInfoList != null && facePreviewInfoList.size() > 0) {
+        if (registerStatus == REGISTER_STATUS_READY && isVisibleToUser && facePreviewInfoList != null && facePreviewInfoList.size() > 0) {
             registerStatus = REGISTER_STATUS_PROCESSING;
             FaceServer.getInstance().registerNv21Network(getContext(), nv21.clone(), previewSize.width, previewSize.height,
                     facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelper.getTrackedFaceCount(), new HttpCallback<JSONObject>() {
                         @Override
                         public void onSucceed(int requestId, JSONObject result) {
-                            L.d(TAG, "[onSucceed]人脸注册成功" + result.toString());
-                            isFace = result.optString("code").equals("0");
-                            String str = isFace ? "register success!" : "register failed!";
-                            showToast(str);
-                            registerStatus = REGISTER_STATUS_DONE;
-                            if (isFace && isLogin)
+                            L.d(TAG, "registerNv21Network [onSucceed] result:" + result.toString());
+                            boolean succese = result.optString("code").equals("0");
+                            String str = succese ? "register success!" : "register failed!";
+                            ToastUtil.showToast(str);
+                            if (succese && getActivity() != null) {
+                                registerStatus = REGISTER_STATUS_DONE;
                                 getActivity().finish();
+                            } else {
+                                onFail(requestId, str);
+                            }
+
                         }
 
                         @Override
                         public void onFail(int requestId, String errorMsg) {
-                            L.d(TAG, "[onFail]人脸注册失败：" + errorMsg);
-                            showToast("register failed!");
-                            registerStatus = REGISTER_STATUS_DONE;
+                            L.d(TAG, "registerNv21Network [onFail]：" + errorMsg);
+                            ToastUtil.showToast(errorMsg);
+                            registerStatus = REGISTER_STATUS_READY;
                         }
                     });
         }
@@ -581,22 +590,26 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
+        if (registerStatus != REGISTER_STATUS_DONE || !isVisibleToUser) {
+            return;
+        }
         L.d(TAG, "searchFace :requestId：" + requestId);
         String url = "wxApi/searcheface";
         Map<String, Object> para = new HashMap<>();
-        para.put("facefeature", Base64.encodeBase64String(frFace.getFeatureData()));
+        String facefeat = Base64.encodeToString(frFace.getFeatureData(), Base64.DEFAULT);
+        para.put("facefeature", facefeat);
         HttpClientProxy.getInstance().postAsyn(url, requestId, para, new HttpCallback<JSONObject>() {
             @Override
             public void onSucceed(int requestId, JSONObject result) {
-                L.d(TAG, "searchFace 人脸搜索成功" + result.toString());
-                //TODO 登录成功
-
+                L.d(TAG, "searchFace result" + result.toString());
                 String code = result.optString("code");
                 if (code.equals("0")) {
+//                    ToastUtil.showToast("人脸验证成功");
                     JSONObject data = result.optJSONObject("data");
                     int isFace = data.optInt("isFace");
+
                     Message message = Message.obtain();
-                    message.arg1 = isFace;
+                    message.arg1 = 1;
                     EventBus.getDefault().postSticky(message);
                 } else {
                     onFail(requestId, "");
@@ -606,7 +619,8 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
             @Override
             public void onFail(int requestId, String errorMsg) {
-                L.d(TAG, "searchFace 人脸搜索失败：" + errorMsg);
+                ToastUtil.showToast("人脸验证失败，请不要太靠近摄像头");
+                L.d(TAG, "searchFace [onFail]：" + errorMsg);
                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
 //                faceHelper.setName(requestId, "VISITOR " + requestId);
 //                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));

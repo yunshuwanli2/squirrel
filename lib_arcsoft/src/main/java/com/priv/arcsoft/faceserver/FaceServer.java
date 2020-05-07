@@ -347,7 +347,7 @@ public class FaceServer {
                     fosFeature.write(faceFeature.getFeatureData());
                     fosFeature.close();
 
-                    String url = "/wxApi/registerFace";
+                    String url = "wxApi/registerFace";
                     Map<String, Object> para = new HashMap<>();
                     para.put("file", file);
                     HttpClientProxy.getInstance().postMultipart(url, 1, para, callback);

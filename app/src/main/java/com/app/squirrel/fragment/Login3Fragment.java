@@ -124,10 +124,10 @@ public class Login3Fragment extends BaseFragment implements View.OnClickListener
             isFace = data.optInt("isFace");
         }
         if (!TextUtils.isEmpty(token)) {
-            L.e(TAG, "获取token成功，postSticky");
+            L.d(TAG, "获取token成功，postSticky");
             UserManager.login(token,isFace);
         } else {
-            L.e(TAG, "获取token失败");
+            L.d(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));
         }
 
