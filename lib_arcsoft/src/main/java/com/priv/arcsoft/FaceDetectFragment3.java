@@ -262,8 +262,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
         super.onDestroy();
     }
 
-    boolean isVisibleToUser;
-
+    boolean isVisibleToUser = true;
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
@@ -619,7 +618,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
             @Override
             public void onFail(int requestId, String errorMsg) {
-                ToastUtil.showToast("人脸验证失败，请不要太靠近摄像头");
+                ToastUtil.showToast("人脸验证失败");
                 L.d(TAG, "searchFace [onFail]：" + errorMsg);
                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
 //                faceHelper.setName(requestId, "VISITOR " + requestId);
