@@ -2,7 +2,6 @@ package com.app.squirrel.fragment;
 
 
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,10 +19,8 @@ import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MKeyBoardUtils;
-import com.priv.yswl.base.tool.MSPUtils;
 import com.priv.yswl.base.tool.ToastUtil;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -125,7 +122,7 @@ public class Login3Fragment extends BaseFragment implements View.OnClickListener
         }
         if (!TextUtils.isEmpty(token)) {
             L.d(TAG, "获取token成功，postSticky");
-            UserManager.login(token,isFace);
+            UserManager.sendLoginEvenBus(token,isFace);
         } else {
             L.d(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));

@@ -4,9 +4,7 @@ import com.app.squirrel.BuildConfig;
 import com.priv.yswl.base.MApplication;
 import com.priv.yswl.base.log.LogCollector;
 import com.priv.yswl.base.network.okhttp.OkHttpClientManager;
-import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MSPUtils;
-import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;

@@ -59,7 +59,7 @@ public class MDeviceUtil {
 
     public static String getMAC(Context context) {
         if (MAC == null)
-            MAC =  Settings.System.getString(context.getContentResolver(), Settings.System.ANDROID_ID);
+            MAC = Settings.System.getString(context.getContentResolver(), Settings.System.ANDROID_ID);
         ;
         return MAC;
     }
@@ -73,6 +73,7 @@ public class MDeviceUtil {
 
     /**
      * 设备是tv
+     *
      * @param context
      * @return
      */
@@ -84,13 +85,16 @@ public class MDeviceUtil {
 
     /**
      * 获取mac地址
+     *
      * @return mac地址
      */
     public static String getMacFromHardware(String interfaceName) {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase(interfaceName)) { continue;}
+                if (!nif.getName().equalsIgnoreCase(interfaceName)) {
+                    continue;
+                }
 
                 byte[] macBytes = nif.getHardwareAddress();
                 if (macBytes == null) {
@@ -115,15 +119,15 @@ public class MDeviceUtil {
 
     public static String getMacAddress() {
 
-        String str="";
-        String macSerial="";
+        String str = "";
+        String macSerial = "";
         try {
             Process pp = Runtime.getRuntime().exec(
                     "cat /sys/class/net/wlan0/address ");
             InputStreamReader ir = new InputStreamReader(pp.getInputStream());
             LineNumberReader input = new LineNumberReader(ir);
 
-            for (; null != str;) {
+            for (; null != str; ) {
                 str = input.readLine();
                 if (str != null) {
                     macSerial = str.trim();// 去空格
@@ -168,13 +172,11 @@ public class MDeviceUtil {
 
         String macAddress = null;
         WifiManager wifiManager =
-                (WifiManager)MApplication.getApplication().getApplicationContext()
+                (WifiManager) MApplication.getApplication().getApplicationContext()
                         .getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = (null == wifiManager ? null : wifiManager.getConnectionInfo());
 
-        if (!wifiManager.isWifiEnabled())
-
-        {
+        if (!wifiManager.isWifiEnabled()) {
 
             //必须先打开，才能获取到MAC地址
 

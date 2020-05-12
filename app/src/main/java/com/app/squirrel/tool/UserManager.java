@@ -30,19 +30,24 @@ public class UserManager {
     public static void setIsFace(int isFace) {
         if (isFace == 0) {
             UserManager.isFace.set(false);
-        }else {
+        } else {
             UserManager.isFace.set(true);
         }
 
     }
 
-    public static void login(String token, int isFace) {
-        MSPUtils.put("token", token);
-        UserManager.setLoginStatus(true);
+    public static void sendLoginEvenBus(String token, int isFace) {
+
         Message message = Message.obtain();
         message.arg1 = isFace;
+        message.obj = token;
         EventBus.getDefault().postSticky(message);
     }
 
+    public static void loginLocal(String token, int isFace) {
+        MSPUtils.put("token", token);
+        UserManager.setIsFace(isFace);
+        UserManager.setLoginStatus(true);
+    }
 
 }

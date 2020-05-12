@@ -246,11 +246,9 @@ public class LogCollector implements CrashHandlerListener {
     /**
      * 清除缓存日志
      */
-    private void createCleanCommand() throws IOException {
-        List<String> commandLine = new ArrayList<>();
-        commandLine.add("logcat");
-        commandLine.add("-c");
-        Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
+    public static String[] cleanCommand = {"logcat", "-c"};
+    private void execCleanCommand() throws IOException {
+        Runtime.getRuntime().exec(cleanCommand);
     }
 
     /**
@@ -307,10 +305,11 @@ public class LogCollector implements CrashHandlerListener {
             List<String> commandLines = createCommands();
             BufferedReader reader = null;
             BufferedWriter writer = null;
+            Process process = null;
             try {
-                createCleanCommand();
+                execCleanCommand();
                 // 获取 logcat
-                Process process = Runtime.getRuntime().exec(
+                process = Runtime.getRuntime().exec(
                         commandLines.toArray(new String[commandLines.size()]));
 
                 reader = new BufferedReader(
@@ -320,7 +319,7 @@ public class LogCollector implements CrashHandlerListener {
 
                 String str;
                 while (!isCrash && ((str = reader.readLine()) != null)) {
-                    createCleanCommand();
+                    execCleanCommand();
                     if (filterStringType(str)) {
                         continue;
                     }
@@ -333,8 +332,8 @@ public class LogCollector implements CrashHandlerListener {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                CloseUtils.close(reader);
                 CloseUtils.close(writer);
+                CloseUtils.close(reader);
             }
         }
     }

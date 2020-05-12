@@ -26,6 +26,7 @@ import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.MSPUtils;
 import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -43,7 +44,6 @@ import java.util.Map;
 
 import static com.app.squirrel.activity.MainActivity.SafeHandler.MSG_UPDATE_TIME;
 
-//import com.priv.arcsoft.ArcSoftFaceActivity;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HttpCallback<JSONObject> {
 
@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public ImageView iv_recy_img;
     public ImageView iv_dry_img;
     public ImageView iv_harm_img;
-//    public Rs232OutService rs232OutService;
+    public Rs232OutService rs232OutService;
 
     @Override
     public boolean getEventBusSetting() {
@@ -76,17 +76,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onEventMessage(Message message) {
-        L.d(TAG, "[onEventMessage]");
-        ToastUtil.showToast("登录成功");
         EventBus.getDefault().removeStickyEvent(message);
+
+        int isFace = message.arg1;
+        String token = (String) message.obj;
+        UserManager.loginLocal(token, isFace);
+
         setLoginStatues();
 
+        ToastUtil.showToast("登录成功");
         //登录成功2分钟后自动登出
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
-        int isFace = message.arg1;
-        UserManager.setIsFace(isFace);
         if (isFace == 0) {
             loginOrout.postDelayed(new Runnable() {
                 @Override
@@ -158,7 +160,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
 
-//        rs232OutService = new Rs232OutService(new MyCallback());
+        rs232OutService = new Rs232OutService(new MyCallback());
         requestPermiss();
     }
 
@@ -202,13 +204,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        rs232OutService.stop();
+        rs232OutService.stop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        rs232OutService.stop();
+        rs232OutService.stop();
         mHandleThread.quit();
     }
 
@@ -288,9 +290,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 //        ArcSoftFaceActivity.JumpAct(this);
     }
-
-    private boolean[] isOpen = {false, false, false, false};
-
 
     //提交记录请求
     private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
@@ -391,15 +390,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void openDoor(int doorNumb) {
-//        rs232OutService.start();
-        Rs232OutService.openDoor(doorNumb);
+        rs232OutService.start();
+        L.d(TAG, "open :" + doorNumb);
+        rs232OutService.openDoor(doorNumb);
     }
 
     class MyCallback implements Rs232Callback {
         @Override
         public void onReceiveOpen(int numb) {
             ToastUtil.showToast(numb + "号门已经打开！");
-            isOpen[numb - 1] = true;
             if (numb == 1) {
                 tv_recy_hint.setVisibility(View.VISIBLE);
                 iv_recy_img.setBackgroundResource(R.drawable.bg_dash);
@@ -481,7 +480,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
-                    isOpen[numb - 1] = false;
                     recordOperateRequest(1, numb, weight, 1);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);

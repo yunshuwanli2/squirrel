@@ -2,16 +2,12 @@ package com.app.squirrel.jpush;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Message;
 import android.text.TextUtils;
 
 import com.app.squirrel.tool.UserManager;
-import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MDeviceUtil;
-import com.priv.yswl.base.tool.MSPUtils;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,7 +31,7 @@ public class SqRecive extends JPushMessageReceiver {
                 String token = jsonObject.optString("token");
                 int isFace = jsonObject.optInt("isFace");
                 if (!TextUtils.isEmpty(token)) {
-                    UserManager.login(token,isFace);
+                    UserManager.sendLoginEvenBus(token,isFace);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

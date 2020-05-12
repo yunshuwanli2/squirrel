@@ -277,7 +277,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
 
     FaceDetectFragment3 faceDetectFragment;
-
     private void switchFaceDetect() {
         if (faceDetectFragment == null) {
             faceDetectFragment = new FaceDetectFragment3();

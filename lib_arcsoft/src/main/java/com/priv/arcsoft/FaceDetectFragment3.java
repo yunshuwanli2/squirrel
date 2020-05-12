@@ -606,9 +606,10 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 //                    ToastUtil.showToast("人脸验证成功");
                     JSONObject data = result.optJSONObject("data");
                     int isFace = data.optInt("isFace");
-
+                    String token = data.optString("token");
                     Message message = Message.obtain();
                     message.arg1 = 1;
+                    message.obj = token;
                     EventBus.getDefault().postSticky(message);
                 } else {
                     onFail(requestId, "");
