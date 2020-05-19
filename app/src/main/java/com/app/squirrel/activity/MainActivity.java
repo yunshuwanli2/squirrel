@@ -97,17 +97,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }, 1000);
         }
-//        //开门
-//        if (openNumb == -1) return;
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Message message = Message.obtain();
-//                message.what = SafeHandler.MSG_OPEN_DOOR;
-//                message.arg1 = openNumb;
-//                mSafeHandle.sendMessage(message);
-//            }
-//        });
 
     }
 
@@ -168,7 +157,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onStart() {
         super.onStart();
 //        rs232OutService.start();
-
     }
 
 
@@ -227,7 +215,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
-        Message message;
         switch (v.getId()) {
             case R.id.ll_dry_garbage:
                 openNumb = 4;
@@ -235,11 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     jumpLogin();
                     return;
                 }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 4;
-                mSafeHandle.sendMessage(message);
-
+                openDoor(openNumb);
                 break;
             case R.id.ll_harmful_garbage:
                 openNumb = 3;
@@ -247,10 +230,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     jumpLogin();
                     return;
                 }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 3;
-                mSafeHandle.sendMessage(message);
+                openDoor(openNumb);
                 break;
             case R.id.ll_recy_garbage:
                 openNumb = 1;
@@ -258,10 +238,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     jumpLogin();
                     return;
                 }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 1;
-                mSafeHandle.sendMessage(message);
+                openDoor(openNumb);
                 break;
             case R.id.ll_wet_garbage:
                 openNumb = 2;
@@ -269,10 +246,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     jumpLogin();
                     return;
                 }
-                message = Message.obtain();
-                message.what = SafeHandler.MSG_OPEN_DOOR;
-                message.arg1 = 2;
-                mSafeHandle.sendMessage(message);
+                openDoor(openNumb);
                 break;
             case R.id.ll_logout:
                 setLogoutStatues();
@@ -280,6 +254,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             default:
                 break;
         }
+    }
+
+    private void openDoor(int doorNumb) {
+        rs232OutService.start();
+        L.d(TAG, "open :" + doorNumb);
+        rs232OutService.openDoor(doorNumb);
     }
 
     /**
@@ -331,7 +311,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
-        public static final int MSG_OPEN_DOOR = 0x6;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
         private WeakReference<MainActivity> mWeakReference;
 
@@ -345,11 +324,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             final MainActivity activity = mWeakReference.get();
             if (activity == null) return;
             switch (msg.what) {
-                //开门
-                case MSG_OPEN_DOOR:
-                    int doorNumb = msg.arg1;
-                    activity.openDoor(doorNumb);
-                    break;
                 //更新时间
                 case MSG_UPDATE_TIME:
                     activity.runOnUiThread(new Runnable() {
@@ -368,7 +342,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     new CountDownTimer(USER_AUTO_LOGOUT_TIME, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-
                         }
 
                         @Override
@@ -389,11 +362,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    private void openDoor(int doorNumb) {
-        rs232OutService.start();
-        L.d(TAG, "open :" + doorNumb);
-        rs232OutService.openDoor(doorNumb);
-    }
 
     class MyCallback implements Rs232Callback {
         @Override

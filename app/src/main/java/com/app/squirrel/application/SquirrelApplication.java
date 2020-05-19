@@ -21,7 +21,7 @@ public class SquirrelApplication extends MApplication {
 
     @Override
     public boolean getDebugSetting() {
-        return true;
+        return test;
     }
 
     @Override

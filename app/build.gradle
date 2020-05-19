@@ -7,13 +7,13 @@ android {
         applicationId "com.app.squirrel"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 43
-        versionName "4.5.3"
+        versionCode 45
+        versionName "4.5.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a'/*, 'armeabi', 'x86', 'x86_64'*/
-        }
+//        ndk {
+//            abiFilters 'armeabi-v7a', 'arm64-v8a'/*, 'armeabi', 'x86', 'x86_64'*/
+//        }
         manifestPlaceholders = [
                 JPUSH_PKGNAME: "com.app.squirrel",
                 JPUSH_APPKEY : "bdb3822118da82603f2301db",
@@ -77,8 +77,8 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
 
-    implementation 'cn.jiguang.sdk:jpush:3.3.9'
-    implementation 'cn.jiguang.sdk:jcore:2.1.6'
+    api 'cn.jiguang.sdk:jpush:3.6.0'
+    api 'cn.jiguang.sdk:jcore:2.3.4'
     implementation 'com.github.navasmdc:MaterialDesign:1.5@aar'
 
     implementation 'com.github.bumptech.glide:glide:4.7.1'

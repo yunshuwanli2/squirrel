@@ -221,8 +221,6 @@ public class Rs232Contol extends SerialHelper {
     }
 
 
-
-
     private static byte charToByte(char c) {
         return (byte) "0123456789ABCDEF".indexOf(c);
     }
@@ -230,7 +228,9 @@ public class Rs232Contol extends SerialHelper {
 
     @Override
     public void open() throws SecurityException, IOException, InvalidParameterException {
-        mDispQueue = new DispQueueThread();
+        if (mDispQueue == null) {
+            mDispQueue = new DispQueueThread();
+        }
         mDispQueue.start();
         super.open();
     }
@@ -238,7 +238,9 @@ public class Rs232Contol extends SerialHelper {
     @Override
     public void close() {
         super.close();
-        mDispQueue.interrupt();
+        if (mDispQueue != null) {
+            mDispQueue.interrupt();
+        }
     }
 
     @Override
@@ -298,14 +300,6 @@ public class Rs232Contol extends SerialHelper {
     }
 
 
-
-
-
-
-
-
-
-
     public static byte[] hexStringToBytes(String hexString) {
         if (hexString != null && !hexString.equals("")) {
             hexString = hexString.toUpperCase();
@@ -323,6 +317,7 @@ public class Rs232Contol extends SerialHelper {
             return null;
         }
     }
+
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder("");
         if (src != null && src.length > 0) {
