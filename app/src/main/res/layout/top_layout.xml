@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="80dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp"
+    android:paddingEnd="25dp"
+    android:paddingStart="25dp"
     android:background="@mipmap/top_bg"
     android:gravity="center_vertical">
 
@@ -9,35 +15,43 @@
         android:id="@+id/tv_tell_numb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
         android:drawableLeft="@mipmap/ic_connect"
         android:drawablePadding="5dp"
         android:text="客户电话:18709878809"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
 
     <TextView
+        android:id="@+id/tv_mech"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@+id/tv_tell_numb"
         android:drawableLeft="@mipmap/ic_mech"
         android:drawablePadding="5dp"
         android:text="机器编码:00908787"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="22dp" />
 
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="right"
+        app:constraint_referenced_ids="tv_tell_numb,tv_mech" />
 
     <TextView
         android:id="@+id/tv_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="25dp"
-        android:layout_toEndOf="@+id/tv_tell_numb"
         android:gravity="end|center_vertical"
         android:text="2019-11-02 17:32"
         android:textColor="@color/white"
-        android:textSize="16sp" />
-</RelativeLayout>
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent" />
+</android.support.constraint.ConstraintLayout>

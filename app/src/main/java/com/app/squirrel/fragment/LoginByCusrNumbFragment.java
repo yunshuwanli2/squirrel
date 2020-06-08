@@ -12,8 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.app.squirrel.R;
+import com.app.squirrel.activity.FaceLoginPreActivity;
+import com.app.squirrel.facedetect.FaceDetectActivity;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
@@ -33,19 +36,17 @@ import java.util.regex.PatternSyntaxException;
 /**
  * A simple {@link Fragment} subclass.
  */
-@Deprecated
-public class Login2Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
+public class LoginByCusrNumbFragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
 
-    private static final String TAG = "Login2Fragment";
+    private static final String TAG = "LoginByCusrNumbFragment";
 
-    public Login2Fragment() {
+    public LoginByCusrNumbFragment() {
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login2, container, false);
     }
 
@@ -53,6 +54,7 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
     ImageView ivAgree;
     boolean isAgree;
     StringBuffer stringBuffer;
+    LinearLayout ll_face_login;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -76,11 +78,15 @@ public class Login2Fragment extends BaseFragment implements View.OnClickListener
         view.findViewById(R.id.btn_clean).setOnClickListener(this);
         view.findViewById(R.id.ll_agree_rule).setOnClickListener(this);
         view.findViewById(R.id.tv_login).setOnClickListener(this);
+        view.findViewById(R.id.ll_face_login).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.ll_face_login:
+                FaceLoginPreActivity.JumpAct(getActivity());
+                break;
             case R.id.btn_0:
                 append(0);
                 break;

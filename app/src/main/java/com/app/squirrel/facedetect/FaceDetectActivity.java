@@ -10,8 +10,6 @@ import com.app.squirrel.R;
 
 /**
  * 主界面
- *
- * @author chaochaowu
  */
 public class FaceDetectActivity extends FragmentActivity {
     public static void JumpAct(Activity context) {
@@ -25,8 +23,10 @@ public class FaceDetectActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content);
-//        getSupportFragmentManager().beginTransaction().replace(R.id.content, new FaceDetectFragment()).commitAllowingStateLoss();
+        setContentView(R.layout.activity_face);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, new FaceDetectFragment())
+                .commitAllowingStateLoss();
     }
 
 

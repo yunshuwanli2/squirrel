@@ -239,7 +239,6 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
     @Override
     public void onDestroy() {
-
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
@@ -789,4 +788,5 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                     }
                 });
     }
+
 }

@@ -12,13 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.squirrel.R;
-import com.app.squirrel.fragment.Login1Fragment;
-import com.app.squirrel.fragment.Login3Fragment;
+import com.app.squirrel.fragment.LoginByCusrNumbFragment;
+import com.app.squirrel.fragment.LoginByWXFragment;
+import com.app.squirrel.fragment.LoginByLocalNumbFragment;
 import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.enums.RuntimeABI;
-import com.priv.arcsoft.FaceDetectFragment3;
 import com.priv.arcsoft.common.Constants;
 import com.priv.arcsoft.util.SoUtil;
 import com.priv.yswl.base.BaseActivity;
@@ -81,10 +81,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     LinearLayout ll_switch1;
     LinearLayout ll_switch2;
-    LinearLayout ll_switch3;
+    //    LinearLayout ll_switch3;
     TextView tv_switch1;
     TextView tv_switch2;
-    TextView tv_switch3;
+    //    TextView tv_switch3;
     TextView tv_date;
     BaseFragment currentFragment;
     SafeHandler mSafeHandle;
@@ -105,14 +105,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         ll_switch1 = findViewById(R.id.ll_switch1);
         ll_switch2 = findViewById(R.id.ll_switch2);
-        ll_switch3 = findViewById(R.id.ll_switch3);
         tv_switch1 = findViewById(R.id.tv_switch1);
         tv_switch2 = findViewById(R.id.tv_switch2);
-        tv_switch3 = findViewById(R.id.tv_switch3);
+//        ll_switch3 = findViewById(R.id.ll_switch3);
+//        tv_switch3 = findViewById(R.id.tv_switch3);
+//        ll_switch3.setOnClickListener(this);
 
         ll_switch1.setOnClickListener(this);
         ll_switch2.setOnClickListener(this);
-        ll_switch3.setOnClickListener(this);
     }
 
     private void initArcSoft() {
@@ -137,7 +137,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     void setScanCodePressedBg() {
-        ll_switch1.setBackgroundColor(getResources().getColor(R.color.lanse3));
+        ll_switch1.setBackground(getResources().getDrawable(R.drawable.bg_tab_login));
         tv_switch1.setTextColor(getResources().getColor(R.color.white));
         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_sm_press);
         tv_switch1.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
@@ -150,22 +150,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         tv_switch1.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
     }
 
-    void setFacePressedBg() {
-        ll_switch3.setBackgroundColor(getResources().getColor(R.color.lanse3));
-        tv_switch3.setTextColor(getResources().getColor(R.color.white));
-        Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_face);
-        tv_switch3.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
-    }
+    /* void setFacePressedBg() {
+         ll_switch3.setBackgroundColor(getResources().getColor(R.color.lanse3));
+         tv_switch3.setTextColor(getResources().getColor(R.color.white));
+         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_face);
+         tv_switch3.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
+     }
 
-    void setFaceNormaBg() {
-        ll_switch3.setBackgroundColor(getResources().getColor(R.color.white));
-        tv_switch3.setTextColor(getResources().getColor(R.color.gray2));
-        Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_face);
-        tv_switch3.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
-    }
-
+     void setFaceNormaBg() {
+         ll_switch3.setBackgroundColor(getResources().getColor(R.color.white));
+         tv_switch3.setTextColor(getResources().getColor(R.color.gray2));
+         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_face);
+         tv_switch3.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
+     }
+ */
     void setNumbPressedBg() {
-        ll_switch2.setBackgroundColor(getResources().getColor(R.color.lanse3));
+        ll_switch2.setBackground(getResources().getDrawable(R.drawable.bg_tab_login));
         tv_switch2.setTextColor(getResources().getColor(R.color.white));
         Drawable drawableLeft = getResources().getDrawable(R.mipmap.ic_phone_press);
         tv_switch2.setCompoundDrawablesWithIntrinsicBounds(drawableLeft, null, null, null);
@@ -216,11 +216,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.tv_back) {
-            finish();
-        }
         switch (v.getId()) {
             case R.id.tv_back:
+                finish();
                 break;
             case R.id.ll_switch1:
                 switchScanCodeLogin();
@@ -228,65 +226,35 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.ll_switch2:
                 switchPhoneLogin();
                 break;
-            case R.id.ll_switch3:
-                switchFaceDetect();
-                break;
             default:
                 break;
         }
     }
 
-    Login1Fragment login1Fragment;
-    Login3Fragment login2Fragment;
+    LoginByWXFragment loginByWXFragment;
+    LoginByCusrNumbFragment login2Fragment;
 
 
     private void switchScanCodeLogin() {
-        if (login1Fragment == null) {
-            login1Fragment = new Login1Fragment();
+        if (loginByWXFragment == null) {
+            loginByWXFragment = new LoginByWXFragment();
         }
-        if (currentFragment == login1Fragment) return;
+        if (currentFragment == loginByWXFragment) return;
         setScanCodePressedBg();
         setNumbNormarBg();
-        setFaceNormaBg();
-        switchFragment(login1Fragment);
+//        setFaceNormaBg();
+        switchFragment(loginByWXFragment);
     }
 
     private void switchPhoneLogin() {
         if (login2Fragment == null) {
-            login2Fragment = new Login3Fragment();
+            login2Fragment = new LoginByCusrNumbFragment();
         }
         if (currentFragment == login2Fragment) return;
         setNumbPressedBg();
-        setFaceNormaBg();
+//        setFaceNormaBg();
         setScanCodeNormarBg();
         switchFragment(login2Fragment);
-    }
-
-   /* FaceDetectFragment2 faceDetectFragment;
-    private void switchFaceDetect() {
-        if (faceDetectFragment == null) {
-            faceDetectFragment = new FaceDetectFragment2();
-        }
-        if (currentFragment == faceDetectFragment) return;
-        setFacePressedBg();
-        setNumbNormarBg();
-        setScanCodeNormarBg();
-
-        switchFragment(faceDetectFragment);
-    }*/
-
-
-    FaceDetectFragment3 faceDetectFragment;
-    private void switchFaceDetect() {
-        if (faceDetectFragment == null) {
-            faceDetectFragment = new FaceDetectFragment3();
-        }
-        if (currentFragment == faceDetectFragment) return;
-        setFacePressedBg();
-        setNumbNormarBg();
-        setScanCodeNormarBg();
-
-        switchFragment(faceDetectFragment);
     }
 
     private void switchFragment(BaseFragment targetFragment) {

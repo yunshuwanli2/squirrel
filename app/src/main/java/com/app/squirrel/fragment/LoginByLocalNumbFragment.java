@@ -32,11 +32,11 @@ import java.util.regex.PatternSyntaxException;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Login3Fragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
+public class LoginByLocalNumbFragment extends BaseFragment implements View.OnClickListener, HttpCallback<JSONObject> {
 
     private static final String TAG = "Login2Fragment";
 
-    public Login3Fragment() {
+    public LoginByLocalNumbFragment() {
     }
 
 

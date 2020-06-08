@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".activity.LoginActivity">
+
+    <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/bg_back"
+        android:drawableStart="@mipmap/ic_back"
+        android:gravity="center"
+        android:paddingStart="5dp"
+        android:paddingEnd="10dp"
+        android:text="返回"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="42dp"
+        android:text="请正对屏幕，确保光线充足"
+        android:textColor="#ff333333"
+        android:textSize="24sp" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@mipmap/icon_bg_face_hint" />
+
+    <Button
+        android:id="@+id/btn_face_login"
+        android:layout_width="280dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="18dp"
+        android:background="@drawable/bg_face_btn"
+        android:text="开始刷脸"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="156dp"
+        android:layout_height="17dp"
+        android:layout_gravity="center_horizontal"
+        android:drawableStart="@mipmap/ic_aes"
+        android:drawablePadding="10dp"
+        android:text="信息已加密，仅用于身份验证"
+        android:textColor="#ff999999"
+        android:textSize="12sp" />
+
+</LinearLayout>
+

@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * 主界面
  *
- * @author chaochaowu
  */
 public class ArcSoftFaceActivity extends FragmentActivity {
     public final static String isLogin_key = "isLogin";

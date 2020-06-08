@@ -10,7 +10,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:background="@mipmap/weixin" />
 
     <TextView
@@ -22,4 +22,28 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp" />
 
+    <LinearLayout
+        android:id="@+id/ll_face_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/bg_circle2"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_log_in_out"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:drawableLeft="@mipmap/icon_face"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="人脸识别开箱"
+            android:textColor="@color/gray2"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 </LinearLayout>
