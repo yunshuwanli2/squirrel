@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Switch;
 
 import com.arcsoft.face.AgeInfo;
@@ -47,6 +48,7 @@ import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.MScreenUtils;
 import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -163,10 +165,21 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
 
 
     private void initView(View view) {
+       int width = MScreenUtils.getScreenWidth(getActivity());
+       int height = MScreenUtils.getScreenHeight(getActivity());
+
+
         previewView = view.findViewById(R.id.single_camera_texture_preview);
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         faceRectView = view.findViewById(R.id.single_camera_face_rect_view);
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) previewView.getLayoutParams();
+        layoutParams.height = Math.min(width, height);
+        layoutParams.width = Math.min(width,height);
+        previewView.setLayoutParams(layoutParams);
+        faceRectView.setLayoutParams(layoutParams);
+
         compareResultList = new ArrayList<>();
         if (isRegistFace) {
             registerStatus = REGISTER_STATUS_DONE;
