@@ -13,20 +13,22 @@
     <TextView
         android:id="@+id/tv_back"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="60dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/bg_back"
         android:drawableStart="@mipmap/ic_back"
         android:gravity="center"
-        android:paddingStart="5dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="20dp"
         android:text="返回"
         android:textSize="18sp" />
 
     <LinearLayout
-        android:layout_width="640dp"
-        android:layout_height="46dp"
+        android:layout_width="match_parent"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
+        android:layout_height="80dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_buttom"
         android:gravity="center">

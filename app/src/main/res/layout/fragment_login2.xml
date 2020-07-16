@@ -6,8 +6,10 @@
 
 
     <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_input_text"
         android:focusable="true"
@@ -43,8 +45,11 @@
 
     <LinearLayout
         android:id="@+id/ll_agree_rule"
-        android:layout_width="400dp"
-        android:layout_height="20dp"
+        android:layout_width="match_parent"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+
+        android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -52,8 +57,8 @@
 
         <ImageView
             android:id="@+id/iv_check"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginRight="10dp"
             android:src="@mipmap/ic_check_normol" />
 
@@ -62,19 +67,21 @@
             android:layout_height="wrap_content"
             android:text="我同意"
             android:textColor="@android:color/background_dark"
-            android:textSize="12sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="《用户协议》"
             android:textColor="@color/lanse"
-            android:textSize="12sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="420dp"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_height="600dp"
         android:layout_gravity="center"
         android:orientation="vertical">
 
@@ -85,8 +92,8 @@
 
             <Button
                 android:id="@+id/btn_1"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -97,8 +104,8 @@
 
             <Button
                 android:id="@+id/btn_2"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -109,8 +116,8 @@
 
             <Button
                 android:id="@+id/btn_3"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -127,8 +134,8 @@
 
             <Button
                 android:id="@+id/btn_4"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -139,8 +146,8 @@
 
             <Button
                 android:id="@+id/btn_5"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -152,8 +159,8 @@
 
             <Button
                 android:id="@+id/btn_6"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -170,8 +177,8 @@
 
             <Button
                 android:id="@+id/btn_7"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -182,8 +189,8 @@
 
             <Button
                 android:id="@+id/btn_8"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -194,8 +201,8 @@
 
             <Button
                 android:id="@+id/btn_9"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -212,8 +219,8 @@
 
             <Button
                 android:id="@+id/btn_clean"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -224,8 +231,8 @@
 
             <Button
                 android:id="@+id/btn_0"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -236,8 +243,8 @@
 
             <Button
                 android:id="@+id/btn_delete_one"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
                 android:layout_margin="11dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
@@ -264,11 +271,13 @@
             android:drawableLeft="@mipmap/icon_face"
             android:drawablePadding="5dp"
             android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:paddingLeft="100dp"
+            android:paddingRight="100dp"
             android:text="人脸识别开箱"
             android:textColor="@color/gray2"
-            android:textSize="18sp"
+            android:textSize="22sp"
             />
 
     </LinearLayout>

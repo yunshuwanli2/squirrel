@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:paddingTop="14dp"
-    android:paddingBottom="14dp"
-    android:paddingEnd="25dp"
-    android:paddingStart="25dp"
+    android:layout_height="140dp"
+    android:paddingTop="28dp"
+    android:paddingBottom="28dp"
+    android:paddingEnd="50dp"
+    android:paddingStart="50dp"
     android:background="@mipmap/top_bg"
     android:gravity="center_vertical">
 
@@ -19,7 +19,7 @@
         android:drawablePadding="5dp"
         android:text="客户电话:18709878809"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="22sp"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
@@ -32,7 +32,7 @@
         android:drawablePadding="5dp"
         android:text="机器编码:00908787"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
@@ -52,6 +52,6 @@
         android:gravity="end|center_vertical"
         android:text="2019-11-02 17:32"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent" />
 </android.support.constraint.ConstraintLayout>
