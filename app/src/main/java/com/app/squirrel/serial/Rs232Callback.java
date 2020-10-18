@@ -45,7 +45,7 @@ public interface Rs232Callback {
 	 *
 	 * @param weight 获取重量
 	 */
-	void onReceiveWeight(int number, String weight, String timeID);
+	void onReceiveWeight(int number, int weight, String timeID);
 	/**
 	 * 火灾报警
 	 */

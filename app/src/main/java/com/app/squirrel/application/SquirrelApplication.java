@@ -54,6 +54,6 @@ public class SquirrelApplication extends MApplication {
     @Override
     public String getBaseUrl_Https() {
 //        return "http://www.bumain.com:8090/";
-        return "http://60.205.177.220:8090/";
+        return "http://60.205.177.220:8082/";
     }
 }

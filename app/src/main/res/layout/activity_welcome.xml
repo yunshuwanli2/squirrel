@@ -10,7 +10,7 @@
 
 
     <LinearLayout
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="@dimen/size_80"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1.6"
@@ -23,24 +23,24 @@
             android:layout_gravity="center"
             android:text="请选择回收类型开始投递"
             android:textColor="@android:color/black"
-            android:textSize="28sp" />
+            android:textSize="@dimen/font_28" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="15dp"
+            android:layout_margin="@dimen/size_15"
             android:text="未绑定小程序的用户可扫描下方二维码进行绑定"
             android:textColor="@android:color/darker_gray"
-            android:textSize="18sp" />
+            android:textSize="@dimen/font_18" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="@dimen/size_10"
+            android:layout_marginRight="@dimen/size_10"
+            android:layout_marginBottom="@dimen/size_10"
+            android:layout_marginTop="@dimen/size_20"
             android:weightSum="4"
             android:orientation="horizontal">
 
@@ -61,10 +61,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="可回收垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="22sp" />
+                    android:textSize="@dimen/font_22" />
 
                 <TextView
                     android:id="@+id/tv_recy_hint"
@@ -73,7 +73,7 @@
                     android:gravity="center"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/size_16"
                     android:visibility="gone" />
 
 
@@ -96,10 +96,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="湿垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="22sp" />
+                    android:textSize="@dimen/font_22" />
 
                 <TextView
                     android:id="@+id/tv_wet_hint"
@@ -131,10 +131,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="有害垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="22sp" />
+                    android:textSize="@dimen/font_22" />
 
                 <TextView
                     android:id="@+id/tv_harmful_hint"
@@ -143,7 +143,7 @@
                     android:gravity="center"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/size_16"
                     android:visibility="gone" />
 
 
@@ -165,10 +165,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="干垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="22sp" />
+                    android:textSize="@dimen/font_22" />
 
                 <TextView
                     android:id="@+id/tv_dry_hint"
@@ -177,7 +177,7 @@
                     android:gravity="center"
                     android:text="开门后30秒内关闭"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/size_16"
                     android:visibility="gone" />
 
 
@@ -198,19 +198,19 @@
 
         <TextView
             android:id="@+id/tv_log_in_out"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/size_5"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:drawableLeft="@mipmap/ic_exit"
-            android:drawablePadding="5dp"
+            android:drawablePadding="@dimen/size_5"
             android:gravity="center"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:paddingLeft="100dp"
-            android:paddingRight="100dp"
+            android:paddingBottom="@dimen/size_20"
+            android:paddingTop="@dimen/size_20"
+            android:paddingLeft="@dimen/size_100"
+            android:paddingRight="@dimen/size_100"
             android:text="退出登录"
             android:textColor="@color/gray2"
-            android:textSize="28sp"
+            android:textSize="@dimen/font_28"
              />
 
     </LinearLayout>
@@ -220,12 +220,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@mipmap/main_bottom_bg"
-        android:paddingRight="30dp">
+        android:paddingRight="@dimen/size_30">
 
         <ImageView
             android:id="@+id/wx_code"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/size_80"
+            android:layout_height="@dimen/size_80"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@color/lanse"
@@ -240,7 +240,7 @@
             android:gravity="center"
             android:text="扫一扫\n进入小松鼠小程序"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="@dimen/font_14"
             android:visibility="gone" />
 
 

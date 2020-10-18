@@ -174,8 +174,8 @@ public class Rs232Contol extends SerialHelper {
 			//投递重量,单位 kg
 			String height = height1+"."+height2;*/
             L.d(TAG, "order： CommonConstant.IN_WEIGHT");
-            String height = Integer.parseInt(dataStr.substring(0, 4), 16) + "";
-            mRs232Callback.onReceiveWeight(number, height, dateTimeStr);
+            int weight = Integer.parseInt(dataStr.substring(0, 4), 16) ;
+            mRs232Callback.onReceiveWeight(number, weight, dateTimeStr);
         } else if (order.equals(CommonConstant.IN_FIRE_WARN)) {
             //TODO 上传防火报警，界面提示，并发送到后台
 

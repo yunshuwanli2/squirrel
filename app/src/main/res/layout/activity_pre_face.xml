@@ -17,10 +17,10 @@
         android:background="@drawable/bg_back"
         android:drawableStart="@mipmap/ic_back"
         android:gravity="center"
-        android:paddingStart="5dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="@dimen/size_5"
+        android:paddingEnd="@dimen/size_10"
         android:text="返回"
-        android:textSize="18sp" />
+        android:textSize="@dimen/font_18" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_marginBottom="42dp"
         android:text="请正对屏幕，确保光线充足"
         android:textColor="#ff333333"
-        android:textSize="24sp" />
+        android:textSize="@dimen/font_24" />
 
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="wrap_content"
@@ -39,23 +39,23 @@
 
     <Button
         android:id="@+id/btn_face_login"
-        android:layout_width="280dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/size_310"
+        android:layout_height="@dimen/size_58"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="18dp"
+        android:layout_marginBottom="@dimen/size_18"
         android:background="@drawable/bg_face_btn"
         android:text="开始刷脸"
-        android:textSize="18sp" />
+        android:textSize="@dimen/font_18" />
 
     <TextView
-        android:layout_width="156dp"
-        android:layout_height="17dp"
+        android:layout_width="@dimen/size_150"
+        android:layout_height="@dimen/size_18"
         android:layout_gravity="center_horizontal"
         android:drawableStart="@mipmap/ic_aes"
-        android:drawablePadding="10dp"
+        android:drawablePadding="@dimen/size_10"
         android:text="信息已加密，仅用于身份验证"
         android:textColor="#ff999999"
-        android:textSize="12sp" />
+        android:textSize="@dimen/font_14" />
 
 </LinearLayout>
 

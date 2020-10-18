@@ -52,6 +52,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static final long PLC_STATUES_TIME_DELAY = 3 * 60 * 1000;
     private static final long WARN_TIME_DELAY = 5 * 1000;//五秒
     private static final long PRC_STATUS_TIME_DELAY = 5 * 1000;//五秒
+    private static final long TIME_GET_BORD_INFO = 5 * 60 * 1000;//更新时间5分钟
     private static final long UPDATE_TIME_TIME_DELAY = 1000;//更新时间1秒
     private static final long USER_AUTO_LOGOUT_TIME = 2 * 60 * 1000;//更新时间1秒
     private int openNumb = -1;
@@ -80,6 +81,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         int isFace = message.arg1;
         String token = (String) message.obj;
+        L.d(TAG,"token:"+token+ " isFace:" + isFace );
+
         UserManager.loginLocal(token, isFace);
 
         setLoginStatues();
@@ -122,7 +125,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                 });
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,12 +206,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onSucceed(int requestId, JSONObject result) {
-        L.d(TAG, "[onSucceed]" + result);
+        L.d(TAG, "requestId"+requestId+ " [onSucceed]" + result);
+        if(requestId==100){
+            L.d(TAG,"关门后记录成功");
+        }
     }
 
     @Override
     public void onFail(int requestId, String errorMsg) {
-        L.e(TAG, "[onFail]" + errorMsg);
+        L.e(TAG, "requestId:"+requestId+" [onFail]" + errorMsg);
     }
 
 
@@ -257,9 +262,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void openDoor(int doorNumb) {
-        rs232OutService.start();
         L.d(TAG, "open :" + doorNumb);
-        rs232OutService.openDoor(doorNumb);
+//        rs232OutService.start();
+//        rs232OutService.openDoor(doorNumb);
+        recordOperateRequest(100,doorNumb,0,1);//单纯记录用
+
+
+//        TODO TEST TODAY 10.18
+        if(doorNumb==1){
+            recordOperateRequest(100,1,22,0);
+            return;
+        }
+        if(doorNumb ==2){
+            requestRecoFullStatus(2,true);
+            return;
+        }
+        if(doorNumb == 3){
+            requestWarn(3);
+        }
+
     }
 
     /**
@@ -267,12 +288,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void jumpLogin() {
         LoginActivity.JumpAct(this);
-
 //        ArcSoftFaceActivity.JumpAct(this);
     }
 
     //提交记录请求
-    private void recordOperateRequest(int requestId, int numb, String weight, int openStatus) {
+
+    /**
+     *
+     * @param requestId
+     * @param numb
+     * @param weight int 单位g
+     * @param openStatus
+     */
+    private void recordOperateRequest(int requestId, int numb, int weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
@@ -312,6 +340,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
         public static final int MSG_OVERTIME_USER_LOGOUT = 0x2;
+        public static final int MSG_GET_BORD_INTO = 0x6;
         private WeakReference<MainActivity> mWeakReference;
 
         private SafeHandler(MainActivity service, Looper looper) {
@@ -333,6 +362,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             activity.tv_date.setText(TIME_FORMAT.format(date));
                             removeMessages(MSG_UPDATE_TIME);
                             sendEmptyMessageDelayed(MSG_UPDATE_TIME, UPDATE_TIME_TIME_DELAY);
+                        }
+                    });
+                    break;
+                case MSG_GET_BORD_INTO:
+                    Rs232OutService.getBoardInfo(1);
+                    Rs232OutService.getBoardInfo(2);
+                    Rs232OutService.getBoardInfo(3);
+                    Rs232OutService.getBoardInfo(4);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            removeMessages(MSG_GET_BORD_INTO);
+                            sendEmptyMessageDelayed(MSG_GET_BORD_INTO, TIME_GET_BORD_INFO);
                         }
                     });
                     break;
@@ -443,12 +485,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
          * timeId 时间
          */
         @Override
-        public void onReceiveWeight(int numb, String weight, String timeID) {
+        public void onReceiveWeight(int numb, int weight, String timeID) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
-                    recordOperateRequest(1, numb, weight, 1);
+                    recordOperateRequest(100, numb, weight, 0);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
@@ -493,7 +535,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFullWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-//            requestRecoFullStatus(numb, true);
+            requestRecoFullStatus(numb, true);
         }
 
         /**

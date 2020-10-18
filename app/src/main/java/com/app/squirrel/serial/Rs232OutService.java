@@ -56,6 +56,8 @@ public class Rs232OutService {
 
 
     /**
+     * 定时任务5分钟上报
+     *
      * app到单片机
      * 读取电路板信息
      *

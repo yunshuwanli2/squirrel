@@ -7,9 +7,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
+        android:layout_height="@dimen/size_60"
+        android:layout_marginStart="@dimen/size_100"
+        android:layout_marginEnd="@dimen/size_100"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_input_text"
         android:focusable="true"
@@ -26,40 +26,39 @@
             android:letterSpacing="0.1"
             android:lines="1"
             android:maxLength="11"
-            android:paddingStart="10dp"
+            android:paddingStart="@dimen/size_10"
             android:textColor="@android:color/background_dark"
             android:textColorHint="@android:color/darker_gray"
-            android:textSize="18sp" />
+            android:textSize="@dimen/font_18" />
 
         <TextView
             android:id="@+id/tv_login"
-            android:layout_width="100dp"
+            android:layout_width="@dimen/size_100"
             android:layout_height="match_parent"
-            android:layout_margin="1dp"
+            android:layout_margin="@dimen/size_1"
             android:background="@color/gray"
             android:gravity="center"
             android:text="确 认"
             android:textColor="@android:color/background_dark"
-            android:textSize="18sp" />
+            android:textSize="@dimen/font_18" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_agree_rule"
         android:layout_width="match_parent"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-
-        android:layout_height="30dp"
+        android:layout_marginStart="@dimen/size_100"
+        android:layout_marginEnd="@dimen/size_100"
+        android:layout_height="@dimen/size_30"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginBottom="@dimen/size_10"
         android:gravity="bottom">
 
         <ImageView
             android:id="@+id/iv_check"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="@dimen/size_32"
+            android:layout_height="@dimen/size_32"
+            android:layout_marginRight="@dimen/size_10"
             android:src="@mipmap/ic_check_normol" />
 
         <TextView
@@ -67,21 +66,21 @@
             android:layout_height="wrap_content"
             android:text="我同意"
             android:textColor="@android:color/background_dark"
-            android:textSize="16sp" />
+            android:textSize="@dimen/size_16" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="《用户协议》"
             android:textColor="@color/lanse"
-            android:textSize="16sp" />
+            android:textSize="@dimen/size_16" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_height="600dp"
+        android:layout_marginStart="@dimen/size_100"
+        android:layout_marginEnd="@dimen/size_100"
+        android:layout_height="@dimen/size_600"
         android:layout_gravity="center"
         android:orientation="vertical">
 
@@ -93,37 +92,37 @@
             <Button
                 android:id="@+id/btn_1"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="1"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_2"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="2"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_3"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="3"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -135,38 +134,38 @@
             <Button
                 android:id="@+id/btn_4"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="4"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_5"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:gravity="center"
                 android:text="5"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_6"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="6"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -178,37 +177,37 @@
             <Button
                 android:id="@+id/btn_7"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="7"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_8"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="8"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_9"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="9"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -220,37 +219,37 @@
             <Button
                 android:id="@+id/btn_clean"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="清空"
                 android:textColor="@color/lanse"
-                android:textSize="20sp"
+                android:textSize="@dimen/size_20"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_0"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="0"
                 android:textColor="@color/lanse"
-                android:textSize="24sp"
+                android:textSize="@dimen/font_24"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_delete_one"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_margin="11dp"
+                android:layout_height="@dimen/size_80"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tab_numb_login"
                 android:text="删除"
                 android:textColor="@color/lanse"
-                android:textSize="20sp"
+                android:textSize="@dimen/size_20"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
@@ -269,15 +268,15 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:drawableLeft="@mipmap/icon_face"
-            android:drawablePadding="5dp"
+            android:drawablePadding="@dimen/size_5"
             android:gravity="center"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:paddingLeft="100dp"
-            android:paddingRight="100dp"
+            android:paddingTop="@dimen/size_20"
+            android:paddingBottom="@dimen/size_20"
+            android:paddingLeft="@dimen/size_100"
+            android:paddingRight="@dimen/size_100"
             android:text="人脸识别开箱"
             android:textColor="@color/gray2"
-            android:textSize="22sp"
+            android:textSize="@dimen/font_22"
             />
 
     </LinearLayout>

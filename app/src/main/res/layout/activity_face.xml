@@ -13,16 +13,16 @@
     <TextView
         android:id="@+id/tv_back"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_height="@dimen/size_40"
+        android:layout_marginTop="@dimen/size_30"
+        android:layout_marginBottom="@dimen/size_30"
         android:background="@drawable/bg_back"
         android:drawableStart="@mipmap/ic_back"
         android:gravity="center"
-        android:paddingStart="5dp"
-        android:paddingEnd="10dp"
+        android:paddingStart="@dimen/size_5"
+        android:paddingEnd="@dimen/size_10"
         android:text="返回"
-        android:textSize="18sp" />
+        android:textSize="@dimen/size_18" />
 
     <FrameLayout
         android:id="@+id/content"

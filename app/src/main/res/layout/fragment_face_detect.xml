@@ -14,14 +14,14 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="600dp"
+            android:layout_width="@dimen/size_600"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="@dimen/size_8"
+            android:layout_marginEnd="@dimen/size_8"
+            android:layout_marginStart="@dimen/size_8"
+            android:layout_marginTop="@dimen/size_8"
             android:transitionName="image"/>
 
     </com.gc.materialdesign.views.Card>
@@ -32,16 +32,16 @@
 
         <com.gc.materialdesign.views.ButtonRectangle
             android:id="@+id/button"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/size_150"
+            android:layout_height="@dimen/size_50"
             android:background="@color/MainColor"
             android:text="@string/capture"
             android:layout_gravity="center"/>
 
         <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
             android:id="@+id/progressBar"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/size_32"
+            android:layout_height="@dimen/size_32"
             android:background="@color/MainColor"
             android:layout_gravity="center"
             android:visibility="gone"/>

@@ -194,16 +194,20 @@ public class LoginByCusrNumbFragment extends BaseFragment implements View.OnClic
         L.e(TAG, "[onSucceed] result:" + result);
 
         String token = null;
+        int isFace = 0;
         String code = result.optString("code");
         if (code.equals("0")) {
             JSONObject data = result.optJSONObject("data");
             token = data.optString("token");
+            isFace = data.optInt("isFace");
         }
         if (!TextUtils.isEmpty(token)) {
-            L.e(TAG, "获取token成功，postSticky");
+            L.e(TAG, "获取token成功，postSticky"+token);
             MSPUtils.clear(getActivity());
-            MSPUtils.put("token", token);
-            EventBus.getDefault().postSticky(new Message());
+           Message message = new Message();
+           message.obj = token;
+           message.arg1 = isFace;
+            EventBus.getDefault().postSticky(message);
         } else {
             L.e(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));

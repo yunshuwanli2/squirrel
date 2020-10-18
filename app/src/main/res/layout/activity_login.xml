@@ -13,22 +13,22 @@
     <TextView
         android:id="@+id/tv_back"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_height="@dimen/size_60"
+        android:layout_marginTop="@dimen/size_30"
+        android:layout_marginBottom="@dimen/size_30"
         android:background="@drawable/bg_back"
         android:drawableStart="@mipmap/ic_back"
         android:gravity="center"
-        android:paddingStart="10dp"
-        android:paddingEnd="20dp"
+        android:paddingStart="@dimen/size_10"
+        android:paddingEnd="@dimen/size_20"
         android:text="返回"
-        android:textSize="18sp" />
+        android:textSize="@dimen/font_18" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginEnd="100dp"
-        android:layout_marginStart="100dp"
-        android:layout_height="80dp"
+        android:layout_marginEnd="@dimen/size_100"
+        android:layout_marginStart="@dimen/size_100"
+        android:layout_height="@dimen/size_80"
         android:layout_gravity="center"
         android:background="@drawable/bg_buttom"
         android:gravity="center">
@@ -47,13 +47,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:drawableLeft="@mipmap/ic_sm"
-                android:drawablePadding="5dp"
+                android:drawablePadding="@dimen/size_5"
                 android:gravity="center"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
+                android:paddingLeft="@dimen/size_30"
+                android:paddingRight="@dimen/size_30"
                 android:text="扫描开箱"
                 android:textColor="@color/gray2"
-                android:textSize="18sp" />
+                android:textSize="@dimen/font_18" />
 
         </LinearLayout>
         <!--<LinearLayout
@@ -92,13 +92,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:drawableLeft="@mipmap/ic_phone"
-                android:drawablePadding="5dp"
+                android:drawablePadding="@dimen/size_5"
                 android:gravity="center"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
+                android:paddingLeft="@dimen/size_30"
+                android:paddingRight="@dimen/size_30"
                 android:text="手机号码开箱"
                 android:textColor="@color/gray2"
-                android:textSize="18sp" />
+                android:textSize="@dimen/font_18" />
         </LinearLayout>
 
 

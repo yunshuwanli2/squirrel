@@ -7,27 +7,27 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/size_200"
+        android:layout_height="@dimen/size_200"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/size_30"
         android:background="@mipmap/weixin" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/size_10"
         android:text="请扫描开箱，支持微信扫一扫登录"
         android:textColor="@android:color/darker_gray"
-        android:textSize="18sp" />
+        android:textSize="@dimen/font_18" />
 
     <LinearLayout
         android:id="@+id/ll_face_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="@dimen/size_60"
         android:background="@drawable/bg_circle2"
         android:gravity="center">
 
@@ -35,15 +35,15 @@
             android:id="@+id/tv_log_in_out"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/size_5"
             android:drawableLeft="@mipmap/icon_face"
-            android:drawablePadding="5dp"
+            android:drawablePadding="@dimen/size_5"
             android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
+            android:paddingLeft="@dimen/size_30"
+            android:paddingRight="@dimen/size_30"
             android:text="人脸识别开箱"
             android:textColor="@color/gray2"
-            android:textSize="18sp" />
+            android:textSize="@dimen/font_18" />
 
     </LinearLayout>
 </LinearLayout>
