@@ -83,7 +83,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
-    api project(path: ':lib_base')
+    api project(path: ':lib_basic')
 //   remove api project(path: ':livenessLib')
     api project(path: ':lib_arcsoft')
 
