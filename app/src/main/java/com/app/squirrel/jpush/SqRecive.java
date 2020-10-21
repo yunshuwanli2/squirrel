@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
 import com.priv.yswl.base.tool.L;
 import com.priv.yswl.base.tool.MDeviceUtil;
@@ -36,6 +37,7 @@ public class SqRecive extends JPushMessageReceiver {
                     }
                 }else if(date.type.equals("2")){
                     TimeSetPushBean.DataBean timeBean = TimeSetPushBean.getTimeInfo(var2.message);
+//                    Rs232OutService.setTime(timeBean.getNumber(),);
                 }
 
         }
