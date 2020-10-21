@@ -26,7 +26,7 @@ import com.priv.yswl.base.network.HttpClientProxy;
 import com.priv.yswl.base.permission.PermissionUtil;
 import com.priv.yswl.base.tool.GsonUtil;
 import com.priv.yswl.base.tool.L;
-import com.priv.yswl.base.tool.MSPUtils;
+import com.priv.yswl.base.tool.MDeviceUtil;
 import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -55,10 +55,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static final long TIME_GET_BORD_INFO = 5 * 60 * 1000;//更新时间5分钟
     private static final long UPDATE_TIME_TIME_DELAY = 1000;//更新时间1秒
     private static final long USER_AUTO_LOGOUT_TIME = 2 * 60 * 1000;//更新时间1秒
+    private static final int ID_REQUEST_RECORD_OPERATE = 0x11;
+    private static final int ID_REQUEST_RECORD_FULL_STATUS = 0x12;
+    private static final int ID_REQUEST_WARN = 0x13;
+    private static final int ID_REQUEST_UPDATE_BORD_INFO = 0x14;
     private int openNumb = -1;
     public HandlerThread mHandleThread;
     public SafeHandler mSafeHandle;
-    public TextView tv_date;
+    public TextView tv_date,tv_deviceId;
     public LinearLayout loginOrout;
     public TextView tv_harm_hint;
     public TextView tv_wet_hint;
@@ -147,6 +151,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         loginOrout.setOnClickListener(this);
         loginOrout.setVisibility(View.INVISIBLE);
         tv_date = findViewById(R.id.tv_date);
+        tv_deviceId = findViewById(R.id.tv_device_id);
+        tv_deviceId.setText("设备ID: "+MDeviceUtil.getMAC(this));
         mHandleThread = new HandlerThread(TAG);
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
@@ -265,20 +271,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         L.d(TAG, "open :" + doorNumb);
 //        rs232OutService.start();
 //        rs232OutService.openDoor(doorNumb);
-        recordOperateRequest(100,doorNumb,0,1);//单纯记录用
+        recordOperateRequest(doorNumb,0,1);//单纯开门记录
 
 
 //        TODO TEST TODAY 10.18
         if(doorNumb==1){
-            recordOperateRequest(100,1,22,0);
+            recordOperateRequest(1,22,0);
             return;
         }
         if(doorNumb ==2){
-            requestRecoFullStatus(2,true);
+            requestRecordFullStatus(2,true);
             return;
         }
         if(doorNumb == 3){
-            requestWarn(3);
+            requestWarn(3,2,"垃圾桶内有烟雾");
         }
 
     }
@@ -295,12 +301,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     /**
      *
-     * @param requestId
      * @param numb
      * @param weight int 单位g
      * @param openStatus
      */
-    private void recordOperateRequest(int requestId, int numb, int weight, int openStatus) {
+    private void recordOperateRequest(int numb, int weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
@@ -309,22 +314,65 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         para.put("openStatus", openStatus);
         String str = GsonUtil.GsonString(para);
         ToastUtil.showToast("请求参数为：" + str);
-        HttpClientProxy.getInstance().postJSONAsyn(url, requestId, str, this);
+        HttpClientProxy.getInstance().postJSONAsyn(url, ID_REQUEST_RECORD_OPERATE, str, this);
     }
 
-    //TODO 请求报警
-    private void requestWarn(int doorNumb) {
 
 
-    }
-
-    private void requestRecoFullStatus(int doorNumb, boolean isFull) {
+    private void requestRecordFullStatus(int doorNumb, boolean isFull) {
         String url = "wxApi/binfs";
         Map<String, Object> para = new HashMap<>();
         para.put("number", doorNumb);
         para.put("isFull", isFull);
         para.put("siteCode", "A0001");
-        HttpClientProxy.getInstance().getAsyn(url, 3, para, this);
+        HttpClientProxy.getInstance().getAsyn(url, ID_REQUEST_RECORD_FULL_STATUS, para, this);
+    }
+
+    /**
+     *
+     * @param doorNumb
+     * @param type
+     * 1 温度过高
+     * 2 烟雾警报
+     * 3 满载警报
+     * 4 灭火容器不足
+     * 5 电机故障
+     * @param remark
+     * 报警提示信息。当type为1时，该字段为温度
+     */
+    private void requestWarn(int doorNumb, int type,String remark) {
+        String url = "wxApi/receiveWarn";
+        Map<String, Object> para = new HashMap<>();
+        para.put("number", doorNumb);
+        para.put("type", type);
+        para.put("remark", "A0001");
+        HttpClientProxy.getInstance().getAsyn(url, ID_REQUEST_WARN, para, this);
+    }
+
+    /**
+     *
+     * @param doorNumb
+     * @param weight
+     * @param temperature
+     * @param smokeWarn
+     * @param fireWarn
+     * @param timeSet
+     * @param times
+     */
+    private void requestUpdateBordInfo(int doorNumb,String weight,
+                                       int temperature,String smokeWarn,
+                                       String fireWarn,String timeSet,String times
+    ) {
+        String url = "wxApi/receiveBordInfo";
+        Map<String, Object> para = new HashMap<>();
+        para.put("number", doorNumb);
+        para.put("weight", weight);
+        para.put("temperature", temperature);
+        para.put("smokeWarn", smokeWarn);
+        para.put("fireWarn", fireWarn);
+        para.put("timeSet", timeSet);
+        para.put("times", times);
+        HttpClientProxy.getInstance().getAsyn(url, ID_REQUEST_UPDATE_BORD_INFO, para, this);
     }
 
     private void setLogoutStatues() {
@@ -336,6 +384,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         loginOrout.setVisibility(View.VISIBLE);
 
     }
+
+
 
     final static class SafeHandler extends Handler {
         public static final int MSG_UPDATE_TIME = 0x0;
@@ -366,10 +416,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     });
                     break;
                 case MSG_GET_BORD_INTO:
-                    Rs232OutService.getBoardInfo(1);
-                    Rs232OutService.getBoardInfo(2);
-                    Rs232OutService.getBoardInfo(3);
-                    Rs232OutService.getBoardInfo(4);
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Rs232OutService.getBoardInfo(1);
+                            Rs232OutService.getBoardInfo(2);
+                            Rs232OutService.getBoardInfo(3);
+                            Rs232OutService.getBoardInfo(4);
+                        }
+                    },100);
+
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -403,6 +459,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
     }
+
 
 
     class MyCallback implements Rs232Callback {
@@ -440,9 +497,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onReceiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
                                       String fireWarn, String timeSet, String times) {
-            ToastUtil.showToast(String.format(Locale.CHINA, "%d 号门打开" +
+            L.d(TAG,String.format(Locale.CHINA, "%d 号门打开" +
                             "，weight:%s,temperature:%d,smokeWarn:%s,fireWarn:%s,timeSet:%s,times:%s"
                     , numb, weight, temperature, smokeWarn, fireWarn, timeSet, times));
+            requestUpdateBordInfo(numb, weight, temperature, smokeWarn, fireWarn, timeSet, times);
 
         }
 
@@ -490,7 +548,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
-                    recordOperateRequest(100, numb, weight, 0);
+                    recordOperateRequest( numb, weight, 0);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
@@ -518,7 +576,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFireWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-
+            requestWarn(numb,1,msg);
         }
 
         /**
@@ -527,6 +585,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onSmokeWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
+            requestWarn(numb,2,msg);
         }
 
         /**
@@ -535,7 +594,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFullWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestRecoFullStatus(numb, true);
+            requestRecordFullStatus(numb, true);
+            requestWarn(numb,3,msg);
         }
 
         /**
@@ -544,6 +604,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFireToolsEmptyWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
+            requestWarn(numb,4,msg);
         }
 
         /**
@@ -552,7 +613,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onMachineWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
+            requestWarn(numb,5,msg);
         }
     }
+
 
 }

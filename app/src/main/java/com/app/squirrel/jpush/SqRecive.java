@@ -26,17 +26,18 @@ public class SqRecive extends JPushMessageReceiver {
         super.onMessage(var1, var2);
         L.d(TAG, "[onMessage]: " + var2.toString());
         if (!TextUtils.isEmpty(var2.message)) {
-            try {
-                JSONObject jsonObject = new JSONObject(var2.message);
-                String token = jsonObject.optString("token");
-                int isFace = jsonObject.optInt("isFace");
-                if (!TextUtils.isEmpty(token)) {
-                    UserManager.sendLoginEvenBus(token,isFace);
+                BasePushBean date = BasePushBean.getBasePush(var2.message);
+                if(date.type.equals("1")){
+                    LoginPushBean.DataBean loginPushBean =LoginPushBean.getUserInfo(var2.message);
+                    String token = loginPushBean.getToken();
+                    int isFace = loginPushBean.getIsFace();
+                    if (!TextUtils.isEmpty(token)) {
+                        UserManager.sendLoginEvenBus(token,isFace);
+                    }
+                }else if(date.type.equals("2")){
+                    TimeSetPushBean.DataBean timeBean = TimeSetPushBean.getTimeInfo(var2.message);
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                L.e(TAG, "[JSONException]: " + e.getMessage());
-            }
+
         }
 
     }

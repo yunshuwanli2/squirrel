@@ -1,5 +1,6 @@
 package com.app.squirrel.serial;
 
+
 import com.priv.yswl.base.tool.L;
 
 import java.io.IOException;

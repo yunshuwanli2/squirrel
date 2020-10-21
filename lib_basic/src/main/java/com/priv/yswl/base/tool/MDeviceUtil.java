@@ -60,7 +60,7 @@ public class MDeviceUtil {
     public static String getMAC(Context context) {
         if (MAC == null)
             MAC = Settings.System.getString(context.getContentResolver(), Settings.System.ANDROID_ID);
-        ;
+
         return MAC;
     }
 
