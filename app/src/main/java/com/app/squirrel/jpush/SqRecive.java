@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.app.squirrel.BuildConfig;
 import com.app.squirrel.serial.Rs232OutService;
 import com.app.squirrel.tool.UserManager;
 import com.priv.yswl.base.tool.L;
@@ -25,19 +26,116 @@ public class SqRecive extends JPushMessageReceiver {
 
     public void onMessage(Context var1, CustomMessage var2) {
         super.onMessage(var1, var2);
-        L.d(TAG, "[onMessage]: " + var2.toString());
-        if (!TextUtils.isEmpty(var2.message)) {
-                BasePushBean date = BasePushBean.getBasePush(var2.message);
+        L.d(TAG, "消息推送内容---[onMessage]: " + var2.toString());
+        String content = var2.message;
+        if (!TextUtils.isEmpty(content)) {
+                BasePushBean date = BasePushBean.getBasePush(content);
                 if(date.type.equals("1")){
-                    LoginPushBean.DataBean loginPushBean =LoginPushBean.getUserInfo(var2.message);
+                    LoginPushBean.DataBean loginPushBean =LoginPushBean.getUserInfo(content);
+                    if(null == loginPushBean){
+                        L.e(TAG,"推送消息 登录json为null");
+                    }
                     String token = loginPushBean.getToken();
                     int isFace = loginPushBean.getIsFace();
                     if (!TextUtils.isEmpty(token)) {
                         UserManager.sendLoginEvenBus(token,isFace);
                     }
                 }else if(date.type.equals("2")){
-                    TimeSetPushBean.DataBean timeBean = TimeSetPushBean.getTimeInfo(var2.message);
-//                    Rs232OutService.setTime(timeBean.getNumber(),);
+                    TimeSetPushBean.DataBean timeBean = TimeSetPushBean.getTimeInfo(content);
+                    if(null==timeBean){
+                        L.e(TAG,"推送消息 时间设置的json为null");
+                        return;
+                    }
+                    String number = timeBean.getNumber();
+                    if(TextUtils.isEmpty(number)){
+                        L.e(TAG,"推送消息 number为null");
+                        return;
+                    }
+                    String[] numbs = number.split(",");
+
+                    for(String nub :numbs){
+                        //TODO TEST kangpeng 版本发布需要注释打开
+                        if(!BuildConfig.DEBUG){
+                         Rs232OutService.setTime(Integer.parseInt(nub),timeBean.isIsOn(),timeBean.getTimes());
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }else if(date.type.equals("3")){//垃圾桶置零
+                    ZeroSetPushBean.DataBean dataBean = ZeroSetPushBean.getZeroSetInfo(content);
+                    if(null == dataBean){
+                        return;
+                    }
+                    String number = dataBean.getNumber();
+                    if(TextUtils.isEmpty(number)){
+                        L.e(TAG,"推送消息 桶子置零 number为null");
+                        return;
+                    }
+                    String[] numbs = number.split(",");
+
+                    for(String nub :numbs){
+                        //TODO TEST kangpeng 版本发布需要注释打开
+                        if(!BuildConfig.DEBUG){
+                            Rs232OutService.reset(Integer.parseInt(nub));
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }else if(date.type.equals("4")){//垃圾桶零点校准
+                    ZeroCheckPushBean.DataBean dataBean = ZeroCheckPushBean.getZeroCheckInfo(content);
+                    if(null == dataBean){
+                        return;
+                    }
+                    String number = dataBean.getNumber();
+                    if(TextUtils.isEmpty(number)){
+                        L.e(TAG,"推送消息 零点校准 number为null");
+                        return;
+                    }
+                    String[] numbs = number.split(",");
+
+                    for(String nub :numbs){
+                        //TODO TEST kangpeng 版本发布需要注释打开
+                        if(!BuildConfig.DEBUG){
+                            Rs232OutService.reset_0(Integer.parseInt(nub));
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }else if(date.type.equals("5")){//垃圾桶负载校准
+                    WeighCheckPushBean.DataBean dataBean = WeighCheckPushBean.getWeighCheckInfo(content);
+                    if(null == dataBean){
+                        return;
+                    }
+                    String number = dataBean.getNumber();
+                    if(TextUtils.isEmpty(number)){
+                        L.e(TAG,"推送消息 垃圾负载number为null");
+                        return;
+                    }
+                    String[] numbs = number.split(",");
+
+                    for(String nub :numbs){
+                        //TODO TEST kangpeng 版本发布需要注释打开
+                        if(!BuildConfig.DEBUG){
+                            Rs232OutService.resetWight(Integer.parseInt(nub),Integer.parseInt(dataBean.getWeight()));
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
         }

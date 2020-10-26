@@ -41,7 +41,7 @@
             android:layout_marginRight="@dimen/size_10"
             android:layout_marginBottom="@dimen/size_10"
             android:layout_marginTop="@dimen/size_20"
-            android:weightSum="4"
+            android:weightSum="2"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -49,6 +49,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
@@ -119,6 +120,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 

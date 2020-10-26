@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.app.squirrel.BuildConfig;
 import com.app.squirrel.R;
 import com.app.squirrel.serial.Rs232Callback;
 import com.app.squirrel.serial.Rs232OutService;
@@ -269,24 +270,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void openDoor(int doorNumb) {
         L.d(TAG, "open :" + doorNumb);
-//        rs232OutService.start();
-//        rs232OutService.openDoor(doorNumb);
-        recordOperateRequest(doorNumb,0,1);//单纯开门记录
+        rs232OutService.start();
+        rs232OutService.openDoor(doorNumb);
+        requestRecordOperate(doorNumb,0,1);//单纯开门记录
 
 
 //        TODO TEST TODAY 10.18
-        if(doorNumb==1){
-            recordOperateRequest(1,22,0);
-            return;
-        }
-        if(doorNumb ==2){
-            requestRecordFullStatus(2,true);
-            return;
-        }
-        if(doorNumb == 3){
-            requestWarn(3,2,"垃圾桶内有烟雾");
-        }
+        if(BuildConfig.DEBUG){
+            if(doorNumb==2){
+                requestRecordOperate(2,22,0);
+            }
+            if(doorNumb ==2){
+                requestRecordFullStatus(2,true);
+                return;
+            }
+            if(doorNumb == 4){
+                requestWarn(4,2,"垃圾桶内有烟雾");
+            }
 
+            if(doorNumb==4){
+                requestUpdateBordInfo(4,"22",28,"01","00","1530","11;12");
+            }
+        }
     }
 
     /**
@@ -305,7 +310,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * @param weight int 单位g
      * @param openStatus
      */
-    private void recordOperateRequest(int numb, int weight, int openStatus) {
+    private void requestRecordOperate(int numb, int weight, int openStatus) {
         String url = "/wxApi/operateRecord";
         Map<String, Object> para = new HashMap<>();
         para.put("number", numb);
@@ -548,7 +553,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
-                    recordOperateRequest( numb, weight, 0);
+                    requestRecordOperate( numb, weight, 0);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
