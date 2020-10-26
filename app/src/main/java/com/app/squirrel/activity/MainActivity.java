@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static final long PRC_STATUS_TIME_DELAY = 5 * 1000;//五秒
     private static final long TIME_GET_BORD_INFO = 5 * 60 * 1000;//更新时间5分钟
     private static final long UPDATE_TIME_TIME_DELAY = 1000;//更新时间1秒
-    private static final long USER_AUTO_LOGOUT_TIME = 2 * 60 * 1000;//更新时间1秒
+    private static final long USER_AUTO_LOGOUT_TIME = 12 * 60 * 1000;//自动登出时间2min
     private static final int ID_REQUEST_RECORD_OPERATE = 0x11;
     private static final int ID_REQUEST_RECORD_FULL_STATUS = 0x12;
     private static final int ID_REQUEST_WARN = 0x13;
@@ -270,8 +270,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void openDoor(int doorNumb) {
         L.d(TAG, "open :" + doorNumb);
-        rs232OutService.start();
-        rs232OutService.openDoor(doorNumb);
+        if(!BuildConfig.DEBUG){
+            rs232OutService.start();
+            rs232OutService.openDoor(doorNumb);
+        }
+
         requestRecordOperate(doorNumb,0,1);//单纯开门记录
 
 
@@ -289,7 +292,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             if(doorNumb==4){
-                requestUpdateBordInfo(4,"22",28,"01","00","1530","11;12");
+                requestUpdateBordInfo(4,"22",28,"01","00","1530","11:30;12:00");
             }
         }
     }
