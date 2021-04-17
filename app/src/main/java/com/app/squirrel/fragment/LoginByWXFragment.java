@@ -38,5 +38,6 @@ public class LoginByWXFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onClick(View view) {
         FaceLoginPreActivity.JumpAct(getActivity());
+        getActivity().finish();
     }
 }

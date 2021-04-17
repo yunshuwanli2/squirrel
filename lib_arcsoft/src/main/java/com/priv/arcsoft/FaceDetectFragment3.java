@@ -509,7 +509,7 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                         public void onSucceed(int requestId, JSONObject result) {
                             L.d(TAG, "registerNv21Network [onSucceed] result:" + result.toString());
                             boolean succese = result.optString("code").equals("0");
-                            String str = succese ? "register success!" : "register failed!";
+                            String str = succese ? "注册成功!" : "注册失败!";
                             ToastUtil.showToast(str);
                             if (succese && getActivity() != null) {
                                 registerStatus = REGISTER_STATUS_DONE;
@@ -615,14 +615,18 @@ public class FaceDetectFragment3 extends BaseDetectFragment implements ViewTreeO
                 L.d(TAG, "searchFace result" + result.toString());
                 String code = result.optString("code");
                 if (code.equals("0")) {
-//                    ToastUtil.showToast("人脸验证成功");
+                    ToastUtil.showToast("人脸验证成功");
                     JSONObject data = result.optJSONObject("data");
                     int isFace = data.optInt("isFace");
                     String token = data.optString("token");
+
+
                     Message message = Message.obtain();
-                    message.arg1 = 1;
+                    message.arg1 = isFace;
                     message.obj = token;
                     EventBus.getDefault().postSticky(message);
+
+                    getActivity().finish();
                 } else {
                     onFail(requestId, "");
                 }

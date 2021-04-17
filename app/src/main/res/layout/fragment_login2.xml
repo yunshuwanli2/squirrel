@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/size_60"
+        android:layout_height="@dimen/size_80"
         android:layout_marginStart="@dimen/size_100"
         android:layout_marginEnd="@dimen/size_100"
         android:layout_gravity="center_horizontal"
@@ -21,6 +21,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:paddingLeft="@dimen/size_10"
             android:cursorVisible="false"
             android:hint="请输入手机号码"
             android:letterSpacing="0.1"
@@ -29,7 +30,7 @@
             android:paddingStart="@dimen/size_10"
             android:textColor="@android:color/background_dark"
             android:textColorHint="@android:color/darker_gray"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_28" />
 
         <TextView
             android:id="@+id/tv_login"
@@ -40,7 +41,7 @@
             android:gravity="center"
             android:text="确 认"
             android:textColor="@android:color/background_dark"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_28" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,17 +49,16 @@
         android:layout_width="match_parent"
         android:layout_marginStart="@dimen/size_100"
         android:layout_marginEnd="@dimen/size_100"
-        android:layout_height="@dimen/size_30"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/size_10"
-        android:layout_marginBottom="@dimen/size_10"
-        android:gravity="bottom">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_24"
+        android:layout_marginBottom="@dimen/size_24"
+        android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/iv_check"
-            android:layout_width="@dimen/size_32"
-            android:layout_height="@dimen/size_32"
-            android:layout_marginRight="@dimen/size_10"
+            android:layout_width="@dimen/size_36"
+            android:layout_height="@dimen/size_36"
+            android:layout_marginRight="@dimen/size_14"
             android:src="@mipmap/ic_check_normol" />
 
         <TextView
@@ -270,8 +270,8 @@
             android:drawableLeft="@mipmap/icon_face"
             android:drawablePadding="@dimen/size_5"
             android:gravity="center"
-            android:paddingTop="@dimen/size_20"
-            android:paddingBottom="@dimen/size_20"
+            android:paddingTop="@dimen/size_14"
+            android:paddingBottom="@dimen/size_14"
             android:paddingLeft="@dimen/size_100"
             android:paddingRight="@dimen/size_100"
             android:text="人脸识别开箱"

@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,7 +64,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private int openNumb = -1;
     public HandlerThread mHandleThread;
     public SafeHandler mSafeHandle;
-    public TextView tv_date,tv_deviceId;
+    public TextView tv_date, tv_deviceId;
     public LinearLayout loginOrout;
     public TextView tv_harm_hint;
     public TextView tv_wet_hint;
@@ -86,25 +87,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         int isFace = message.arg1;
         String token = (String) message.obj;
-        L.d(TAG,"token:"+token+ " isFace:" + isFace );
-
+        L.d(TAG, "token:" + token + " isFace:" + isFace);
+        //人脸验证通过保存
         UserManager.loginLocal(token, isFace);
 
         setLoginStatues();
 
-        ToastUtil.showToast("登录成功");
         //登录成功2分钟后自动登出
         mSafeHandle.removeMessages(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
         mSafeHandle.sendEmptyMessage(SafeHandler.MSG_OVERTIME_USER_LOGOUT);
 
-        if (isFace == 0) {
-            loginOrout.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ArcSoftFaceActivity.JumpAct(MainActivity.this, UserManager.isLogin(), UserManager.isFace());
-                }
-            }, 1000);
-        }
+//        ToastUtil.showToast("登录成功");
+//        if (isFace == 0) {
+//            loginOrout.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    ArcSoftFaceActivity.JumpAct(MainActivity.this, UserManager.isLogin(), UserManager.isFace());
+//                }
+//            }, 1000);
+//        }
 
     }
 
@@ -134,6 +135,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_welcome);
 
         findViewById(R.id.ll_dry_garbage).setOnClickListener(this);
@@ -153,7 +155,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         loginOrout.setVisibility(View.INVISIBLE);
         tv_date = findViewById(R.id.tv_date);
         tv_deviceId = findViewById(R.id.tv_device_id);
-        tv_deviceId.setText("设备ID: "+MDeviceUtil.getMAC(this));
+        tv_deviceId.setText("设备ID: " + MDeviceUtil.getMAC(this));
         mHandleThread = new HandlerThread(TAG);
         mHandleThread.start();
         mSafeHandle = new SafeHandler(this, mHandleThread.getLooper());
@@ -213,15 +215,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onSucceed(int requestId, JSONObject result) {
-        L.d(TAG, "requestId"+requestId+ " [onSucceed]" + result);
-        if(requestId==100){
-            L.d(TAG,"关门后记录成功");
+        L.d(TAG, "requestId" + requestId + " [onSucceed]" + result);
+        if (requestId == 100) {
+            L.d(TAG, "关门后记录成功");
         }
     }
 
     @Override
     public void onFail(int requestId, String errorMsg) {
-        L.e(TAG, "requestId:"+requestId+" [onFail]" + errorMsg);
+        L.e(TAG, "requestId:" + requestId + " [onFail]" + errorMsg);
     }
 
 
@@ -270,29 +272,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void openDoor(int doorNumb) {
         L.d(TAG, "open :" + doorNumb);
-        if(!BuildConfig.DEBUG){
+        if (!BuildConfig.DEBUG) {
             rs232OutService.start();
             rs232OutService.openDoor(doorNumb);
         }
 
-        requestRecordOperate(doorNumb,0,1);//单纯开门记录
+        requestRecordOperate(doorNumb, 0, 1);//单纯开门记录
 
 
 //        TODO TEST TODAY 10.18
-        if(BuildConfig.DEBUG){
-            if(doorNumb==2){
-                requestRecordOperate(2,22,0);
+        if (BuildConfig.DEBUG) {
+            if (doorNumb == 2) {
+                requestRecordOperate(2, 22, 0);
             }
-            if(doorNumb ==2){
-                requestRecordFullStatus(2,true);
+            if (doorNumb == 2) {
+                requestRecordFullStatus(2, true);
                 return;
             }
-            if(doorNumb == 4){
-                requestWarn(4,2,"垃圾桶内有烟雾");
+            if (doorNumb == 4) {
+                requestWarn(4, 2, "垃圾桶内有烟雾");
             }
 
-            if(doorNumb==4){
-                requestUpdateBordInfo(4,"22",28,"01","00","1530","11:30;12:00");
+            if (doorNumb == 4) {
+                requestUpdateBordInfo(4, "22", 28, "01", "00", "1530", "11:30;12:00");
             }
         }
     }
@@ -308,9 +310,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //提交记录请求
 
     /**
-     *
      * @param numb
-     * @param weight int 单位g
+     * @param weight     int 单位g
      * @param openStatus
      */
     private void requestRecordOperate(int numb, int weight, int openStatus) {
@@ -321,10 +322,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         para.put("siteCode", "A0001");
         para.put("openStatus", openStatus);
         String str = GsonUtil.GsonString(para);
-        ToastUtil.showToast("请求参数为：" + str);
+        L.d(TAG, "[/wxApi/operateRecord]:" + str);
         HttpClientProxy.getInstance().postJSONAsyn(url, ID_REQUEST_RECORD_OPERATE, str, this);
     }
-
 
 
     private void requestRecordFullStatus(int doorNumb, boolean isFull) {
@@ -337,18 +337,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     /**
-     *
      * @param doorNumb
-     * @param type
-     * 1 温度过高
-     * 2 烟雾警报
-     * 3 满载警报
-     * 4 灭火容器不足
-     * 5 电机故障
-     * @param remark
-     * 报警提示信息。当type为1时，该字段为温度
+     * @param type     1 温度过高
+     *                 2 烟雾警报
+     *                 3 满载警报
+     *                 4 灭火容器不足
+     *                 5 电机故障
+     * @param remark   报警提示信息。当type为1时，该字段为温度
      */
-    private void requestWarn(int doorNumb, int type,String remark) {
+    private void requestWarn(int doorNumb, int type, String remark) {
         String url = "wxApi/receiveWarn";
         Map<String, Object> para = new HashMap<>();
         para.put("number", doorNumb);
@@ -358,7 +355,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     /**
-     *
      * @param doorNumb
      * @param weight
      * @param temperature
@@ -367,9 +363,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * @param timeSet
      * @param times
      */
-    private void requestUpdateBordInfo(int doorNumb,String weight,
-                                       int temperature,String smokeWarn,
-                                       String fireWarn,String timeSet,String times
+    private void requestUpdateBordInfo(int doorNumb, String weight,
+                                       int temperature, String smokeWarn,
+                                       String fireWarn, String timeSet, String times
     ) {
         String url = "wxApi/receiveBordInfo";
         Map<String, Object> para = new HashMap<>();
@@ -392,7 +388,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         loginOrout.setVisibility(View.VISIBLE);
 
     }
-
 
 
     final static class SafeHandler extends Handler {
@@ -432,7 +427,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             Rs232OutService.getBoardInfo(3);
                             Rs232OutService.getBoardInfo(4);
                         }
-                    },100);
+                    }, 100);
 
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -467,7 +462,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
     }
-
 
 
     class MyCallback implements Rs232Callback {
@@ -505,7 +499,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onReceiveBordInfo(int numb, String weight, int temperature, String smokeWarn,
                                       String fireWarn, String timeSet, String times) {
-            L.d(TAG,String.format(Locale.CHINA, "%d 号门打开" +
+            L.d(TAG, String.format(Locale.CHINA, "%d 号门打开" +
                             "，weight:%s,temperature:%d,smokeWarn:%s,fireWarn:%s,timeSet:%s,times:%s"
                     , numb, weight, temperature, smokeWarn, fireWarn, timeSet, times));
             requestUpdateBordInfo(numb, weight, temperature, smokeWarn, fireWarn, timeSet, times);
@@ -556,7 +550,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void run() {
                     ToastUtil.showToast(numb + "号垃圾桶门关闭，重量：" + weight);
-                    requestRecordOperate( numb, weight, 0);
+                    requestRecordOperate(numb, weight, 0);
                     if (numb == 1) {
                         tv_recy_hint.setVisibility(View.INVISIBLE);
                         iv_recy_img.setBackground(null);
@@ -584,7 +578,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFireWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestWarn(numb,1,msg);
+            requestWarn(numb, 1, msg);
         }
 
         /**
@@ -593,7 +587,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onSmokeWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestWarn(numb,2,msg);
+            requestWarn(numb, 2, msg);
         }
 
         /**
@@ -603,7 +597,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         public void onFullWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
             requestRecordFullStatus(numb, true);
-            requestWarn(numb,3,msg);
+            requestWarn(numb, 3, msg);
         }
 
         /**
@@ -612,7 +606,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onFireToolsEmptyWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestWarn(numb,4,msg);
+            requestWarn(numb, 4, msg);
         }
 
         /**
@@ -621,7 +615,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void onMachineWarn(int numb, String msg) {
             ToastUtil.showToast(numb + "号垃圾桶" + msg);
-            requestWarn(numb,5,msg);
+            requestWarn(numb, 5, msg);
         }
     }
 

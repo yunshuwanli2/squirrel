@@ -10,9 +10,9 @@
 
 
     <LinearLayout
-        android:layout_marginTop="@dimen/size_80"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/size_80"
         android:layout_weight="1.6"
         android:orientation="vertical">
 
@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:text="请选择回收类型开始投递"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/font_28" />
+            android:textSize="@dimen/font_32" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,26 +32,26 @@
             android:layout_margin="@dimen/size_15"
             android:text="未绑定小程序的用户可扫描下方二维码进行绑定"
             android:textColor="@android:color/darker_gray"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_22" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_10"
+            android:layout_marginTop="@dimen/size_20"
             android:layout_marginRight="@dimen/size_10"
             android:layout_marginBottom="@dimen/size_10"
-            android:layout_marginTop="@dimen/size_20"
-            android:weightSum="2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="2">
 
             <LinearLayout
                 android:id="@+id/ll_recy_garbage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="gone"
                 android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/iv_rec_img"
@@ -90,8 +90,8 @@
 
                 <ImageView
                     android:id="@+id/iv_wet_img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/size_310"
+                    android:layout_height="@dimen/size_310"
                     android:src="@mipmap/ic_wet_garbage" />
 
                 <TextView
@@ -100,7 +100,7 @@
                     android:layout_marginTop="@dimen/size_15"
                     android:text="湿垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="@dimen/font_22" />
+                    android:textSize="@dimen/font_28" />
 
                 <TextView
                     android:id="@+id/tv_wet_hint"
@@ -120,13 +120,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="gone"
                 android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/iv_harm_img"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/size_100"
                     android:layout_height="wrap_content"
                     android:src="@mipmap/ic_harmful_garbage" />
 
@@ -150,6 +150,7 @@
 
 
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/ll_dry_garbage"
                 android:layout_width="0dp"
@@ -160,8 +161,8 @@
 
                 <ImageView
                     android:id="@+id/iv_dry_img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/size_310"
+                    android:layout_height="@dimen/size_310"
                     android:src="@mipmap/ic_dry_garbage" />
 
                 <TextView
@@ -170,7 +171,7 @@
                     android:layout_marginTop="@dimen/size_15"
                     android:text="干垃圾"
                     android:textColor="@android:color/background_dark"
-                    android:textSize="@dimen/font_22" />
+                    android:textSize="@dimen/font_28" />
 
                 <TextView
                     android:id="@+id/tv_dry_hint"
@@ -195,25 +196,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/size_20"
         android:background="@drawable/bg_circle"
         android:gravity="center">
 
         <TextView
             android:id="@+id/tv_log_in_out"
-            android:layout_margin="@dimen/size_5"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/size_5"
             android:drawableLeft="@mipmap/ic_exit"
             android:drawablePadding="@dimen/size_5"
             android:gravity="center"
-            android:paddingBottom="@dimen/size_20"
-            android:paddingTop="@dimen/size_20"
             android:paddingLeft="@dimen/size_100"
+            android:paddingTop="@dimen/size_20"
             android:paddingRight="@dimen/size_100"
+            android:paddingBottom="@dimen/size_20"
             android:text="退出登录"
             android:textColor="@color/gray2"
-            android:textSize="@dimen/font_28"
-             />
+            android:textSize="@dimen/font_22" />
 
     </LinearLayout>
 

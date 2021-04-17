@@ -204,8 +204,8 @@ public class LogCollector implements CrashHandlerListener {
         mCacheFile = FileUtils.createLogCacheFile(mContext, mCacheFile, mCleanCache);
         CrashHandler.getInstance().init(mContext, mCleanCache).crash(this);
 
-        mLogRunnable = new LogRunnable();
-        Executors.newSingleThreadExecutor().execute(mLogRunnable);
+//        mLogRunnable = new LogRunnable();
+//        Executors.newSingleThreadExecutor().execute(mLogRunnable);
     }
 
     @Override

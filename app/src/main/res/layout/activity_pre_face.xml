@@ -20,7 +20,7 @@
         android:paddingStart="@dimen/size_5"
         android:paddingEnd="@dimen/size_10"
         android:text="返回"
-        android:textSize="@dimen/font_18" />
+        android:textSize="@dimen/font_22" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,16 +39,16 @@
 
     <Button
         android:id="@+id/btn_face_login"
-        android:layout_width="@dimen/size_310"
-        android:layout_height="@dimen/size_58"
+        android:layout_width="@dimen/size_352"
+        android:layout_height="@dimen/size_80"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/size_18"
+        android:layout_marginBottom="@dimen/size_32"
         android:background="@drawable/bg_face_btn"
         android:text="开始刷脸"
-        android:textSize="@dimen/font_18" />
+        android:textSize="@dimen/font_22" />
 
     <TextView
-        android:layout_width="@dimen/size_150"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/size_18"
         android:layout_gravity="center_horizontal"
         android:drawableStart="@mipmap/ic_aes"

@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import com.app.squirrel.R;
 import com.app.squirrel.activity.FaceLoginPreActivity;
 import com.app.squirrel.facedetect.FaceDetectActivity;
+import com.app.squirrel.tool.UserManager;
+import com.priv.arcsoft.ArcSoftFaceActivity;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.network.CallBack.HttpCallback;
 import com.priv.yswl.base.network.HttpClientProxy;
@@ -199,15 +201,18 @@ public class LoginByCusrNumbFragment extends BaseFragment implements View.OnClic
         if (code.equals("0")) {
             JSONObject data = result.optJSONObject("data");
             token = data.optString("token");
-            isFace = data.optInt("isFace");
+            isFace = data.optInt("isFace");//0 未注册 1 已注册
         }
         if (!TextUtils.isEmpty(token)) {
-            L.e(TAG, "获取token成功，postSticky"+token);
+            L.e(TAG, "获取token成功，postSticky" + token);
             MSPUtils.clear(getActivity());
-           Message message = new Message();
-           message.obj = token;
-           message.arg1 = isFace;
-            EventBus.getDefault().postSticky(message);
+            UserManager.loginLocal(token, isFace);
+            UserManager.sendLoginEvenBus(token,isFace);
+            if(isFace==0){
+                ArcSoftFaceActivity.JumpAct(getActivity(),true, false);
+                getActivity().finish();
+            }
+
         } else {
             L.e(TAG, "获取token失败");
             ToastUtil.showToast(result.optString("msg"));

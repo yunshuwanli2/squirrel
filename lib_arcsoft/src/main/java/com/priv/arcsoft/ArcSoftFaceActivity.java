@@ -21,9 +21,15 @@ public class ArcSoftFaceActivity extends FragmentActivity {
     public final static String isLogin_key = "isLogin";
     public final  static String isFace_key = "isFace";
 
-    public static void JumpAct(Activity context, boolean isLogin, boolean isFace) {
+    /**
+     *
+     * @param context
+     * @param isLogin
+     * @param isFace 1是已经认证 0是未认证
+     */
+    public static void JumpAct(Context context, boolean isLogin, boolean isFace) {
         Intent intent = new Intent(context, ArcSoftFaceActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(isLogin_key, isLogin);
         intent.putExtra(isFace_key, isFace);
         context.startActivity(intent);

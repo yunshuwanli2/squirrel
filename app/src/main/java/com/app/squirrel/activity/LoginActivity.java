@@ -25,6 +25,7 @@ import com.priv.yswl.base.BaseActivity;
 import com.priv.yswl.base.BaseFragment;
 import com.priv.yswl.base.MApplication;
 import com.priv.yswl.base.tool.L;
+import com.priv.yswl.base.tool.MDeviceUtil;
 import com.priv.yswl.base.tool.ToastUtil;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -102,6 +103,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void initUI() {
         tv_date = findViewById(R.id.tv_date);
         findViewById(R.id.tv_back).setOnClickListener(this);
+        ((TextView)findViewById(R.id.tv_device_id)).setText("设备ID: "+ MDeviceUtil.getMAC(this));
 
         ll_switch1 = findViewById(R.id.ll_switch1);
         ll_switch2 = findViewById(R.id.ll_switch2);

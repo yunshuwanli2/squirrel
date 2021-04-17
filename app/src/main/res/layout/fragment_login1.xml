@@ -7,8 +7,8 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="@dimen/size_200"
-        android:layout_height="@dimen/size_200"
+        android:layout_width="@dimen/size_352"
+        android:layout_height="@dimen/size_352"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/size_30"
         android:background="@mipmap/weixin" />
@@ -17,17 +17,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/size_10"
+        android:layout_margin="@dimen/size_20"
         android:text="请扫描开箱，支持微信扫一扫登录"
         android:textColor="@android:color/darker_gray"
-        android:textSize="@dimen/font_18" />
+        android:textSize="@dimen/font_20" />
 
     <LinearLayout
         android:id="@+id/ll_face_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/size_60"
+        android:layout_marginTop="@dimen/size_100"
         android:background="@drawable/bg_circle2"
         android:gravity="center">
 
@@ -37,13 +37,15 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/size_5"
             android:drawableLeft="@mipmap/icon_face"
-            android:drawablePadding="@dimen/size_5"
+            android:drawablePadding="@dimen/size_10"
             android:gravity="center"
-            android:paddingLeft="@dimen/size_30"
-            android:paddingRight="@dimen/size_30"
+            android:paddingTop="@dimen/size_20"
+            android:paddingBottom="@dimen/size_20"
+            android:paddingLeft="@dimen/size_100"
+            android:paddingRight="@dimen/size_100"
             android:text="人脸识别开箱"
             android:textColor="@color/gray2"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_22" />
 
     </LinearLayout>
 </LinearLayout>
